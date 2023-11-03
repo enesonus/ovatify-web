@@ -1,10 +1,39 @@
+# Dependency directories
+node_modules/
+
+# SvelteKit build directory
+/build/
+/.svelte-kit/
+/package/
+
+# System files
 .DS_Store
-node_modules
-/build
-/.svelte-kit
-/package
+Thumbs.db
+ehthumbs.db
+Icon?
+
+# Editor directories and files
+.idea/
+*.sublime-workspace
+*.sublime-project
+.vscode/
+*.swp
+*.swo
+*.swn
+
+# Environment variables
 .env
 .env.*
 !.env.example
+
+# Timestamp files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Thumbnails
+._*
