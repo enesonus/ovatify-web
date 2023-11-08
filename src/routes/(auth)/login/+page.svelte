@@ -9,9 +9,7 @@
 	import { auth, FIREBASE_ERRORS } from "$lib/utils/firebase";
 	import { displayToast } from "$lib/utils/toast";
 	import * as api from "$lib/utils/api";
-	import MainIcon from "$lib/assets/MainIcon.svelte";
-	import { Github } from "lucide-svelte";
-	import GoogleIcon from "$lib/assets/GoogleIcon.svelte";
+	import { Icons } from "$lib/icons";
 
 	let email = "";
 	let password = "";
@@ -50,7 +48,7 @@
 			const userCredential = await signInWithEmailAndPassword(auth, email, password);
 			displayToast({ type: "success", message: "Firebase login successful" });
 			const userToken = await userCredential.user.getIdToken();
-			const serverRes = await api.post("users/login", userToken);
+			const serverRes = await api.post("users/login/", userToken);
 			if (serverRes.status !== 200) {
 				console.error("Server error updating last login ");
 			}
@@ -81,7 +79,7 @@
 <div class="flex flex-col justify-center items-center min-h-screen">
 	<div class="flex flex-col justify-center items-center">
 		<div class="py-4">
-			<MainIcon />
+			<Icons.logoWithText />
 		</div>
 		<div
 			class="flex border-[2px] bg-[#1D1F26] text-[#B3BBD8] rounded-2xl
@@ -135,7 +133,7 @@
 							displayToast({ type: "error", message: "Not implemented yet" });
 						}}
 						class="border-[#B3BBD8] xsm:w-3/4 font-semibold"
-						><GoogleIcon /><span class="px-2">Google</span></Button
+						><Icons.google class="h-6 w-6" /><span class="px-2">Google</span></Button
 					>
 					<Button
 						variant="outline"
@@ -143,7 +141,7 @@
 							displayToast({ type: "error", message: "Not implemented yet" });
 						}}
 						class="border-[#B3BBD8] xsm:w-3/4 font-semibold text-start"
-						><Github /><span class="px-2">Github</span></Button
+						><Icons.github class="h-6 w-6" /><span class="px-2">Github</span></Button
 					>
 				</div>
 			</form>

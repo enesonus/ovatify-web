@@ -1,4 +1,11 @@
+<script lang="ts">
+	import type { IconProps } from "lucide-svelte";
+
+	type $$Props = IconProps;
+</script>
+
 <svg
+	{...$$restProps}
 	width="83"
 	height="104"
 	viewBox="0 0 83 104"
