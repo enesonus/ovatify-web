@@ -1,9 +1,15 @@
 <script lang="ts">
-	import Nav from "./Nav.svelte";
+	import SideNav from "./SideNav.svelte";
+	import TopNav from "./TopNav.svelte";
 </script>
 
-<div class="flex">
-	<Nav />
-
-	<slot />
-</div>
+<main>
+	<TopNav />
+	<div class="flex">
+		<SideNav />
+		<!-- Page Content -->
+		<div class="p-4">
+			<slot />
+		</div>
+	</div>
+</main>

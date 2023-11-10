@@ -27,11 +27,19 @@ async function send(
 	try {
 		const response = await fetch(`${base}/${path}`, options);
 		const text = await response.text();
-
-		return { data: text ? JSON.parse(text) : null, status: response.status };
-	} catch (e) {
+		try {
+			const data = JSON.parse(text);
+			return { data: data, error: null, status: response.status };
+		} catch (e) {
+			return {
+				data: null,
+				error: { message: "Error parsing response text as JSON", obj: text },
+				status: response.status
+			};
+		}
+	} catch (e: any) {
 		console.error(e);
-		return { data: null, status: 500 };
+		return { data: null, error: { message: e?.message, obj: e }, status: 500 };
 	}
 }
 

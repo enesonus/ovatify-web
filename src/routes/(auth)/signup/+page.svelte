@@ -9,9 +9,7 @@
 	import { onDestroy, onMount } from "svelte";
 	import { user } from "$lib/stores/user";
 	import { goto } from "$app/navigation";
-	import MainIcon from "$lib/assets/MainIcon.svelte";
-	import { Github } from "lucide-svelte";
-	import GoogleIcon from "$lib/assets/GoogleIcon.svelte";
+	import { Icons } from "$lib/icons";
 
 	let email = "";
 	let password = "";
@@ -98,7 +96,7 @@
 <div class="flex flex-col justify-center items-center min-h-screen">
 	<div class="flex flex-col justify-center items-center">
 		<div class="py-4">
-			<MainIcon />
+			<Icons.logoWithText />
 		</div>
 		<div
 			class="flex border-[2px] bg-[#1D1F26] text-[#B3BBD8] rounded-2xl
@@ -161,7 +159,8 @@
 							displayToast({ type: "error", message: "Not implemented yet" });
 						}}
 						class="border-[#B3BBD8] xsm:w-3/4 font-semibold"
-						><GoogleIcon /><span class="px-2">Continue with Google</span></Button
+						><Icons.google class="h-6 w-6" /><span class="px-2">Continue with Google</span
+						></Button
 					>
 					<Button
 						variant="outline"
@@ -169,7 +168,8 @@
 							displayToast({ type: "error", message: "Not implemented yet" });
 						}}
 						class="border-[#B3BBD8] xsm:w-3/4 font-semibold text-start"
-						><Github /><span class="px-2">Continue with Github</span></Button
+						><Icons.github class="h-6 w-6" /><span class="px-2">Continue with Github</span
+						></Button
 					>
 				</div>
 			</form>

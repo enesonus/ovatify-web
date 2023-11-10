@@ -37,27 +37,14 @@
 	});
 </script>
 
-<div class="p-4">
+<div>
 	<h1>Welcome to Ovatify!</h1>
-	<div>
+	<div class="flex flex-col gap-4">
 		{#if $user}
 			<p>Logged in as: {$user.email}</p>
-			<p>UID: {$user.uid}</p>
 		{/if}
-		<Button variant="outline">Hello</Button>
-		<button on:click={testFunction}>Send API call to backend</button>
-		{#if loading}
-			<p>Loading...</p>
-		{/if}
+		<Button variant={!loading ? "outline" : "destructive"} on:click={testFunction}
+			>Send API call to backend</Button
+		>
 	</div>
 </div>
-
-<style lang="postcss">
-	button {
-		background-color: blue;
-		border-radius: 1rem;
-		padding: 0.5rem;
-		margin: 0.5rem;
-		color: white;
-	}
-</style>
