@@ -4,7 +4,7 @@
 	import { cn } from "$lib/utils";
 </script>
 
-<nav class="flex flex-col w-20 justify-center items-center border-blue-500">
+<nav class="flex flex-col w-20 min-w-[5rem] items-center border-blue-500">
 	<a href="/" class="w-16 h-16">
 		<div
 			class={cn(
