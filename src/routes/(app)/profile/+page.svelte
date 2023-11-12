@@ -2,10 +2,30 @@
 	import { auth } from "$lib/utils/firebase";
 	import { displayToast } from "$lib/utils/toast";
 	import { signOut } from "firebase/auth";
-	import { Button } from "$lib/components/ui/button";
 	import { goto } from "$app/navigation";
+	import { Button } from "$lib/components/ui/button";
+	import * as api from "$lib/utils/api";
+	import { user } from "$lib/stores/user";
 
 	let loading = false;
+
+	async function testFunction() {
+		if (loading) return;
+		loading = true;
+		try {
+			const userToken = await $user?.getIdToken();
+			const res = await api.get("users/return-post-body", userToken);
+			displayToast({
+				type: "success",
+				message: `Status ${res?.status} | ${res?.data?.message ?? "No Token"} 
+			| UID: ${res?.data?.uid ?? "No UID"}`
+			});
+		} catch {
+			displayToast({ type: "error", message: "Error getting genres" });
+		} finally {
+			loading = false;
+		}
+	}
 
 	async function signout() {
 		if (loading) return;
@@ -27,5 +47,8 @@
 	<div>
 		<p>Profile Page</p>
 		<Button variant="outline" on:click={signout}>Sign Out</Button>
+		<Button variant={!loading ? "outline" : "destructive"} on:click={testFunction}
+			>Send API call to backend</Button
+		>
 	</div>
 </div>

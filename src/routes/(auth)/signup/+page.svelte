@@ -61,8 +61,8 @@
 			const userCredential = await createUserWithEmailAndPassword(auth, email, password);
 			displayToast({ type: "success", message: "Firebase signup successful" });
 			const userToken = await userCredential.user.getIdToken();
-			const serverRes = await api.post("users/createUser", userToken, { email });
-			if (serverRes.status !== 200) {
+			const serverRes = await api.post("users/createUser/", userToken, { email });
+			if (serverRes.status !== 201) {
 				console.log("Error creating user");
 				displayToast({ type: "error", message: "Error creating user" });
 				// potentially retry here with exponential backoff strategy
@@ -81,16 +81,6 @@
 			loading = false;
 		}
 	}
-
-	const unsubscribe = user.subscribe((value) => {
-		if (value) {
-			goto("/");
-		}
-	});
-
-	onDestroy(() => {
-		unsubscribe();
-	});
 </script>
 
 <div class="flex flex-col justify-center items-center min-h-screen">
