@@ -1,7 +1,10 @@
 import { dev } from "$app/environment";
 import type { SendOptions } from "$lib/types";
 
-const base = dev
+const local = false;
+const base = local
+	? "http://127.0.0.1:8000"
+	: dev
 	? "https://ovatify-backend-dev.fly.dev"
 	: "https://ovatify-backend.fly.dev";
 

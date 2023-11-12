@@ -36,3 +36,6 @@ npm-debug.log*
 
 # Thumbnails
 ._*
+
+# Test routes
+/src/routes/(app)/test/
