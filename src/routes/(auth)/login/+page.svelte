@@ -48,9 +48,9 @@
 			const userCredential = await signInWithEmailAndPassword(auth, email, password);
 			displayToast({ type: "success", message: "Firebase login successful" });
 			const userToken = await userCredential.user.getIdToken();
-			const serverRes = await api.post("users/login/", userToken);
+			const serverRes = await api.put("users/login/", userToken);
 			if (serverRes.status !== 200) {
-				console.error("Server error updating last login ");
+				console.error("Server error updating last login.");
 			}
 		} catch (error: any) {
 			console.log("Error message: ", error.message);
@@ -64,16 +64,6 @@
 			loading = false;
 		}
 	}
-
-	const unsubscribe = user.subscribe((value) => {
-		if (value) {
-			goto("/");
-		}
-	});
-
-	onDestroy(() => {
-		unsubscribe();
-	});
 </script>
 
 <div class="flex flex-col justify-center items-center min-h-screen">
