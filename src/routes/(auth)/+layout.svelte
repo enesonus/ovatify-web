@@ -2,10 +2,16 @@
 	import { goto } from "$app/navigation";
 	import { user } from "$lib/stores/user";
 	import { onDestroy } from "svelte";
+	import { page } from "$app/stores";
 
 	const unsubscribe = user.subscribe((value) => {
 		if (value) {
-			goto("/");
+			const redirectTo = $page.url.searchParams.get("redirect");
+			if (redirectTo) {
+				goto(`/${redirectTo}`);
+			} else {
+				goto("/");
+			}
 		}
 	});
 

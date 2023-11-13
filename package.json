@@ -40,6 +40,7 @@
 	"dependencies": {
 		"@fontsource-variable/inter": "^5.0.15",
 		"bits-ui": "^0.9.1",
+		"chart.js": "^4.4.0",
 		"clsx": "^2.0.0",
 		"firebase": "^10.5.2",
 		"lucide-svelte": "^0.292.0",

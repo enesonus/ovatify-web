@@ -1,9 +1,7 @@
 <script lang="ts">
-	import { goto } from "$app/navigation";
 	import { user } from "$lib/stores/user";
-	import { displayToast } from "$lib/utils/toast";
-	import { onDestroy } from "svelte";
 	import Carousel from "./Carousel.svelte";
+	import RecentRatingsChart from "./RecentRatingsChart.svelte";
 
 	const placeholderImageUrl =
 		"https://images.unsplash.com/photo-1496208612508-eb52fba7d94e?q=80&w=1780&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
@@ -36,13 +34,7 @@
 			</div>
 			<!-- Stats -->
 			<div class="flex flex-grow justify-center items-center">
-				<div class="w-fit">
-					<img
-						src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-						class="w-96 rounded-lg"
-						alt=""
-					/>
-				</div>
+				<RecentRatingsChart />
 			</div>
 		</div>
 		<!-- Newly Added -->
