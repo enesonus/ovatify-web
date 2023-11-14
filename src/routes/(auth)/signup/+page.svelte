@@ -61,7 +61,7 @@
 			const userCredential = await createUserWithEmailAndPassword(auth, email, password);
 			displayToast({ type: "success", message: "Firebase signup successful" });
 			const userToken = await userCredential.user.getIdToken();
-			const serverRes = await api.post("users/createUser/", userToken, { email });
+			const serverRes = await api.post("users/create-user/", userToken, { email });
 			if (serverRes.status !== 201) {
 				console.log("Error creating user");
 				displayToast({ type: "error", message: "Error creating user" });
