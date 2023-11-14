@@ -1,6 +1,9 @@
+import { dev } from "$app/environment";
 import type { SendOptions } from "$lib/types";
 
-const base = "http://localhost:8000";
+const base = dev
+	? "https://ovatify-backend-dev.fly.dev"
+	: "https://ovatify-backend.fly.dev";
 
 async function send(
 	method: string,
