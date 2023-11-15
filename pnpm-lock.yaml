@@ -17,6 +17,9 @@ dependencies:
   clsx:
     specifier: ^2.0.0
     version: 2.0.0
+  cmdk-sv:
+    specifier: ^0.0.7
+    version: 0.0.7(svelte@4.2.2)
   firebase:
     specifier: ^10.5.2
     version: 10.5.2
@@ -1493,6 +1496,16 @@ packages:
   /clsx@2.0.0:
     resolution: {integrity: sha512-rQ1+kcj+ttHG0MKVGBUXwayCCF1oh39BF5COIpRzuCEv8Mwjv0XucrI2ExNTOn9IlLifGClWQcU9BrZORvtw6Q==}
     engines: {node: '>=6'}
+    dev: false
+
+  /cmdk-sv@0.0.7(svelte@4.2.2):
+    resolution: {integrity: sha512-xe586uQnKKOAW6q0dvfuzGwWgsJzEIpA9fvAkfX6J13AH+cwFXb0uLUqPlVTJ2YLzt6Tu4DLO+mRv10DasHEWw==}
+    peerDependencies:
+      svelte: ^4.0.0
+    dependencies:
+      bits-ui: 0.9.1(svelte@4.2.2)
+      nanoid: 5.0.3
+      svelte: 4.2.2
     dev: false
 
   /code-red@1.0.4:

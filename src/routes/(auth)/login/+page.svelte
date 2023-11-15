@@ -1,15 +1,12 @@
 <script lang="ts">
-	import { onDestroy } from "svelte";
 	import { signInWithEmailAndPassword } from "firebase/auth";
 	import { Input } from "$lib/components/ui/input";
 	import { Button } from "$lib/components/ui/button";
 	import { Label } from "$lib/components/ui/label";
-	import { user } from "$lib/stores/user";
-	import { goto } from "$app/navigation";
 	import { auth, FIREBASE_ERRORS } from "$lib/utils/firebase";
 	import { displayToast } from "$lib/utils/toast";
-	import * as api from "$lib/utils/api";
 	import { Icons } from "$lib/icons";
+	import { updateLastLogin } from "$lib/services/authService";
 
 	let email = "";
 	let password = "";
@@ -46,11 +43,12 @@
 		loading = true;
 		try {
 			const userCredential = await signInWithEmailAndPassword(auth, email, password);
-			displayToast({ type: "success", message: "Firebase login successful" });
 			const userToken = await userCredential.user.getIdToken();
-			const serverRes = await api.put("users/login/", userToken);
+			const serverRes = await updateLastLogin(userToken);
 			if (serverRes.status !== 200) {
 				console.error("Server error updating last login.");
+			} else {
+				console.log("Last login updated successfully.");
 			}
 		} catch (error: any) {
 			console.log("Error message: ", error.message);

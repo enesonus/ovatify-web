@@ -12,6 +12,7 @@
 	import { goto } from "$app/navigation";
 	import Stars from "$lib/components/Stars.svelte";
 	import { fade } from "svelte/transition";
+	import { searchSong, uploadSongFile, addSong } from "$lib/services/songService";
 
 	type SelectedSongBody = {
 		spotify_id: string;
@@ -74,7 +75,7 @@
 		querying = true;
 		try {
 			const token = await $user.getIdToken();
-			const response = await api.get(`songs/api/search?search_string=${query}`, token);
+			const response = await searchSong(token, query);
 			if (response.status !== 200) {
 				console.log(response);
 				displayToast({ type: "error", message: "Error searching for songs" });
@@ -103,35 +104,18 @@
 		}
 		const token = await $user.getIdToken();
 		const body: SelectedSongBody = {
-			spotify_id: selectedSongId
+			spotify_id: selectedSongId,
+			rating: selectedSongRating
 		};
 		console.log(body);
 		try {
-			const response = await api.post("songs/api/add", token, body);
+			const response = await addSong(token, body);
 			if (response.status !== 200) {
 				console.log(response);
 				displayToast({ type: "error", message: "Error adding song" });
 				return;
 			}
 			displayToast({ type: "success", message: "Song added successfully" });
-			if (selectedSongRating > 0) {
-				const ratingBody = {
-					spotify_id: selectedSongId,
-					rating: selectedSongRating
-				};
-				try {
-					const ratingResponse = await api.post("songs/api/rate", token, ratingBody);
-					if (ratingResponse.status !== 200) {
-						console.log(ratingResponse);
-						displayToast({ type: "error", message: "Error rating song" });
-					} else {
-						displayToast({ type: "success", message: "Song rated successfully" });
-					}
-				} catch (error: any) {
-					console.log(error);
-					displayToast({ type: "error", message: "Error rating song" });
-				}
-			}
 		} catch (error: any) {
 			console.log(error);
 			displayToast({ type: "error", message: "Error adding song" });
@@ -155,7 +139,7 @@
 		return true;
 	}
 
-	async function uploadSongFile() {
+	async function uploadFile() {
 		if (loading) return;
 		if (!file) {
 			displayToast({ type: "error", message: "No file selected" });
@@ -173,7 +157,7 @@
 		}
 		try {
 			const token = await $user.getIdToken();
-			const response = await api.post("songs/upload-file/", token, null, form);
+			const response = await uploadSongFile(token, form);
 			switch (response.status) {
 				case 201:
 					displayToast({ type: "success", message: "Songs uploaded successfully" });
@@ -200,7 +184,8 @@
 </script>
 
 <Dialog.Root bind:open={dialogIsOpen} closeOnOutsideClick={false}>
-	<Dialog.Trigger class={buttonVariants({ variant: "outline" })}>Add Song</Dialog.Trigger>
+	<Dialog.Trigger class={buttonVariants({ variant: "outline" })}>Add Music</Dialog.Trigger
+	>
 	<Dialog.Content
 		class="flex justify-center rounded-lg w-11/12 md:max-w-[80vw] lg:max-w-[51.2rem] h-[32rem]"
 	>
@@ -352,7 +337,7 @@
 						<p>No file chosen</p>
 					{/if}
 					<Button
-						on:click={uploadSongFile}
+						on:click={uploadFile}
 						variant="outline"
 						class={`w-96 ${
 							loading

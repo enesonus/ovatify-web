@@ -4,10 +4,14 @@ import type { Toast } from "$lib/types";
 export function displayToast(toast: Toast) {
 	switch (toast.type) {
 		case "success":
-			svelteToast.success(toast.message);
+			svelteToast.success(toast.message, {
+				style: "background-color: #333; color: #fff;"
+			});
 			break;
 		case "error":
-			svelteToast.error(toast.message);
+			svelteToast.error(toast.message, {
+				style: "background-color: #333; color: #fff;"
+			});
 			break;
 	}
 }
