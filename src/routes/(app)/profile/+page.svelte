@@ -4,7 +4,6 @@
 	import { signOut } from "firebase/auth";
 	import { goto } from "$app/navigation";
 	import { Button } from "$lib/components/ui/button";
-	import SongFileComboUpload from "./SongFileComboUpload.svelte";
 
 	let loading = false;
 
@@ -28,6 +27,5 @@
 	<div>
 		<p>Profile Page</p>
 		<Button variant="outline" on:click={signout}>Sign Out</Button>
-		<SongFileComboUpload />
 	</div>
 </div>

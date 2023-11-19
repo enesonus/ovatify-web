@@ -4,6 +4,7 @@
 	import { Search } from "lucide-svelte";
 	import { Icons } from "$lib/icons";
 	import { cn } from "$lib/utils";
+	import UserDropdown from "./UserDropdown.svelte";
 </script>
 
 <nav class="flex h-16 items-center gap-16">
@@ -32,5 +33,9 @@
 				placeholder="Search songs, albums, artists"
 			/>
 		</div>
+	</div>
+	<!-- User -->
+	<div class="ml-auto w-16 h-16 flex justify-center items-center">
+		<UserDropdown />
 	</div>
 </nav>

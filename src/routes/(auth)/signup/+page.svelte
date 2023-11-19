@@ -10,6 +10,7 @@
 	import { user } from "$lib/stores/user";
 	import { goto } from "$app/navigation";
 	import { Icons } from "$lib/icons";
+	import { createUser } from "$lib/services/authService";
 
 	let email = "";
 	let password = "";
@@ -59,15 +60,16 @@
 		loading = true;
 		try {
 			const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-			displayToast({ type: "success", message: "Firebase signup successful" });
+			console.log("Firebase Signup Successful");
 			const userToken = await userCredential.user.getIdToken();
-			const serverRes = await api.post("users/create-user/", userToken, { email });
+			console.log("Attempting to create user in database...");
+			const serverRes = await createUser(userToken, email);
 			if (serverRes.status !== 201) {
 				console.log("Error creating user");
 				displayToast({ type: "error", message: "Error creating user" });
 				// potentially retry here with exponential backoff strategy
 			} else {
-				console.log("Signed up successfully");
+				console.log("User created successfully");
 				displayToast({ type: "success", message: "Signed up successfully" });
 			}
 		} catch (error: any) {

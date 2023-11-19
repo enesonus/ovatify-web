@@ -1,15 +1,23 @@
 <script lang="ts">
 	import { ChevronLeftCircle, ChevronRightCircle } from "lucide-svelte";
+	import { createEventDispatcher } from "svelte";
+
+	const dispatch = createEventDispatcher();
+
+	function toggleDialog(data: any) {
+		dispatch("toggleDialog", data);
+	}
+
 	const placeholderImageUrl =
 		"https://images.unsplash.com/photo-1496208612508-eb52fba7d94e?q=80&w=1780&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
 
 	export let title: string;
-	export let data: Record<string, any>[] = [
-		{ title: "1989 (Taylor's Version)", type: "Album", artist: "Taylor Swift" },
-		{ title: "1989 (Taylor's Version)", type: "Album", artist: "Taylor Swift" },
-		{ title: "1989 (Taylor's Version)", type: "Album", artist: "Taylor Swift" },
-		{ title: "1989 (Taylor's Version)", type: "Album", artist: "Taylor Swift" },
-		{ title: "1989 (Taylor's Version)", type: "Album", artist: "Taylor Swift" }
+	export let data: any[] = [
+		{ name: "1989 (Taylor's Version)", release_year: "2021", artists: ["Taylor Swift"] },
+		{ name: "1989 (Taylor's Version)", release_year: "2021", artists: ["Taylor Swift"] },
+		{ name: "1989 (Taylor's Version)", release_year: "2021", artists: ["Taylor Swift"] },
+		{ name: "1989 (Taylor's Version)", release_year: "2021", artists: ["Taylor Swift"] },
+		{ name: "1989 (Taylor's Version)", release_year: "2021", artists: ["Taylor Swift"] }
 	];
 </script>
 
@@ -24,22 +32,20 @@
 	<div class="flex gap-4">
 		{#each data as element}
 			<!-- Song Cards -->
-			<a
-				href="/"
+			<button
+				on:click={() => toggleDialog(element)}
 				class="border-[2px] border-black p-2 rounded-lg bg-zinc-900 hover:bg-zinc-800"
 			>
 				<div class="w-48 rounded-lg">
-					<img src={placeholderImageUrl} alt="" />
-					<p class="py-2">{element.title}</p>
-					<p>{element.type} • {element.artist}</p>
+					<img
+						src={element.image_url ?? placeholderImageUrl}
+						alt={element.name}
+						class="object-cover"
+					/>
+					<p class="py-2">{element.name}</p>
+					<p>{element.release_year} • {element.artists[0]}</p>
 				</div>
-			</a>
+			</button>
 		{/each}
 	</div>
 </div>
-
-<style lang="postcss">
-	img {
-		object-fit: cover;
-	}
-</style>

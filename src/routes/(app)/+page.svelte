@@ -1,8 +1,14 @@
 <script lang="ts">
 	import { user } from "$lib/stores/user";
 	import Carousel from "./Carousel.svelte";
-	import RecentRatingsChart from "./RecentRatingsChart.svelte";
+	import RecentRatingsChart from "$lib/components/charts/RecentRatingsChart.svelte";
+	import * as Dialog from "$lib/components/ui/dialog";
 
+	let dialogIsOpen = false;
+
+	function toggleDialog() {
+		dialogIsOpen = !dialogIsOpen;
+	}
 	const placeholderImageUrl =
 		"https://images.unsplash.com/photo-1496208612508-eb52fba7d94e?q=80&w=1780&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
 </script>
@@ -39,13 +45,23 @@
 		</div>
 		<!-- Newly Added -->
 		<div>
-			<Carousel title="Newly added" />
+			<Carousel title="Newly added" on:toggleDialog={toggleDialog} />
 		</div>
 		<!-- Categories -->
 		<div>
 			<Carousel title="Categories" />
 		</div>
 	</div>
+	<!-- Hidden dialog -->
+	<Dialog.Root bind:open={dialogIsOpen}>
+		<Dialog.Content class="min-w-[48rem] min-h-[90vh] ">
+			<div class="flex flex-col items-center justify-center">
+				<h1>1989 (Taylor's Version)</h1>
+				<img src={placeholderImageUrl} alt="" class="w-64" />
+				<p>Taylor Swift</p>
+			</div>
+		</Dialog.Content>
+	</Dialog.Root>
 </section>
 
 <style lang="postcss">
