@@ -13,6 +13,7 @@
 	import Stars from "$lib/components/Stars.svelte";
 	import { fade } from "svelte/transition";
 	import { searchSong, uploadSongFile, addSong } from "$lib/services/songService";
+	import { placeholderImageUrl } from "$lib/constants";
 
 	type SelectedSongBody = {
 		spotify_id: string;
@@ -27,9 +28,6 @@
 		track_name: string;
 		image_url?: string;
 	};
-
-	const placeholderImageUrl =
-		"https://images.unsplash.com/photo-1496208612508-eb52fba7d94e?q=80&w=1780&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
 
 	let file: File | undefined;
 	let query: string = "";
@@ -97,6 +95,7 @@
 			displayToast({ type: "error", message: "Please select a song" });
 			return;
 		}
+		loading = true;
 		if (!$user) {
 			displayToast({ type: "error", message: "You must be logged in to upload a song" });
 			goto("/login");
@@ -107,15 +106,19 @@
 			spotify_id: selectedSongId,
 			rating: selectedSongRating
 		};
-		console.log(body);
 		try {
 			const response = await addSong(token, body);
-			if (response.status !== 200) {
-				console.log(response);
-				displayToast({ type: "error", message: "Error adding song" });
-				return;
+			switch (response.status) {
+				case 200:
+					displayToast({ type: "success", message: "Song added successfully" });
+					break;
+				case 400:
+					displayToast({ type: "error", message: "Song already exists" });
+					break;
+				default:
+					displayToast({ type: "error", message: "Error adding song" });
+					break;
 			}
-			displayToast({ type: "success", message: "Song added successfully" });
 		} catch (error: any) {
 			console.log(error);
 			displayToast({ type: "error", message: "Error adding song" });
@@ -305,12 +308,14 @@
 					<Button
 						variant="outline"
 						class={`w-4/5 ${
-							selectedSongId === null
+							selectedSongId === null || loading
 								? "text-white bg-red-800 hover:bg-red-700"
 								: "text-black bg-[#B3BBD8]"
 						}`}
 						on:click={addSelectedSong}
-						>{selectedSongRating > 0
+						>{loading
+							? "Adding song..."
+							: selectedSongRating > 0
 							? "Rate and add selected song"
 							: "Add selected song"}</Button
 					>

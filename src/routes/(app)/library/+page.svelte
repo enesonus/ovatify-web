@@ -2,7 +2,7 @@
 	import Carousel from "../Carousel.svelte";
 	import * as Dialog from "$lib/components/ui/dialog";
 	import { Button } from "$lib/components/ui/button";
-	import { getFriendGroups, getRecentAdditions } from "./getData";
+	import { getFriendGroups, getRecentAdditions, getUserFavorites } from "./getData";
 	import SongFileComboUpload from "./SongFileComboUpload.svelte";
 	import { CheckCircle2, XCircle, Trash2, Edit } from "lucide-svelte";
 	import { displayToast } from "$lib/utils/toast";
@@ -11,6 +11,8 @@
 	import { user } from "$lib/stores/user";
 	import { goto } from "$app/navigation";
 	import { updateSong } from "$lib/services/songService";
+	import { placeholderImageUrl } from "$lib/constants";
+	import Spinner from "$lib/components/Spinner.svelte";
 
 	let displaySongDialogIsOpen = false;
 	let confirmDialogIsOpen = false;
@@ -48,9 +50,6 @@
 		selectedSong = element.detail;
 		displaySongDialogIsOpen = !displaySongDialogIsOpen;
 	}
-
-	const placeholderImageUrl =
-		"https://images.unsplash.com/photo-1496208612508-eb52fba7d94e?q=80&w=1780&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
 </script>
 
 <section class="min-h-screen">
@@ -73,9 +72,24 @@
 		<div>
 			{#await getRecentAdditions()}
 				<!-- Show skeleton state -->
-				<div>Loading...</div>
+				<div>
+					<Spinner class="animate-spin" />
+				</div>
 			{:then data}
 				<Carousel on:toggleDialog={toggleDialog} title="Recent Additions" {data} />
+			{:catch}
+				<div>Error fetching data</div>
+			{/await}
+		</div>
+		<!-- Favorites -->
+		<div>
+			{#await getUserFavorites()}
+				<!-- Show skeleton state -->
+				<div>
+					<Spinner class="animate-spin" />
+				</div>
+			{:then data}
+				<Carousel on:toggleDialog={toggleDialog} title="Your Favorites" {data} />
 			{:catch}
 				<div>Error fetching data</div>
 			{/await}
@@ -84,7 +98,9 @@
 		<div>
 			{#await getFriendGroups()}
 				<!-- Show skeleton state -->
-				<div>Loading...</div>
+				<div>
+					<Spinner class="animate-spin" />
+				</div>
 			{:then data}
 				<Carousel on:toggleDialog={toggleDialog} title="Friend Groups" {data} />
 			{:catch}

@@ -1,12 +1,10 @@
-import { dev } from "$app/environment";
 import type { SendOptions } from "$lib/types";
+import { env } from "$env/dynamic/public";
 
 const local = false;
-const base = local
-	? "http://127.0.0.1:8000"
-	: dev
-	? "https://ovatify-backend-dev.fly.dev"
-	: "https://ovatify-backend.fly.dev";
+const base = !local
+	? env.PUBLIC_BASE_URL ?? ""
+	: "http://127.0.0.1:8000";
 
 async function send(
 	method: string,
