@@ -1,27 +1,13 @@
 <script lang="ts">
 	import { onMount } from "svelte";
 	import Chart from "chart.js/auto";
-	import { getRandomRGBA } from "$lib/utils/colors";
 
 	let canvas: HTMLCanvasElement;
 
-	export let chartData: any;
-
-	function getDataSets(chartData: any) {
-		const returnData = [];
-		for (const yLabel in chartData.yLabels) {
-			const color = getRandomRGBA();
-			returnData.push({
-				data: chartData.yLabels[yLabel].data,
-				label: chartData.yLabels[yLabel].label,
-				backgroundColor: chartData.yLabels[yLabel].color ?? color,
-				borderColor: chartData.yLabels[yLabel].color ?? color,
-				borderWidth: 2,
-				fill: false
-			});
-		}
-		return returnData;
-	}
+	export let chartTitle: string;
+	export let barColor = "#292929";
+	export let xValues: string[];
+	export let yValues: number[];
 
 	onMount(() => {
 		const context = canvas.getContext("2d");
@@ -29,8 +15,16 @@
 		new Chart(context, {
 			type: "bar",
 			data: {
-				labels: chartData.xLabels,
-				datasets: getDataSets(chartData)
+				labels: xValues,
+				datasets: [
+					{
+						data: yValues,
+						label: "Number of Songs",
+						backgroundColor: barColor,
+						borderColor: barColor,
+						borderWidth: 2
+					}
+				]
 			},
 			options: {
 				responsive: true,
@@ -47,7 +41,7 @@
 				plugins: {
 					title: {
 						display: true,
-						text: chartData.title,
+						text: chartTitle,
 						font: {
 							size: 18
 						}
@@ -66,6 +60,7 @@
 					y: {
 						beginAtZero: true,
 						ticks: {
+							stepSize: 1,
 							padding: 0,
 							crossAlign: "near",
 							font: {

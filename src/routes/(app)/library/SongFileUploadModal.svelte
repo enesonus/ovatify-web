@@ -1,5 +1,4 @@
 <script lang="ts">
-	import * as api from "$lib/utils/api";
 	import * as Dialog from "$lib/components/ui/dialog";
 	import { Button, buttonVariants } from "$lib/components/ui/button";
 	import { Skeleton } from "$lib/components/ui/skeleton";
@@ -12,23 +11,11 @@
 	import { goto } from "$app/navigation";
 	import Stars from "$lib/components/Stars.svelte";
 	import { fade } from "svelte/transition";
-	import { searchSong, uploadSongFile, addSong } from "$lib/services/songService";
+	import { searchSpotifySong, uploadSongFile, addSong } from "$lib/services/songService";
 	import { placeholderImageUrl } from "$lib/constants";
+	import type { SelectedSongBody, SongQueryResponse } from "$lib/types";
 
-	type SelectedSongBody = {
-		spotify_id: string;
-		rating?: number;
-	};
-
-	type SongQueryResponse = {
-		spotify_id: string;
-		album_name: string;
-		artist: string;
-		release_year: string;
-		track_name: string;
-		image_url?: string;
-	};
-
+	export let refresh: boolean;
 	let file: File | undefined;
 	let query: string = "";
 	let queryResult: SongQueryResponse[] = [];
@@ -58,7 +45,7 @@
 		query = query.trim();
 		if (query.length === 0) return;
 		if (query.length < 3) {
-			displayToast({ type: "error", message: "Please enter at least 3 characters" });
+			displayToast({ type: "error", message: "Enter at least 3 characters to search" });
 			return;
 		}
 		if (query.length > 50) {
@@ -73,13 +60,12 @@
 		querying = true;
 		try {
 			const token = await $user.getIdToken();
-			const response = await searchSong(token, query);
+			const response = await searchSpotifySong(token, query);
 			if (response.status !== 200) {
 				console.log(response);
 				displayToast({ type: "error", message: "Error searching for songs" });
 			} else {
 				queryResult = response.data.results;
-				console.log(queryResult);
 			}
 		} catch (error: any) {
 			console.log(error);
@@ -108,16 +94,13 @@
 		};
 		try {
 			const response = await addSong(token, body);
-			switch (response.status) {
-				case 200:
-					displayToast({ type: "success", message: "Song added successfully" });
-					break;
-				case 400:
-					displayToast({ type: "error", message: "Song already exists" });
-					break;
-				default:
-					displayToast({ type: "error", message: "Error adding song" });
-					break;
+			if (response.status >= 200 && response.status < 300) {
+				displayToast({ type: "success", message: "Rating added successfully" });
+				refresh = !refresh;
+			} else if (response.status === 400) {
+				displayToast({ type: "error", message: "Song already exists" });
+			} else {
+				displayToast({ type: "error", message: "Error adding song" });
 			}
 		} catch (error: any) {
 			console.log(error);
@@ -150,30 +133,26 @@
 		}
 		const validFileName = validateFileName(file.name);
 		if (!validFileName) return;
-		loading = true;
-		const form = new FormData();
-		form.append("file", file!);
 		if (!$user) {
 			displayToast({ type: "error", message: "You must be logged in to upload a song" });
 			goto("/login");
 			return;
 		}
+		loading = true;
+		const form = new FormData();
+		form.append("file", file!);
 		try {
 			const token = await $user.getIdToken();
 			const response = await uploadSongFile(token, form);
-			switch (response.status) {
-				case 201:
-					displayToast({ type: "success", message: "Songs uploaded successfully" });
-					break;
-				case 400:
-					displayToast({
-						type: "error",
-						message: "Please make sure the data is in the format shown in the docs"
-					});
-					break;
-				default:
-					displayToast({ type: "error", message: "Error uploading songs" });
-					break;
+			if (response.status === 201) {
+				displayToast({ type: "success", message: "Songs uploaded successfully" });
+			} else if (response.status === 400) {
+				displayToast({
+					type: "error",
+					message: "Please make sure file data structure is correct"
+				});
+			} else {
+				displayToast({ type: "error", message: "Error uploading songs" });
 			}
 		} catch (e: any) {
 			console.log(e);
@@ -264,7 +243,7 @@
 											>
 												<img
 													class="w-24 min-w-[6rem] h-24 object-cover rounded-lg"
-													src={result.image_url ?? placeholderImageUrl}
+													src={result.album_url ?? placeholderImageUrl}
 													alt={result.track_name}
 												/>
 											</div>

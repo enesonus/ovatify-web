@@ -2,9 +2,7 @@ import type { SendOptions } from "$lib/types";
 import { env } from "$env/dynamic/public";
 
 const local = false;
-const base = !local
-	? env.PUBLIC_BASE_URL ?? ""
-	: "http://127.0.0.1:8000";
+const base = !local ? env.PUBLIC_BASE_URL ?? "" : "http://127.0.0.1:8000";
 
 async function send(
 	method: string,
@@ -12,22 +10,18 @@ async function send(
 	token?: string | null,
 	data?: object | null,
 	form?: FormData | null
-) {
+): Promise<{ data: any; status: number; error: { message: string; value: any } | null }> {
 	const options: SendOptions = { method, headers: {} };
-
 	if (data) {
 		options.headers["Content-Type"] = "application/json";
 		options.body = JSON.stringify(data);
 	}
-
 	if (form) {
 		options.body = form;
 	}
-
 	if (token) {
 		options.headers["Authorization"] = `Bearer ${token}`;
 	}
-
 	try {
 		const response = await fetch(`${base}/${path}`, options);
 		const text = await response.text();
@@ -37,13 +31,13 @@ async function send(
 		} catch (e) {
 			return {
 				data: null,
-				error: { message: "Error parsing response text as JSON", obj: text },
+				error: { message: "Error parsing response text as JSON", value: text },
 				status: response.status
 			};
 		}
 	} catch (e: any) {
 		console.error(e);
-		return { data: null, error: { message: e?.message, obj: e }, status: 500 };
+		return { data: null, error: { message: e?.message, value: e }, status: 500 };
 	}
 }
 

@@ -1,59 +1,66 @@
 <script lang="ts">
-	import Carousel from "../Carousel.svelte";
-	import * as Dialog from "$lib/components/ui/dialog";
+	import SongDetailsModal from "./EditSongModal.svelte";
+	import Carousel from "$lib/components/Carousel.svelte";
 	import { Button } from "$lib/components/ui/button";
-	import { getFriendGroups, getRecentAdditions, getUserFavorites } from "./getData";
-	import SongFileComboUpload from "./SongFileComboUpload.svelte";
-	import { CheckCircle2, XCircle, Trash2, Edit } from "lucide-svelte";
+	import SongFileComboUpload from "./SongFileUploadModal.svelte";
 	import { displayToast } from "$lib/utils/toast";
-	import Stars from "$lib/components/Stars.svelte";
-	import { fade } from "svelte/transition";
 	import { user } from "$lib/stores/user";
-	import { goto } from "$app/navigation";
-	import { updateSong } from "$lib/services/songService";
-	import { placeholderImageUrl } from "$lib/constants";
 	import Spinner from "$lib/components/Spinner.svelte";
+	import { getRecentlyAddedSongs, getUserFavorites } from "$lib/services/userService";
+	import { sleep } from "$lib/utils/time";
 
-	let displaySongDialogIsOpen = false;
-	let confirmDialogIsOpen = false;
+	let dialogIsOpen = false;
 	let activeTab: string = "Playlists";
-	let rating = 0;
-	let editMode = false;
-	let selectedSong: any;
+	let refreshRecents = false;
+	let selectedSongId: string = "";
 
-	async function updateRating() {
-		editMode = false;
-		displayToast({ message: "Rating updated", type: "success" });
-		if (!$user) {
-			displayToast({ message: "Please login to rate songs", type: "error" });
-			goto("/login");
-			return;
+	// Gets data to fill the carousel with recent song additions by the user
+	async function getRecentAdditions() {
+		const token = await $user?.getIdToken();
+		if (!token) {
+			console.log("No token");
+			return [];
 		}
-		const token = await $user.getIdToken();
-		const body = {
-			songId: selectedSong.id,
-			rating: rating
-		};
-		const response = await updateSong(token, body);
-		if (response.status !== 204) {
-			displayToast({ message: "Error updating rating", type: "error" });
+		const response = await getRecentlyAddedSongs(token);
+		if (response.status !== 200) {
+			displayToast({ message: "Error getting recent additions", type: "error" });
+			return [];
 		}
-		selectedSong = null;
+		return response.data.songs;
 	}
 
-	async function deleteRating() {
-		confirmDialogIsOpen = false;
-		displayToast({ message: "Deleted", type: "success" });
+	// Gets data to fill the carousel with the user's favorite songs
+	async function getYourFavorites() {
+		const token = await $user?.getIdToken();
+		if (!token) {
+			console.log("No token");
+			return [];
+		}
+		const response = await getUserFavorites(token);
+		if (response.status !== 200) {
+			displayToast({ message: "Error getting favorites", type: "error" });
+			return [];
+		}
+		console.log("favorites", response.data.songs);
+		return response.data.songs;
 	}
 
-	function toggleDialog(element: any) {
-		selectedSong = element.detail;
-		displaySongDialogIsOpen = !displaySongDialogIsOpen;
+	// Gets data to fill the carousel with songs from the user's friend groups - WIP
+	async function getFriendGroups() {
+		await sleep(1);
+		return [];
+	}
+
+	function toggleDialog(event: CustomEvent<string>) {
+		selectedSongId = event.detail;
+		console.log("selected song id", selectedSongId);
+		dialogIsOpen = !dialogIsOpen;
 	}
 </script>
 
 <section class="min-h-screen">
 	<div class="flex flex-col gap-4">
+		<!-- Buttons to tab through different sections, do nothing for now -->
 		<div class="flex gap-2">
 			{#each ["Playlists", "Songs", "Albums", "Artists"] as item}
 				<Button
@@ -65,35 +72,39 @@
 				>
 			{/each}
 			<div class="ml-auto">
-				<SongFileComboUpload />
+				<SongFileComboUpload bind:refresh={refreshRecents} />
 			</div>
 		</div>
 		<!-- Recent Additions -->
-		<div>
-			{#await getRecentAdditions()}
-				<!-- Show skeleton state -->
-				<div>
-					<Spinner class="animate-spin" />
-				</div>
-			{:then data}
-				<Carousel on:toggleDialog={toggleDialog} title="Recent Additions" {data} />
-			{:catch}
-				<div>Error fetching data</div>
-			{/await}
-		</div>
+		{#key refreshRecents}
+			<div>
+				{#await getRecentAdditions()}
+					<!-- Show skeleton state -->
+					<div>
+						<Spinner class="animate-spin" />
+					</div>
+				{:then data}
+					<Carousel on:toggleEvent={toggleDialog} title="Recent Additions" {data} />
+				{:catch}
+					<div>Error fetching data</div>
+				{/await}
+			</div>
+		{/key}
 		<!-- Favorites -->
-		<div>
-			{#await getUserFavorites()}
-				<!-- Show skeleton state -->
-				<div>
-					<Spinner class="animate-spin" />
-				</div>
-			{:then data}
-				<Carousel on:toggleDialog={toggleDialog} title="Your Favorites" {data} />
-			{:catch}
-				<div>Error fetching data</div>
-			{/await}
-		</div>
+		{#key refreshRecents}
+			<div>
+				{#await getYourFavorites()}
+					<!-- Show skeleton state -->
+					<div>
+						<Spinner class="animate-spin" />
+					</div>
+				{:then data}
+					<Carousel on:toggleEvent={toggleDialog} title="Your Favorites" {data} />
+				{:catch}
+					<div>Error fetching data</div>
+				{/await}
+			</div>
+		{/key}
 		<!-- Friend Groups -->
 		<div>
 			{#await getFriendGroups()}
@@ -102,102 +113,12 @@
 					<Spinner class="animate-spin" />
 				</div>
 			{:then data}
-				<Carousel on:toggleDialog={toggleDialog} title="Friend Groups" {data} />
+				<Carousel on:toggleEvent={toggleDialog} title="Friend Groups" {data} />
 			{:catch}
 				<div>Error fetching data</div>
 			{/await}
 		</div>
 	</div>
 	<!-- Modal for detailed music information -->
-	<Dialog.Root bind:open={displaySongDialogIsOpen}>
-		<Dialog.Content
-			class="w-11/12 rounded-lg max-w-[90%] md:max-w-2xl h-[90vh] overflow-y-auto"
-		>
-			<div class=" relative flex flex-col items-center">
-				<div
-					class="flex flex-col w-full justify-center items-center text-start break-all"
-				>
-					<img src={placeholderImageUrl} alt="" class="w-64 object-cover" />
-					<h1 class="font-bold text-xl px-2 w-full">{selectedSong.name ?? "Name"}</h1>
-					<h2 class="w-full px-2">
-						{selectedSong.artists ? selectedSong.artists.join(", ") : "Artists"}
-					</h2>
-					<p class="w-full px-2">
-						Album: {selectedSong.album ?? "Album"}
-					</p>
-					<p class="w-full px-2">
-						Genres: {selectedSong.genres ? selectedSong.genres.join(", ") : "Genres"}
-					</p>
-
-					<p class="w-full px-2">
-						Instruments: {selectedSong.instruments
-							? selectedSong.instruments.join(", ")
-							: "Instruments"}
-					</p>
-					<p class="w-full px-2">Mood: {selectedSong.mood ?? "Mood"}</p>
-					<p class="w-full px-2 text-center">
-						Average Rating: {selectedSong.avgRating ?? 3.5}
-					</p>
-					<div class="flex justify-center items-center gap-1">
-						{#if !editMode}
-							<p class="px-2 tabular-nums">Your Rating: {selectedSong.rating ?? 5}</p>
-						{:else}
-							<p class="px-2 tabular-nums">New Rating: {rating}</p>
-						{/if}
-						{#if !editMode}
-							<Button
-								variant="outline"
-								on:click={() => {
-									editMode = true;
-								}}
-								class="w-6 h-6 p-0"
-							>
-								<Edit class="w-4 h-4" />
-							</Button>
-							<Button
-								variant="outline"
-								on:click={() => {
-									confirmDialogIsOpen = true;
-								}}
-								class="w-6 h-6 p-0"
-							>
-								<Trash2 class="w-4 h-4" />
-							</Button>
-						{/if}
-					</div>
-					{#if editMode}
-						<div transition:fade class="flex justify-center items-center h-8">
-							<Stars bind:rating />
-							<Button variant="outline" on:click={updateRating} class=" w-6 h-6 p-0 ml-1">
-								<CheckCircle2 class="w-4 h-4" />
-							</Button>
-							<Button
-								variant="outline"
-								on:click={() => {
-									editMode = false;
-								}}
-								class=" w-6 h-6 p-0"
-							>
-								<XCircle class="w-4 h-4" />
-							</Button>
-						</div>
-					{/if}
-				</div>
-			</div>
-		</Dialog.Content>
-	</Dialog.Root>
-	<!-- Confirm modal for deleting song from user's library -->
-	<Dialog.Root bind:open={confirmDialogIsOpen}>
-		<Dialog.Content class="rounded-lg max-w-[16rem] sm:max-w-xs md:max-w-md">
-			<Dialog.Header>
-				<Dialog.Title>Are you sure?</Dialog.Title>
-				<Dialog.Description
-					>This action will delete this song from your library</Dialog.Description
-				>
-			</Dialog.Header>
-			<Dialog.Footer>
-				<Button variant="destructive" on:click={deleteRating}>Delete</Button>
-			</Dialog.Footer>
-		</Dialog.Content>
-	</Dialog.Root>
+	<SongDetailsModal bind:dialogIsOpen bind:selectedSongId />
 </section>

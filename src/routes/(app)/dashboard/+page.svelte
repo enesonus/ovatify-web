@@ -1,36 +1,43 @@
 <script lang="ts">
 	import AddedSongsBarChart from "$lib/components/charts/AddedSongsBarChart.svelte";
 	import RecentRatingsChart from "$lib/components/charts/RecentRatingsChart.svelte";
+	import { getEntityCount } from "$lib/services/userService";
+	import { user } from "$lib/stores/user";
+	import { onMount } from "svelte";
 
-	const byMood: any = {
-		title: "Added Songs by Mood",
-		xLabels: ["Happy", "Sad", "Excited", "Angry", "Calm", "Neutral"],
-		yLabels: [{ label: "Value", data: [50, 100, 75, 50, 50, 160], color: "#292929" }]
-	};
+	async function getEntityChart(entity: "artists" | "tempos" | "genres" | "moods") {
+		const token = await $user!.getIdToken();
+		const res = await getEntityCount(token, entity);
+		if (res?.status === 200) {
+			const data = res.data;
+			return { xValues: Object.keys(data), yValues: Object.values(data) as number[] };
+		}
+		return { xValues: [], yValues: [] };
+	}
 
-	const byTempo: any = {
-		title: "Added Songs by Tempo",
-		xLabels: ["Fast", "Slow", "Medium"],
-		yLabels: [{ label: "Value", data: [50, 100, 75], color: "#1E9798" }]
-	};
+	const entities = ["artists", "genres", "moods", "tempos"] as const;
 
-	const byGenre: any = {
-		title: "Added Songs by Genre",
-		xLabels: ["Pop", "Rock", "Jazz", "Classical"],
-		yLabels: [{ label: "Value", data: [30, 100, 75, 60], color: "#983423" }]
-	};
+	onMount(() => {
+		// getTempoChart();
+	});
 </script>
 
 <div class="grid grid-cols-2 gap-8">
-	<div class="flex justify-center items-center">
-		<AddedSongsBarChart chartData={byMood} />
-	</div>
-	<div class="flex justify-center items-center">
-		<AddedSongsBarChart chartData={byTempo} />
-	</div>
-	<div class="flex justify-center items-center">
-		<AddedSongsBarChart chartData={byGenre} />
-	</div>
+	{#if $user}
+		{#each entities as entity}
+			<div class="flex justify-center items-center">
+				{#await getEntityChart(entity)}
+					<div>Loading</div>
+				{:then data}
+					<AddedSongsBarChart
+						chartTitle={`Added songs by ${entity.slice(0, -1)} `}
+						xValues={data.xValues}
+						yValues={data.yValues}
+					/>
+				{/await}
+			</div>
+		{/each}
+	{/if}
 	<div class="flex justify-center items-center">
 		<RecentRatingsChart />
 	</div>
