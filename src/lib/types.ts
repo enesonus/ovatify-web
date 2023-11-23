@@ -4,6 +4,15 @@ export type SendOptions = {
 	body?: string | FormData;
 };
 
+export type UserData = {
+	email?: string;
+	uid?: string;
+	displayName?: string;
+	photoURL?: string;
+	joined?: number;
+	expires?: number;
+};
+
 export type Toast = {
 	message: string;
 	type: "success" | "error" | "warning" | "info";
@@ -12,21 +21,43 @@ export type Toast = {
 export type CarouselSong = {
 	id: string;
 	name: string;
-	album?: string;
-	artists: string[];
-	genre: string;
+	main_artist: string;
 	release_year: number;
+	img_url: string;
 };
 
-export type DetailedSong = {
+export type SelectedSongBody = {
+	spotify_id: string;
+	rating: number;
+};
+
+export type SongQueryResponse = {
+	spotify_id: string;
+	album_name: string;
+	artist: string;
+	release_year: string;
+	track_name: string;
+	album_url?: string;
+};
+
+export type CacheEntry = {
+	data: any;
+	expiry: number;
+};
+
+export type Song = {
 	id: string;
 	name: string;
+	albums: string[];
 	artists: string[];
 	release_year: number;
+	img_url: string;
 	tempo: string;
-	genre: string;
+	genres: string[];
 	mood: string;
-	recorded_enviroment: string;
+	recorded_environment: string;
+	average_rating: number;
+	user_rating: number;
 	duration: number;
 	replay_count: number;
 	version: string;

@@ -4,11 +4,12 @@
 	import { getSongById } from "$lib/services/songService";
 	import Spinner from "$lib/components/Spinner.svelte";
 	import { placeholderImageUrl } from "$lib/constants";
+	import type { Song } from "$lib/types";
 
 	export let dialogIsOpen: boolean;
-	export let selectedSongId: string = "";
+	export let selectedSongId: string;
 
-	let selectedSong: any;
+	let song: Song | null = null;
 	let loading = false;
 
 	$: if (!dialogIsOpen) {
@@ -21,8 +22,8 @@
 		if (selectedSongId === "") return;
 		loading = true;
 		const token = await $user?.getIdToken();
-		const response = await getSongById(token!, selectedSongId);
-		selectedSong = response.data;
+		song = await getSongById(token!, selectedSongId);
+		console.log(song);
 		loading = false;
 	}
 </script>
@@ -31,40 +32,54 @@
 	<Dialog.Content
 		class="w-11/12 rounded-lg max-w-[90%] md:max-w-2xl h-[90vh] overflow-y-auto"
 	>
-		<div class=" relative flex flex-col items-center">
+		<div class="flex flex-col items-center">
 			<div class="flex flex-col w-full justify-center items-center text-start break-all">
 				{#if dialogIsOpen}
 					{#if loading}
-						<div class="flex justify-center items-center min-h-[70vh]">
+						<div class="flex justify-center items-center min-h-[80vh]">
 							<Spinner class="animate-spin" />
 						</div>
+					{:else if !song}
+						<div class="flex justify-center items-center min-h-[80vh]">
+							<p class="text-center">Song not found</p>
+						</div>
 					{:else}
-						<img src={placeholderImageUrl} alt="" class="w-64 object-cover" />
-						<h1 class="font-bold text-xl px-2 w-full">{selectedSong.name ?? "Name"}</h1>
+						<img
+							src={song.img_url ? song.img_url : placeholderImageUrl}
+							alt={`${song.name} Cover Art` ?? "Unknown Song Cover Art"}
+							class="w-64 object-cover"
+						/>
+						<h1 class="font-bold text-xl px-2 w-full">
+							{song.name ?? "Unknown Song"}
+						</h1>
+						<!-- <p class="w-full px-2">
+					{song.id ? `ID: ${song.id}` : "ID: No Id"}
+				</p> -->
 						<h2 class="w-full px-2">
-							{selectedSong.artists ? selectedSong.artists.join(", ") : "Artists"}
+							By: {song.artists && song.artists.length > 0
+								? song.artists.join(", ")
+								: "Unknown"}
 						</h2>
 						<p class="w-full px-2">
-							Album: {selectedSong.album ?? "Album"}
+							Album: {song.albums && song.albums.length > 0 ? song.albums[0] : "Unknown"}
 						</p>
 						<p class="w-full px-2">
-							Release Year: {selectedSong.release_year ?? "Release Year"}
+							Genres: {song.genres && song.genres.length > 0
+								? song.genres.join(", ")
+								: "Unknown"}
+						</p>
+						<p class="w-full px-2">Mood: {song.mood ?? "Unknown"}</p>
+						<p class="w-full px-2">Tempo: {song.tempo ?? "Unknown"}</p>
+						<p class="w-full px-2">Release Year: {song.release_year ?? "Unknown"}</p>
+						<p class="w-full px-2">
+							Duration: {song.duration ? `${song.duration} seconds` : "Unknown"}
 						</p>
 						<p class="w-full px-2">
-							Genres: {selectedSong.genres ? selectedSong.genres.join(", ") : "Genres"}
+							Recorded Environment: {song.recorded_environment ?? "Unknown"}
 						</p>
-						<p class="w-full px-2">
-							Instruments: {selectedSong.instruments
-								? selectedSong.instruments.join(", ")
-								: "Instruments"}
-						</p>
-						<p class="w-full px-2">Mood: {selectedSong.mood ?? "Mood"}</p>
 						<p class="w-full px-2 text-center">
-							Average Rating: {selectedSong.avgRating ?? 3.5}
+							Average Rating: {song.average_rating ? song.average_rating : "Unrated"}
 						</p>
-						<div class="flex justify-center items-center gap-1">
-							<p class="px-2 tabular-nums">Your Rating: {selectedSong.rating ?? 5}</p>
-						</div>
 					{/if}
 				{/if}
 			</div>

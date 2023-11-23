@@ -1,7 +1,4 @@
-type CacheEntry = {
-	data: any;
-	expiry: number;
-};
+import type { CacheEntry } from "$lib/types";
 
 export function saveToCache(
 	cache: Map<string, any>,
