@@ -7,6 +7,8 @@
 	import { signOut } from "firebase/auth";
 	import { goto } from "$app/navigation";
 	import { user } from "$lib/stores/user";
+	import { userData } from "$lib/stores/userData";
+	import Skeleton from "$lib/components/ui/skeleton/skeleton.svelte";
 
 	let loading = false;
 
@@ -28,12 +30,16 @@
 
 <DropdownMenu.Root preventScroll={false}>
 	<DropdownMenu.Trigger>
-		<Avatar.Root class="w-12 h-12">
-			<Avatar.Image src="" alt="avatar" />
-			<Avatar.Fallback>{$user?.email?.slice(0, 2)}</Avatar.Fallback>
+		<Avatar.Root class="w-8 h-8 text-xs xsm:text-base xsm:w-12 xsm:h-12 ">
+			{#if $userData.img_url}
+				<Avatar.Image src={$userData.img_url} alt={$userData.name} />
+				<Avatar.Fallback>{$userData.name.slice(0, 2)}</Avatar.Fallback>
+			{:else}
+				<Skeleton class="w-8 h-8 text-xs xsm:text-base xsm:w-12 xsm:h-12" />
+			{/if}
 		</Avatar.Root>
 	</DropdownMenu.Trigger>
-	<DropdownMenu.Content class="w-56">
+	<DropdownMenu.Content class="w-max xsm:w-56">
 		<DropdownMenu.Label>Account</DropdownMenu.Label>
 		<DropdownMenu.Separator />
 		<DropdownMenu.Group>

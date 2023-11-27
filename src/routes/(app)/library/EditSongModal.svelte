@@ -6,62 +6,75 @@
 	import Stars from "$lib/components/Stars.svelte";
 	import { fade } from "svelte/transition";
 	import { user } from "$lib/stores/user";
-	import { getSongById, updateSong } from "$lib/services/songService";
+	import { getSongById } from "$lib/services/songService";
 	import { placeholderImageUrl } from "$lib/constants";
 	import Spinner from "$lib/components/Spinner.svelte";
 	import type { Song } from "$lib/types";
+	import { deleteUserSongRating, editUserSongRating } from "$lib/services/userService";
+	import { deleteFromCache, songCache } from "$lib/utils/caches";
 
 	export let dialogIsOpen: boolean;
 	export let selectedSongId: string = "";
+	export let refresh: boolean;
 
 	let confirmDialogIsOpen = false;
 	let rating = 0;
 	let editMode = false;
 	let song: Song | null = null;
 	let loading = false;
+	let songLoading = false;
 
 	$: if (!dialogIsOpen) {
 		selectedSongId = "";
+		song = null;
 	}
 
 	$: getSong(selectedSongId);
 
 	async function getSong(selectedSongId: string) {
 		if (selectedSongId === "") return;
-		loading = true;
+		songLoading = true;
 		const token = await $user!.getIdToken();
 		song = await getSongById(token, selectedSongId);
 		console.log(song);
-		loading = false;
+		songLoading = false;
 	}
 
 	async function updateRating() {
-		if (true) {
-			console.log("Not implemented yet");
-			dialogIsOpen = false;
-			editMode = false;
-			displayToast({ message: "Not implemented yet", type: "success" });
+		if (loading) return;
+		loading = true;
+		const token = await $user!.getIdToken();
+		const response = await editUserSongRating(token, selectedSongId, rating);
+		if (response.status === 201) {
+			displayToast({ message: "Rating updated", type: "success" });
+			deleteFromCache(songCache, selectedSongId);
 		} else {
-			const token = await $user!.getIdToken();
-			const body = {
-				songId: song?.id,
-				rating: rating
-			};
-			const response = await updateSong(token, body);
-			if (response.status !== 204) {
-				displayToast({ message: "Error updating rating", type: "error" });
-			} else {
-				editMode = false;
-				displayToast({ message: "Rating updated", type: "success" });
-			}
-			dialogIsOpen = false;
-			song = null;
+			displayToast({ message: "Error updating rating", type: "error" });
 		}
+		loading = false;
+		editMode = false;
+		dialogIsOpen = false;
 	}
 
 	async function deleteRating() {
+		if (loading) return;
+		loading = true;
+		const token = await $user!.getIdToken();
+		const response = await deleteUserSongRating(token, selectedSongId);
+		if (response.status === 201) {
+			displayToast({ message: "Rating deleted", type: "success" });
+			deleteFromCache(songCache, selectedSongId);
+			refresh = !refresh;
+		} else if (response.status === 404) {
+			displayToast({ message: "Rating not found", type: "error" });
+			deleteFromCache(songCache, selectedSongId);
+			refresh = !refresh;
+		} else {
+			displayToast({ message: "Error deleting rating", type: "error" });
+		}
 		confirmDialogIsOpen = false;
-		displayToast({ message: "Deleted", type: "success" });
+		dialogIsOpen = false;
+		loading = false;
 	}
 </script>
 
@@ -69,8 +82,8 @@
 	<Dialog.Content
 		class="w-11/12 rounded-lg max-w-[90%] md:max-w-2xl h-[90vh] overflow-y-auto"
 	>
-		{#if $user && dialogIsOpen}
-			{#if loading}
+		{#if dialogIsOpen}
+			{#if songLoading}
 				<div class="flex justify-center items-center min-h-[70vh]">
 					<Spinner class="animate-spin" />
 				</div>
@@ -86,14 +99,11 @@
 						<img
 							src={song.img_url ? song.img_url : placeholderImageUrl}
 							alt={`${song.name} Cover Art` ?? "Unknown Song Cover Art"}
-							class="w-64 object-cover"
+							class="w-64 object-cover rounded-lg"
 						/>
-						<h1 class="font-bold text-xl px-2 w-full">
+						<h1 class="pt-4 font-bold text-xl px-2 w-full">
 							{song.name ?? "Unknown Song"}
 						</h1>
-						<!-- <p class="w-full px-2">
-							{song.id ? `ID: ${song.id}` : "ID: No Id"}
-						</p> -->
 						<h2 class="w-full px-2">
 							By: {song.artists && song.artists.length > 0
 								? song.artists.join(", ")
@@ -148,14 +158,18 @@
 								<Button
 									variant="outline"
 									on:click={updateRating}
-									class=" w-6 h-6 p-0 ml-1"
+									class={`w-6 h-6 p-0 ml-1 ${
+										loading ? "bg-red-800 hover:bg-red-800" : ""
+									}}`}
 								>
 									<CheckCircle2 class="w-4 h-4" />
 								</Button>
 								<Button
 									variant="outline"
-									on:click={() => (editMode = false)}
-									class=" w-6 h-6 p-0"
+									on:click={() => {
+										if (!loading) editMode = false;
+									}}
+									class={`w-6 h-6 p-0 ${loading ? "bg-red-800 hover:bg-red-800" : ""}}`}
 								>
 									<XCircle class="w-4 h-4" />
 								</Button>
@@ -177,7 +191,9 @@
 			>
 		</Dialog.Header>
 		<Dialog.Footer>
-			<Button variant="destructive" on:click={deleteRating}>Delete</Button>
+			<Button variant="destructive" class="w-full" on:click={deleteRating}
+				>{loading ? "Deleting..." : "Delete"}</Button
+			>
 		</Dialog.Footer>
 	</Dialog.Content>
 </Dialog.Root>

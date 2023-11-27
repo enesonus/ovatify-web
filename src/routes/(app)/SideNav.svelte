@@ -4,7 +4,9 @@
 	import { cn } from "$lib/utils";
 </script>
 
-<nav class="flex flex-col w-20 min-w-[5rem] items-center border-blue-500">
+<nav
+	class="hidden sticky bg-zinc-950 self-start top-16 sm:flex flex-col w-20 min-w-[5rem] items-center border-blue-500"
+>
 	<a href="/" class="w-16 h-16">
 		<div
 			class={cn(
@@ -56,7 +58,7 @@
 				"flex flex-col justify-center items-center h-full text-xs font-semibold"
 			)}
 		>
-			<Icons.navAccount class="h-8 w-8" />
+			<Icons.navProfile class="h-8 w-8" />
 			Profile
 		</div>
 	</a>

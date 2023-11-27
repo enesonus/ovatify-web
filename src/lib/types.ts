@@ -4,15 +4,6 @@ export type SendOptions = {
 	body?: string | FormData;
 };
 
-export type UserData = {
-	email?: string;
-	uid?: string;
-	displayName?: string;
-	photoURL?: string;
-	joined?: number;
-	expires?: number;
-};
-
 export type Toast = {
 	message: string;
 	type: "success" | "error" | "warning" | "info";
@@ -61,4 +52,10 @@ export type Song = {
 	duration: number;
 	replay_count: number;
 	version: string;
+};
+
+export type Friend = {
+	id: string;
+	name: string;
+	img_url: string | null;
 };

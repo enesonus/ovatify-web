@@ -16,6 +16,12 @@ export function displayToast(toast: Toast) {
 	}
 }
 
+export function makeToast(message: string) {
+	svelteToast.success(message, {
+		style: "background-color: #333; color: #fff;"
+	});
+}
+
 export function prepareToast(toast: Toast) {
 	localStorage.setItem("toast", JSON.stringify(toast));
 }

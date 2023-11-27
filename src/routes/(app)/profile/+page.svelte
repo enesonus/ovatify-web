@@ -1,61 +1,76 @@
 <script lang="ts">
-	import { auth } from "$lib/utils/firebase";
 	import { displayToast } from "$lib/utils/toast";
-	import { signOut } from "firebase/auth";
-	import { goto } from "$app/navigation";
-	import { Button } from "$lib/components/ui/button";
-	import { UserPlus, Pencil } from "lucide-svelte";
 	import { placeholderImageUrl } from "$lib/constants";
+	import ManageFriendsModal from "./ManageFriendsModal.svelte";
+	import { user } from "$lib/stores/user";
+	import { sleep } from "$lib/utils/time";
+	import { getUserIncomingFriendRequestCount } from "$lib/services/friendService";
+	import { Badge } from "$lib/components/ui/badge";
+	import EditProfileModal from "./EditProfileModal.svelte";
+	import { getUserProfile } from "$lib/services/userService";
+	import { userData } from "$lib/stores/userData";
 
-	let loading = false;
+	let consentToDataShare: boolean = false;
+	let username = $user?.displayName ?? "";
 
-	async function signout() {
-		if (loading) return;
-		loading = true;
-		try {
-			await signOut(auth);
-			displayToast({ type: "success", message: "Signed out successfully" });
-			goto("/login");
-		} catch (error) {
-			displayToast({ type: "error", message: "Error signing out" });
-			console.log("Error signing out", error);
-		} finally {
-			loading = false;
+	async function getPendingFriendRequestCount() {
+		const token = await $user!.getIdToken();
+		const response = await getUserIncomingFriendRequestCount(token);
+		if (response.status === 200) {
+			console.log(response.data.count);
+			return response.data.count as number;
+		}
+		displayToast({ type: "error", message: "Error getting friend requests" });
+		return -1;
+	}
+
+	async function getProfileDetails() {
+		const token = await $user!.getIdToken();
+		const response = await getUserProfile(token);
+		if (response.status === 200) {
+			consentToDataShare = response.data.consent_to_data_share;
+		} else {
+			displayToast({ type: "error", message: "Error getting profile details" });
 		}
 	}
 </script>
 
-<div class="flex min-h-[16vh] w-4/5 bg-zinc-900 rounded-[15px] mx-auto mt-12">
-	<div class="flex my-auto w-full">
-		<div class=" ml-8">
-			<img src={placeholderImageUrl} alt="" class=" rounded-full h-32 w-32" />
-		</div>
-		<div class=" my-auto">
-			<p class=" pl-4 text-4xl">Erkam Demirci</p>
-			<p class=" pl-4 text-[#6f6767]">25 Friends - 376 Rated Songs</p>
-		</div>
-		<div class=" ml-auto pr-4">
-			<div class="flex gap-4">
-				<UserPlus class="h-8 w-8" />
-				<Pencil class="h-8 w-8" />
+<div>
+	<div class="flex min-h-[16vh] w-4/5 bg-zinc-900 rounded-[15px] mx-auto mt-12">
+		<div class="flex my-auto w-full">
+			<div class="ml-8">
+				<img
+					src={$userData.img_url ?? placeholderImageUrl}
+					alt={$userData.name ?? "User"}
+					class="rounded-full h-32 w-32"
+				/>
+			</div>
+			<div class="my-auto">
+				<p class="pl-4 text-4xl">{$userData.name ?? "User"}</p>
+				<p class="pl-4 text-[#6f6767]">25 Friends - 376 Rated Songs</p>
+			</div>
+			<div class="ml-auto pr-4">
+				<div class="flex gap-2">
+					<ManageFriendsModal />
+					<EditProfileModal />
+				</div>
 			</div>
 		</div>
 	</div>
+	<div class="mx-auto w-4/5 mt-6">
+		<p class="text-left text-3xl ml-4">Content 1</p>
+	</div>
+	<div
+		class="flex items-center flex-col min-h-[25vh] w-4/5 bg-zinc-900 rounded-lg mx-auto mt-1 md-12"
+	>
+		<p>Content</p>
+	</div>
+	<div class="mx-auto w-4/5 mt-6">
+		<p class="text-left text-3xl ml-4">Content 2</p>
+	</div>
+	<div
+		class="flex items-center flex-col min-h-[25vh] w-4/5 bg-zinc-900 rounded-lg mx-auto mt-1 md-12"
+	>
+		<p>Content</p>
+	</div>
 </div>
-
-<div class=" mx-auto w-4/5 mt-6">
-	<p class=" text-left text-3xl ml-4">Content 1</p>
-</div>
-<div
-	class="flex items-center flex-col min-h-[25vh] w-4/5 bg-zinc-900 rounded-lg mx-auto mt-1 md-12"
-/>
-
-<div class=" mx-auto w-4/5 mt-6">
-	<p class=" text-left text-3xl ml-4">Content 2</p>
-</div>
-<div
-	class="flex items-center flex-col min-h-[25vh] w-4/5 bg-zinc-900 rounded-lg mx-auto mt-1 md-12"
-/>
-
-<style lang="postcss">
-</style>

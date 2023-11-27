@@ -6,7 +6,7 @@ import navDashboard from "./nav/navDashboard.svelte";
 import navExplore from "./nav/navExplore.svelte";
 import navHome from "./nav/navHome.svelte";
 import navLibrary from "./nav/navLibrary.svelte";
-import navAccount from "./nav/navAccount.svelte";
+import navProfile from "./nav/navProfile.svelte";
 
 export const Icons = {
 	github,
@@ -17,5 +17,5 @@ export const Icons = {
 	navExplore,
 	navHome,
 	navLibrary,
-	navAccount
+	navProfile
 };
