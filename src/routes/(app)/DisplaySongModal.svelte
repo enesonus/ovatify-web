@@ -1,29 +1,74 @@
 <script lang="ts">
 	import { user } from "$lib/stores/user";
 	import * as Dialog from "$lib/components/ui/dialog";
-	import { getSongById } from "$lib/services/songService";
+	import { addSong, getSongById } from "$lib/services/songService";
 	import Spinner from "$lib/components/Spinner.svelte";
 	import { placeholderImageUrl } from "$lib/constants";
 	import type { Song } from "$lib/types";
+	import { Button } from "$lib/components/ui/button";
+	import { BookmarkPlus } from "lucide-svelte";
+	import { displayToast } from "$lib/utils/toast";
+	import Stars from "$lib/components/Stars.svelte";
+	import { cn } from "$lib/utils";
+	import { getRatingColor } from "$lib/utils/colors";
+	import { deleteFromCache, songCache } from "$lib/utils/caches";
 
 	export let dialogIsOpen: boolean;
 	export let selectedSongId: string;
+	export let refresh: boolean;
 
 	let song: Song | null = null;
+	let loadingSong = false;
 	let loading = false;
+	let rating = 0;
+	let addRatingDialogIsOpen = false;
 
 	$: if (!dialogIsOpen) {
 		selectedSongId = "";
+		song = null;
+		rating = 0;
+	}
+
+	$: if (!addRatingDialogIsOpen) {
+		rating = 0;
 	}
 
 	$: getSong(selectedSongId);
 
 	async function getSong(selectedSongId: string) {
 		if (selectedSongId === "") return;
-		loading = true;
-		const token = await $user?.getIdToken();
-		song = await getSongById(token!, selectedSongId);
+		loadingSong = true;
+		const token = await $user!.getIdToken();
+		song = await getSongById(token, selectedSongId);
 		console.log(song);
+		loadingSong = false;
+	}
+
+	async function addSongToLibrary() {
+		if (loading) return;
+		if (rating == 0) {
+			displayToast({ type: "error", message: "Please select a rating" });
+			return;
+		}
+		if (!selectedSongId) {
+			displayToast({ type: "error", message: "Please select a song" });
+			return;
+		}
+		loading = true;
+		const token = await $user!.getIdToken();
+		const response = await addSong(token, selectedSongId, rating);
+		console.log(response);
+		if (response.status >= 200 && response.status < 300) {
+			displayToast({ type: "success", message: "Rating added successfully" });
+			deleteFromCache(songCache, selectedSongId);
+			refresh = !refresh;
+		} else if (response.status === 400) {
+			displayToast({ type: "error", message: "This song is already in your library" });
+		} else {
+			displayToast({ type: "error", message: "Error adding song" });
+		}
+		addRatingDialogIsOpen = false;
+		dialogIsOpen = false;
 		loading = false;
 	}
 </script>
@@ -35,7 +80,7 @@
 		<div class="flex flex-col items-center">
 			<div class="flex flex-col w-full justify-center items-center text-start break-all">
 				{#if dialogIsOpen}
-					{#if loading}
+					{#if loadingSong}
 						<div class="flex justify-center items-center min-h-[80vh]">
 							<Spinner class="animate-spin" />
 						</div>
@@ -47,14 +92,35 @@
 						<img
 							src={song.img_url ? song.img_url : placeholderImageUrl}
 							alt={`${song.name} Cover Art` ?? "Unknown Song Cover Art"}
-							class="w-64 object-cover"
+							class="w-64 object-cover rounded-lg"
 						/>
-						<h1 class="font-bold text-xl px-2 w-full">
+						<Button
+							class={cn(
+								"md:self-end mt-2 min-w-[12rem] tabular-nums",
+								getRatingColor(song.average_rating)
+							)}
+							variant="secondary"
+							>AVG: {song.average_rating ? song.average_rating : "Unrated"}</Button
+						>
+						{#if !song.user_rating}
+							<Button
+								class="md:self-end mt-1 min-w-[12rem] tabular-nums bg-emerald-800 hover:bg-emerald-700"
+								variant="secondary"
+								on:click={() => (addRatingDialogIsOpen = true)}
+								>Add to Library<BookmarkPlus class="ml-2" /></Button
+							>
+						{:else}
+							<Button
+								class={cn(
+									"md:self-end mt-1 min-w-[12rem] tabular-nums",
+									getRatingColor(song.user_rating)
+								)}
+								variant="secondary">User: {song.user_rating}</Button
+							>
+						{/if}
+						<h1 class="pt-4 font-bold text-xl px-2 w-full">
 							{song.name ?? "Unknown Song"}
 						</h1>
-						<!-- <p class="w-full px-2">
-					{song.id ? `ID: ${song.id}` : "ID: No Id"}
-				</p> -->
 						<h2 class="w-full px-2">
 							By: {song.artists && song.artists.length > 0
 								? song.artists.join(", ")
@@ -77,12 +143,30 @@
 						<p class="w-full px-2">
 							Recorded Environment: {song.recorded_environment ?? "Unknown"}
 						</p>
-						<p class="w-full px-2 text-center">
-							Average Rating: {song.average_rating ? song.average_rating : "Unrated"}
-						</p>
 					{/if}
 				{/if}
 			</div>
+		</div>
+	</Dialog.Content>
+</Dialog.Root>
+<Dialog.Root bind:open={addRatingDialogIsOpen}>
+	<Dialog.Content
+		class="w-11/12 rounded-lg max-w-[90%] md:max-w-xl overflow-y-auto min-h-[32rem]"
+	>
+		<div class="pt-4 w-full flex flex-col justify-center items-center gap-4">
+			<h2 class="text-lg">Choose rating</h2>
+			<div class="flex">
+				<Stars bind:rating />
+			</div>
+			<Button
+				variant="outline"
+				class={`min-w-[12rem] ${
+					loading || rating == 0
+						? "bg-red-800 hover:bg-red-700"
+						: "bg-emerald-800 hover:bg-emerald-700"
+				}`}
+				on:click={addSongToLibrary}>{loading ? "Adding..." : "Add Song"}</Button
+			>
 		</div>
 	</Dialog.Content>
 </Dialog.Root>

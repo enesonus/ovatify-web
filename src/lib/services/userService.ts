@@ -45,17 +45,25 @@ export async function deleteUserSongRating(token: string, songId: string) {
 	return response;
 }
 
-export async function addFriend(token: string, friendUsername: string) {
-	const body = {
-		friend_username: friendUsername
-	};
+export async function editUserProfile(
+	token: string,
+	body: {
+		username?: string;
+		img_url?: string;
+		data_processing_consent?: boolean;
+	}
+) {
 	console.log(body);
+	const response = await api.put(`users/edit-user-preferences/`, token, body);
+	return response;
 }
 
-export async function formFriendship(token: string, friendUsername: string) {
-	const body = {
-		friend_username: friendUsername
-	};
-	const response = await api.post(`users/form-friendship/`, token, body);
+export async function getUserProfile(token: string) {
+	const response = await api.get(`users/get-user-profile/`, token);
+	return response;
+}
+
+export async function createUserPreferences(token: string) {
+	const response = await api.post(`users/user-preferences/`, token);
 	return response;
 }

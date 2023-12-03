@@ -1,0 +1,73 @@
+<script lang="ts">
+	import { Button, buttonVariants } from "$lib/components/ui/button";
+	import { displayToast } from "$lib/utils/toast";
+	import { user } from "$lib/stores/user";
+	import { cn } from "$lib/utils";
+	import { uploadSongFile } from "$lib/services/songService";
+
+	export let dialogIsOpen: boolean;
+
+	let file: File | null = null;
+	let loading = false;
+
+	function setFile(event: Event) {
+		const target = event.target as HTMLInputElement;
+		file = target?.files?.[0] ?? null;
+	}
+
+	function validateFile() {
+		if (!file) {
+			displayToast({ type: "error", message: "No file selected" });
+			return false;
+		}
+		const fileSplit = file.name.split(".");
+		const fileExtension = fileSplit[fileSplit.length - 1].toLowerCase();
+		if (fileExtension !== "json") {
+			displayToast({ type: "error", message: "The file must be a JSON file" });
+			return false;
+		}
+		return true;
+	}
+
+	async function uploadFile() {
+		if (loading) return;
+		if (!validateFile()) return;
+		loading = true;
+		const token = await $user!.getIdToken();
+		const response = await uploadSongFile(token, file!);
+		if (response.status === 201) {
+			displayToast({ type: "success", message: "File uploaded successfully" });
+		} else if (response.status === 400) {
+			displayToast({
+				type: "error",
+				message: "Please make sure file data structure is correct"
+			});
+		} else {
+			displayToast({ type: "error", message: "Error uploading file" });
+		}
+		dialogIsOpen = false;
+		loading = false;
+		file = null;
+	}
+</script>
+
+<div class="flex flex-col gap-4 min-h-[24rem] justify-center items-center">
+	<label
+		for="file-upload"
+		class={cn(buttonVariants({ variant: "outline" }), "w-4/5 py-8 cursor-pointer")}
+		>Choose File</label
+	>
+	<input id="file-upload" type="file" class="hidden" accept=".json" on:change={setFile} />
+	{#if file}
+		<p>Chosen file "{file.name}"</p>
+	{:else}
+		<p>No file chosen</p>
+	{/if}
+	<Button
+		on:click={uploadFile}
+		variant="outline"
+		class={`w-4/5 ${
+			loading ? "bg-red-800 hover:bg-red-800 text-white" : "text-black bg-[#B3BBD8]"
+		}`}>Upload File</Button
+	>
+</div>
