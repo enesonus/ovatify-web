@@ -38,16 +38,19 @@
 		</div>
 	{:then friends}
 		<div in:fade>
-			{#each friends as friend}
-				<div class="p-2">
-					<div class="w-full flex items-center justify-start bg-zinc-700 p-2 rounded-lg">
-						<img
-							src={friend.img_url ?? placeholderImageUrl}
-							alt={friend.name ?? "User"}
-							class="w-12 h-12 rounded-full"
-						/>
-						<p class="pl-2 pr-4">{friend.name}</p>
-						<!-- <div class="ml-auto pr-4">
+			{#if friends.length > 0}
+				{#each friends as friend}
+					<div class="p-2">
+						<div
+							class="w-full flex items-center justify-start bg-zinc-700 p-2 rounded-lg"
+						>
+							<img
+								src={friend.img_url ?? placeholderImageUrl}
+								alt={friend.name ?? "User"}
+								class="w-12 h-12 rounded-full object-cover"
+							/>
+							<p class="pl-2 pr-4">{friend.name}</p>
+							<!-- <div class="ml-auto pr-4">
 							<Button
 								variant="outline"
 								on:click={() => handleRemoveFriend(friend.name)}
@@ -56,9 +59,14 @@
 								<UserX class="w-5 h-5" />
 							</Button>
 						</div> -->
+						</div>
 					</div>
+				{/each}
+			{:else}
+				<div class="flex flex-col items-center justify-center w-full h-full gap-2">
+					<h2 class="text-xl">No friends found</h2>
 				</div>
-			{/each}
+			{/if}
 		</div>
 	{/await}
 </div>

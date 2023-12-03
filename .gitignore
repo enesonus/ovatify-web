@@ -39,3 +39,4 @@ npm-debug.log*
 
 # Test routes
 /src/routes/(app)/test/
+/static/images/test/

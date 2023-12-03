@@ -7,10 +7,21 @@
 	import { displayToast } from "$lib/utils/toast";
 	import { Icons } from "$lib/icons";
 	import { updateLastLogin } from "$lib/services/authService";
+	import { authFlowOngoing } from "$lib/stores/authState";
+	import { getUserProfile } from "$lib/services/userService";
+	import { userData } from "$lib/stores/userData";
+	import { user } from "$lib/stores/user";
+	import { goto } from "$app/navigation";
+	import { sleep } from "$lib/utils/time";
+	import { fade, fly } from "svelte/transition";
 
 	let email = "";
 	let password = "";
 	let loading = false;
+
+	$: if ($user && !$authFlowOngoing) {
+		loading = true;
+	}
 
 	function validateEmail() {
 		email = email.trim();
@@ -42,14 +53,26 @@
 		}
 		loading = true;
 		try {
+			$authFlowOngoing = true;
 			const userCredential = await signInWithEmailAndPassword(auth, email, password);
+			console.log("User logged in to firebase");
 			const userToken = await userCredential.user.getIdToken();
-			const serverRes = await updateLastLogin(userToken);
-			if (serverRes.status !== 200) {
+			console.log("Attempting to get user profile from database...");
+			const getUserProfileResponse = await getUserProfile(userToken);
+			if (getUserProfileResponse.status !== 200) {
+				console.error("Server error getting user profile.");
+			} else {
+				console.log("User profile retrieved successfully.");
+				userData.set(getUserProfileResponse.data);
+			}
+			const updateLastLoginResponse = await updateLastLogin(userToken);
+			if (updateLastLoginResponse.status !== 200) {
 				console.error("Server error updating last login.");
 			} else {
 				console.log("Last login updated successfully.");
 			}
+			goto("/", { replaceState: true });
+			displayToast({ type: "success", message: "Logged in successfully" });
 		} catch (error: any) {
 			console.log("Error message: ", error.message);
 			if (error.message === FIREBASE_ERRORS.invalidCredentials) {
@@ -58,20 +81,19 @@
 				console.log("Error logging in", error);
 				displayToast({ type: "error", message: "Error logging in" });
 			}
-		} finally {
 			loading = false;
 		}
 	}
 </script>
 
-<div class="flex flex-col justify-center items-center min-h-screen">
-	<div class="flex flex-col justify-center items-center">
+<div class="flex flex-col justify-center items-center min-h-[100dvh]">
+	<div in:fade|global class="flex flex-col justify-center items-center">
 		<div class="py-4">
 			<Icons.logoWithText />
 		</div>
 		<div
-			class="flex border-[2px] bg-[#1D1F26] text-[#B3BBD8] rounded-2xl
-					 w-[20rem] xsm:w-[24rem] sm:w-[32rem] justify-center items-center pb-8 mt-4 mb-8"
+			class="flex border-2 bg-[#1D1F26] text-[#B3BBD8] rounded-2xl justify-center items-center
+					 w-[20rem] xsm:w-[24rem] sm:w-[32rem] max-w-[95vw] pb-8 mt-4 mb-8"
 		>
 			<form class="flex flex-col p-4 gap-4 xsm:w-[24rem]" on:submit|preventDefault>
 				<h1 class="pt-4 text-center text-2xl font-bold">Log In</h1>
@@ -100,11 +122,21 @@
 					class="font-semibold">{!loading ? "Log In" : "Logging in..."}</Button
 				>
 				<div>
-					<p class="pl-4">
-						Don't have an account? <a href="/signup" class="font-semibold underline"
-							>Sign up</a
-						>
-					</p>
+					{#if loading}
+						<p class="px-2 text-center sm:px-4 sm:text-start">
+							Don't have an account? <span
+								class="font-semibold underline text-red-800 decoration-red-800"
+								>Sign up</span
+							>
+						</p>
+					{:else}
+						<p class="px-2 text-center sm:px-4 sm:text-start">
+							Don't have an account? <a
+								href="/signup"
+								class="font-semibold underline hover:text-zinc-300">Sign up</a
+							>
+						</p>
+					{/if}
 				</div>
 				<div class="relative">
 					<div class="absolute inset-0 flex items-center">
@@ -120,7 +152,7 @@
 						on:click={() => {
 							displayToast({ type: "error", message: "Not implemented yet" });
 						}}
-						class="border-[#B3BBD8] xsm:w-3/4 font-semibold"
+						class="border-[#B3BBD8] w-full xsm:w-3/4 font-semibold"
 						><Icons.google class="h-6 w-6" /><span class="px-2">Google</span></Button
 					>
 					<Button
@@ -128,7 +160,7 @@
 						on:click={() => {
 							displayToast({ type: "error", message: "Not implemented yet" });
 						}}
-						class="border-[#B3BBD8] xsm:w-3/4 font-semibold text-start"
+						class="border-[#B3BBD8] w-full xsm:w-3/4 font-semibold text-start"
 						><Icons.github class="h-6 w-6" /><span class="px-2">Github</span></Button
 					>
 				</div>

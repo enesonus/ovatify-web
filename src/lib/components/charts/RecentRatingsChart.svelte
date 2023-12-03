@@ -123,6 +123,6 @@
 	});
 </script>
 
-<div class="w-[32rem] bg-[#DDDDDD] rounded-lg">
+<div class="w-full bg-[#DDDDDD] rounded-lg">
 	<canvas bind:this={canvas} />
 </div>

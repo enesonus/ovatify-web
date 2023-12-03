@@ -7,9 +7,11 @@
 	import UserDropdown from "./UserDropdown.svelte";
 	import * as Sheet from "$lib/components/ui/sheet";
 	import { Button } from "$lib/components/ui/button";
-	import { user } from "$lib/stores/user";
+	import { page } from "$app/stores";
+	import SearchModal from "./SearchModal.svelte";
 
 	let open = false;
+	let searchDialogIsOpen = false;
 </script>
 
 <nav
@@ -38,7 +40,10 @@
 							<div
 								class={cn(
 									buttonVariants({ variant: "ghost" }),
-									"flex gap-2 pl-2 py-6 justify-start items-center font-semibold"
+									"flex gap-2 pl-2 py-6 justify-start items-center font-semibold",
+									{
+										"bg-slate-800 hover:bg-slate-700": $page.url.pathname === "/"
+									}
 								)}
 							>
 								<Icons.navHome class="h-8 w-8" />
@@ -49,7 +54,10 @@
 							<div
 								class={cn(
 									buttonVariants({ variant: "ghost" }),
-									"flex gap-2 pl-2 py-6 justify-start items-center font-semibold"
+									"flex gap-2 pl-2 py-6 justify-start items-center font-semibold",
+									{
+										"bg-slate-800 hover:bg-slate-700": $page.url.pathname === "/explore"
+									}
 								)}
 							>
 								<Icons.navExplore class="h-8 w-8" />
@@ -60,7 +68,10 @@
 							<div
 								class={cn(
 									buttonVariants({ variant: "ghost" }),
-									"flex gap-2 pl-2 py-6 justify-start items-center font-semibold"
+									"flex gap-2 pl-2 py-6 justify-start items-center font-semibold",
+									{
+										"bg-slate-800 hover:bg-slate-700": $page.url.pathname === "/library"
+									}
 								)}
 							>
 								<Icons.navLibrary class="h-8 w-8" />
@@ -71,7 +82,10 @@
 							<div
 								class={cn(
 									buttonVariants({ variant: "ghost" }),
-									"flex gap-2 pl-2 py-6 justify-start items-center font-semibold"
+									"flex gap-2 pl-2 py-6 justify-start items-center font-semibold",
+									{
+										"bg-slate-800 hover:bg-slate-700": $page.url.pathname === "/dashboard"
+									}
 								)}
 							>
 								<Icons.navDashboard class="h-8 w-8" />
@@ -82,7 +96,10 @@
 							<div
 								class={cn(
 									buttonVariants({ variant: "ghost" }),
-									"flex gap-2 pl-2 py-6 justify-start items-center font-semibold"
+									"flex gap-2 pl-2 py-6 justify-start items-center font-semibold",
+									{
+										"bg-slate-800 hover:bg-slate-700": $page.url.pathname === "/profile"
+									}
 								)}
 							>
 								<Icons.navProfile class="h-8 w-8" />
@@ -110,19 +127,32 @@
 	<div class="hidden md:flex justify-center items-center w-96 mx-4">
 		<div class="relative flex-grow mx-4 min-w-full">
 			<Search class="absolute left-2.5 top-1/2 transform -translate-y-1/2 h-4 w-4" />
-			<Input
+			<!-- <Input
 				class="bg-[#292929] border-[#949494] pl-8 w-full placeholder-slate-950"
 				placeholder="Search songs, albums, artists"
-			/>
+			/> -->
+			<Button
+				variant="secondary"
+				on:click={() => (searchDialogIsOpen = true)}
+				class="bg-[#292929] border-[#949494] border-[1px] pl-8 w-full text-[#949494] justify-start"
+				>Search songs, albums, artists</Button
+			>
 		</div>
 	</div>
 	<!-- User -->
 	<div class="flex justify-center items-center h-full">
-		<div class="md:hidden flex justify-center items-center px-2">
-			<Search class="h-6 w-6" />
+		<div class="md:hidden flex justify-center items-center pr-2 xsm:pr-4">
+			<Button
+				variant="ghost"
+				on:click={() => (searchDialogIsOpen = true)}
+				class="p-0 h-8 w-8 xsm:h-12 xsm:w-12 rounded-full"
+			>
+				<Search class="h-6 w-6" />
+			</Button>
 		</div>
-		<div class="w-16 flex justify-center items-center">
+		<div class="w-16 flex justify-center items-center pr-4">
 			<UserDropdown />
 		</div>
 	</div>
 </nav>
+<SearchModal bind:dialogIsOpen={searchDialogIsOpen} />

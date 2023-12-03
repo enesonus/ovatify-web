@@ -11,7 +11,7 @@
 </script>
 
 {#await getRandomChart()}
-	<div>
+	<div class="w-full">
 		<Spinner class="animate-spin" />
 	</div>
 {:then}

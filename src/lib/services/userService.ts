@@ -1,16 +1,22 @@
 import * as api from "$lib/utils/api";
 
-export async function getRecentlyAddedSongs(token: string, numberOfSongs: number = 10) {
+export async function getRecentlyAddedSongs(token: string, numberOfSongs: number | null) {
+	console.log(numberOfSongs);
 	const response = await api.get(
-		`users/get-recently-added-songs/?number_of_songs=${numberOfSongs}`,
+		`users/get-recently-added-songs/${
+			numberOfSongs ? `?number_of_songs=${numberOfSongs}` : ""
+		}`,
 		token
 	);
+	console.log(response);
 	return response;
 }
 
-export async function getUserFavorites(token: string, numberOfSongs: number = 10) {
+export async function getUserFavorites(token: string, numberOfSongs: number | null) {
 	const response = await api.get(
-		`users/get-favorite-songs/?number_of_songs=${numberOfSongs}`,
+		`users/get-favorite-songs/${
+			numberOfSongs ? `?number_of_songs=${numberOfSongs}` : ""
+		}`,
 		token
 	);
 	return response;
@@ -51,6 +57,7 @@ export async function editUserProfile(
 		username?: string;
 		img_url?: string;
 		data_processing_consent?: boolean;
+		data_sharing_consent?: boolean;
 	}
 ) {
 	console.log(body);
@@ -58,7 +65,13 @@ export async function editUserProfile(
 	return response;
 }
 
+export async function getUserProfileStats(token: string) {
+	const response = await api.get("users/get-profile-stats/", token);
+	return response;
+}
+
 export async function getUserProfile(token: string) {
+	// await sleep(2);
 	const response = await api.get(`users/get-user-profile/`, token);
 	return response;
 }

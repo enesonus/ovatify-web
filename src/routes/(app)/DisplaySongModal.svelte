@@ -12,10 +12,11 @@
 	import { cn } from "$lib/utils";
 	import { getRatingColor } from "$lib/utils/colors";
 	import { deleteFromCache, songCache } from "$lib/utils/caches";
+	import { fade } from "svelte/transition";
+	import { refresh } from "$lib/stores/refresh";
 
 	export let dialogIsOpen: boolean;
 	export let selectedSongId: string;
-	export let refresh: boolean;
 
 	let song: Song | null = null;
 	let loadingSong = false;
@@ -61,7 +62,7 @@
 		if (response.status >= 200 && response.status < 300) {
 			displayToast({ type: "success", message: "Rating added successfully" });
 			deleteFromCache(songCache, selectedSongId);
-			refresh = !refresh;
+			$refresh = !$refresh;
 		} else if (response.status === 400) {
 			displayToast({ type: "error", message: "This song is already in your library" });
 		} else {
@@ -75,48 +76,52 @@
 
 <Dialog.Root bind:open={dialogIsOpen}>
 	<Dialog.Content
-		class="w-11/12 rounded-lg max-w-[90%] md:max-w-2xl h-[90vh] overflow-y-auto"
+		class="w-11/12 rounded-lg max-w-[90%] md:max-w-2xl lg:max-w-4xl h-[90vh] max-h-[48rem] overflow-y-auto"
 	>
-		<div class="flex flex-col items-center">
-			<div class="flex flex-col w-full justify-center items-center text-start break-all">
-				{#if dialogIsOpen}
-					{#if loadingSong}
-						<div class="flex justify-center items-center min-h-[80vh]">
-							<Spinner class="animate-spin" />
-						</div>
-					{:else if !song}
-						<div class="flex justify-center items-center min-h-[80vh]">
-							<p class="text-center">Song not found</p>
-						</div>
-					{:else}
+		<div class="flex flex-col items-center justify-center h-full py-2">
+			{#if dialogIsOpen}
+				{#if loadingSong}
+					<div in:fade|global class="flex justify-center items-center">
+						<Spinner class="animate-spin w-10 h-10" />
+					</div>
+				{:else if !song}
+					<div in:fade|global class="flex justify-center items-center">
+						<p class="text-center text-xl">Song not found</p>
+					</div>
+				{:else}
+					<div
+						in:fade|global
+						class="flex flex-col w-full h-full justify-center items-center text-start break-all"
+					>
 						<img
 							src={song.img_url ? song.img_url : placeholderImageUrl}
 							alt={`${song.name} Cover Art` ?? "Unknown Song Cover Art"}
 							class="w-64 object-cover rounded-lg"
 						/>
-						<Button
+						<div
 							class={cn(
-								"md:self-end mt-2 min-w-[12rem] tabular-nums",
+								"mt-2 min-w-[12rem] tabular-nums px-4 py-2 rounded-md border-2 text-center font-medium text-sm h-10 select-none bg-primary-foreground",
 								getRatingColor(song.average_rating)
 							)}
-							variant="secondary"
-							>AVG: {song.average_rating ? song.average_rating : "Unrated"}</Button
 						>
+							AVG: {song.average_rating ? song.average_rating : "Unrated"}
+						</div>
 						{#if !song.user_rating}
 							<Button
-								class="md:self-end mt-1 min-w-[12rem] tabular-nums bg-emerald-800 hover:bg-emerald-700"
+								class="mt-1 min-w-[12rem] tabular-nums bg-emerald-800 hover:bg-emerald-700"
 								variant="secondary"
 								on:click={() => (addRatingDialogIsOpen = true)}
 								>Add to Library<BookmarkPlus class="ml-2" /></Button
 							>
 						{:else}
-							<Button
+							<div
 								class={cn(
-									"md:self-end mt-1 min-w-[12rem] tabular-nums",
+									"mt-2 min-w-[12rem] tabular-nums px-4 py-2 rounded-md border-2 text-center font-medium text-sm h-10 select-none bg-primary-foreground",
 									getRatingColor(song.user_rating)
 								)}
-								variant="secondary">User: {song.user_rating}</Button
 							>
+								User: {song.user_rating}
+							</div>
 						{/if}
 						<h1 class="pt-4 font-bold text-xl px-2 w-full">
 							{song.name ?? "Unknown Song"}
@@ -143,15 +148,15 @@
 						<p class="w-full px-2">
 							Recorded Environment: {song.recorded_environment ?? "Unknown"}
 						</p>
-					{/if}
+					</div>
 				{/if}
-			</div>
+			{/if}
 		</div>
 	</Dialog.Content>
 </Dialog.Root>
 <Dialog.Root bind:open={addRatingDialogIsOpen}>
 	<Dialog.Content
-		class="w-11/12 rounded-lg max-w-[90%] md:max-w-xl overflow-y-auto min-h-[32rem]"
+		class="w-11/12 rounded-lg max-w-[90%] md:max-w-xl overflow-y-auto min-h-[24rem]"
 	>
 		<div class="pt-4 w-full flex flex-col justify-center items-center gap-4">
 			<h2 class="text-lg">Choose rating</h2>

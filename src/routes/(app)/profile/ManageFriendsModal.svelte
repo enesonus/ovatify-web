@@ -1,22 +1,17 @@
 <script lang="ts">
 	import * as Dialog from "$lib/components/ui/dialog";
-	import { buttonVariants } from "$lib/components/ui/button";
 	import * as Tabs from "$lib/components/ui/tabs";
 	import FriendsTab from "./FriendsTab.svelte";
 	import AddFriendTab from "./AddFriendTab.svelte";
 	import IncomingTab from "./IncomingTab.svelte";
 	import OutgoingTab from "./OutgoingTab.svelte";
-	import { UserPlus } from "lucide-svelte";
-	import { cn } from "$lib/utils";
 
-	let dialogIsOpen = false;
+	export let refresh: boolean;
+	export let refreshFriendCount: boolean;
+	export let dialogIsOpen: boolean;
 </script>
 
 <Dialog.Root bind:open={dialogIsOpen}>
-	<Dialog.Trigger class={cn(buttonVariants({ variant: "outline" }), "p-0 w-8 h-8")}
-		><UserPlus class="h-6 w-6" /><span class="sr-only">Manage Friends</span
-		></Dialog.Trigger
-	>
 	<Dialog.Content
 		class="flex justify-center rounded-lg w-11/12 md:max-w-[80vw] lg:max-w-[51.2rem] h-[32rem]"
 	>
@@ -45,7 +40,7 @@
 				<div
 					class="flex flex-col items-center justify-center mt-4 h-96 bg-zinc-800 rounded-lg"
 				>
-					<IncomingTab bind:dialogIsOpen />
+					<IncomingTab bind:dialogIsOpen bind:refresh bind:refreshFriendCount />
 				</div>
 			</Tabs.Content>
 			<Tabs.Content value="4">

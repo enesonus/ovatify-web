@@ -14,6 +14,8 @@
 	import { user } from "$lib/stores/user";
 	import type { Friend } from "$lib/types";
 
+	export let refresh: boolean;
+	export let refreshFriendCount: boolean;
 	export let dialogIsOpen: boolean;
 	let loading = false;
 
@@ -46,6 +48,10 @@
 				message:
 					action === "accept" ? "Friend request accepted" : "Friend request rejected"
 			});
+			if (action === "accept") {
+				refresh = !refresh;
+			}
+			refreshFriendCount = !refreshFriendCount;
 		} else if (response.status === 400) {
 			displayToast({
 				type: "error",
@@ -83,7 +89,7 @@
 							<img
 								src={friend.img_url ?? placeholderImageUrl}
 								alt={friend.name ?? "User"}
-								class="w-12 h-12 rounded-full"
+								class="w-12 h-12 rounded-full object-cover"
 							/>
 							<p class="pl-2 pr-4">{friend.name}</p>
 							<div class="ml-auto pr-4">

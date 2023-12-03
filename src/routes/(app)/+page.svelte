@@ -1,17 +1,17 @@
 <script lang="ts">
 	import { user } from "$lib/stores/user";
-	import Carousel from "$lib/components/Carousel.svelte";
+	import SongCarousel from "$lib/components/SongCarousel.svelte";
+	import GenreCarousel from "$lib/components/GenreCarousel.svelte";
 	import DisplaySongModal from "./DisplaySongModal.svelte";
 	import { getAllRecentSongs } from "$lib/services/songService";
-	import { sleep } from "$lib/utils/time";
+	import { getSongGenres, getRandomSongGenres } from "$lib/services/genreService";
 	import { userData } from "$lib/stores/userData";
-	import { fade } from "svelte/transition";
 	import YouMightLike from "./YouMightLike.svelte";
 	import RandomChart from "./RandomChart.svelte";
+	import { refresh } from "$lib/stores/refresh";
 
 	let dialogIsOpen = false;
 	let selectedSongId: string = "";
-	let refreshNewlyAdded = false;
 
 	async function getRecentAdditions() {
 		const token = await $user!.getIdToken();
@@ -20,8 +20,11 @@
 	}
 
 	async function getGenres() {
-		await sleep(Math.random() * 2);
-		return [];
+		const token = await $user!.getIdToken();
+		// const response = await getSongGenres(token, 10);
+		const response = await getRandomSongGenres(token, 10);
+		console.log(response);
+		return response;
 	}
 
 	// React to event to get selected song id when an element in the carousel is clicked
@@ -31,45 +34,39 @@
 	}
 </script>
 
-<section class="min-h-screen">
+<section class="min-h-[100dvh]">
 	<div class="flex flex-col gap-4">
 		<!-- Welcome -->
 		<h1 class="text-2xl font-bold">
-			Welcome, {$userData.name ?? "User"}
+			Welcome, {$userData.name}
 		</h1>
 		<!-- Music you might like & Stats -->
-		<div class="flex flex-col md:flex-row">
+		<div class="flex flex-col items-center justify-center sm:flex-row">
 			<!-- Music you might like -->
-			<YouMightLike />
+			<YouMightLike on:toggleEvent={toggleDialog} />
 			<!-- Stats -->
-			<div class="flex flex-grow justify-center items-center">
+			<!-- <div class="flex max-w-[36rem] justify-center items-center">
 				<RandomChart />
-			</div>
+			</div> -->
 		</div>
 		<!-- Newly added and Genres -->
-		<div class="flex flex-col gap-2">
+		<div class="flex flex-col gap-2 pb-4">
 			<!-- Newly Added -->
-			{#key refreshNewlyAdded}
-				<Carousel
+			{#key $refresh}
+				<SongCarousel
 					title="Newly added"
 					on:toggleEvent={toggleDialog}
-					functionToCall={getRecentAdditions}
+					dataFunction={getRecentAdditions}
+				/>
+				<!-- Genres -->
+				<GenreCarousel
+					title="Genres"
+					dataFunction={getGenres}
+					on:toggleEvent={toggleDialog}
 				/>
 			{/key}
-			<!-- Genres -->
-			<div>
-				<Carousel
-					title="Genres"
-					on:toggleEvent={toggleDialog}
-					functionToCall={getGenres}
-				/>
-			</div>
 		</div>
 	</div>
 	<!-- Hidden dialog -->
-	<DisplaySongModal
-		bind:dialogIsOpen
-		bind:selectedSongId
-		bind:refresh={refreshNewlyAdded}
-	/>
+	<DisplaySongModal bind:dialogIsOpen bind:selectedSongId />
 </section>

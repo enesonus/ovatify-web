@@ -17,6 +17,12 @@ export type CarouselSong = {
 	img_url: string;
 };
 
+export type CarouselGenre = {
+	id: string;
+	name: string;
+	img_url: string;
+};
+
 export type SelectedSongBody = {
 	spotify_id: string;
 	rating: number;
@@ -58,4 +64,14 @@ export type Friend = {
 	id: string;
 	name: string;
 	img_url: string | null;
+};
+
+export type UserData = {
+	id: string | null;
+	name: string;
+	img_url: string;
+	preferences: {
+		data_processing: boolean;
+		data_sharing: boolean;
+	};
 };
