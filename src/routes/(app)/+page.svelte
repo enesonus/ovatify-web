@@ -2,7 +2,7 @@
 	import { user } from "$lib/stores/user";
 	import SongCarousel from "$lib/components/SongCarousel.svelte";
 	import GenreCarousel from "$lib/components/GenreCarousel.svelte";
-	import DisplaySongModal from "./DisplaySongModal.svelte";
+	import DisplaySongModal from "$lib/components/DisplaySongModal.svelte";
 	import { getAllRecentSongs } from "$lib/services/songService";
 	import { getSongGenres, getRandomSongGenres } from "$lib/services/genreService";
 	import { userData } from "$lib/stores/userData";
@@ -37,17 +37,13 @@
 <section class="min-h-[100dvh]">
 	<div class="flex flex-col gap-4">
 		<!-- Welcome -->
-		<h1 class="text-2xl font-bold">
+		<h1 class="text-center sm:text-start text-2xl font-bold">
 			Welcome, {$userData.name}
 		</h1>
 		<!-- Music you might like & Stats -->
-		<div class="flex flex-col items-center justify-center sm:flex-row">
+		<div class="flex items-center md:pr-8">
 			<!-- Music you might like -->
 			<YouMightLike on:toggleEvent={toggleDialog} />
-			<!-- Stats -->
-			<!-- <div class="flex max-w-[36rem] justify-center items-center">
-				<RandomChart />
-			</div> -->
 		</div>
 		<!-- Newly added and Genres -->
 		<div class="flex flex-col gap-2 pb-4">

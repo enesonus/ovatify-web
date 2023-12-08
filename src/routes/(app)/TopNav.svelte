@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { Input } from "$lib/components/ui/input";
 	import { buttonVariants } from "$lib/components/ui/button";
 	import { Search, Menu } from "lucide-svelte";
 	import { Icons } from "$lib/icons";
@@ -8,35 +7,35 @@
 	import * as Sheet from "$lib/components/ui/sheet";
 	import { Button } from "$lib/components/ui/button";
 	import { page } from "$app/stores";
-	import SearchModal from "./SearchModal.svelte";
+	import SearchModal from "$lib/components/SearchModal.svelte";
 
-	let open = false;
+	let sideMenuIsOpen = false;
 	let searchDialogIsOpen = false;
 </script>
 
 <nav
-	class="sticky bg-zinc-950 top-0 flex h-16 items-center gap-0 bg-background/60 shadow-sm backdrop-blur justify-between"
+	class="sticky z-20 bg-zinc-950 top-0 flex h-16 items-center gap-0 bg-background/60 shadow-sm backdrop-blur justify-between"
 >
 	<div class="flex">
 		<!-- Menu Side Nav -->
 		<div class="flex items-center justify-center px-2 xsm:w-20 xsm:px-0">
-			<Sheet.Root bind:open>
+			<Sheet.Root bind:open={sideMenuIsOpen}>
 				<Sheet.Trigger asChild let:builder>
 					<Button builders={[builder]} variant="ghost" class="text-base px-2 xsm:px-4">
 						<Menu class="h-6 w-6" />
 						<span class="sr-only">Toggle Menu</span>
 					</Button>
 				</Sheet.Trigger>
-				<Sheet.Content side="left" class="">
+				<Sheet.Content side="left">
 					<a
 						href="/"
-						on:click={() => (open = false)}
+						on:click={() => (sideMenuIsOpen = false)}
 						class="mr-6 flex items-center space-x-2"
 					>
 						<span class="font-bold inline-block">Ovatify</span></a
 					>
 					<div class="overflow-auto pt-4">
-						<a href="/" on:click={() => (open = false)}>
+						<a href="/" on:click={() => (sideMenuIsOpen = false)}>
 							<div
 								class={cn(
 									buttonVariants({ variant: "ghost" }),
@@ -50,7 +49,7 @@
 								Home
 							</div>
 						</a>
-						<a href="/explore" on:click={() => (open = false)}>
+						<a href="/explore" on:click={() => (sideMenuIsOpen = false)}>
 							<div
 								class={cn(
 									buttonVariants({ variant: "ghost" }),
@@ -64,7 +63,7 @@
 								Explore
 							</div>
 						</a>
-						<a href="/library" on:click={() => (open = false)}>
+						<a href="/library" on:click={() => (sideMenuIsOpen = false)}>
 							<div
 								class={cn(
 									buttonVariants({ variant: "ghost" }),
@@ -78,7 +77,7 @@
 								Library
 							</div>
 						</a>
-						<a href="/dashboard" on:click={() => (open = false)}>
+						<a href="/dashboard" on:click={() => (sideMenuIsOpen = false)}>
 							<div
 								class={cn(
 									buttonVariants({ variant: "ghost" }),
@@ -92,7 +91,7 @@
 								Dashboard
 							</div>
 						</a>
-						<a href="/profile" on:click={() => (open = false)}>
+						<a href="/profile" on:click={() => (sideMenuIsOpen = false)}>
 							<div
 								class={cn(
 									buttonVariants({ variant: "ghost" }),
@@ -127,10 +126,6 @@
 	<div class="hidden md:flex justify-center items-center w-96 mx-4">
 		<div class="relative flex-grow mx-4 min-w-full">
 			<Search class="absolute left-2.5 top-1/2 transform -translate-y-1/2 h-4 w-4" />
-			<!-- <Input
-				class="bg-[#292929] border-[#949494] pl-8 w-full placeholder-slate-950"
-				placeholder="Search songs, albums, artists"
-			/> -->
 			<Button
 				variant="secondary"
 				on:click={() => (searchDialogIsOpen = true)}

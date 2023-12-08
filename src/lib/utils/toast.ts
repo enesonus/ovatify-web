@@ -13,6 +13,11 @@ export function displayToast(toast: Toast) {
 				style: "background-color: #333; color: #fff;"
 			});
 			break;
+		default:
+			svelteToast.error(toast.message, {
+				style: "background-color: #333; color: #fff;"
+			});
+			break;
 	}
 }
 

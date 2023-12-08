@@ -60,7 +60,6 @@ export async function editUserProfile(
 		data_sharing_consent?: boolean;
 	}
 ) {
-	console.log(body);
 	const response = await api.put(`users/edit-user-preferences/`, token, body);
 	return response;
 }
@@ -71,13 +70,17 @@ export async function getUserProfileStats(token: string) {
 }
 
 export async function getUserProfile(token: string) {
-	// await sleep(2);
 	const response = await api.get(`users/get-user-profile/`, token);
 	return response;
 }
 
-export async function createUserPreferences(token: string) {
-	const response = await api.post(`users/user-preferences/`, token);
+export async function exportSongsByGenre(token: string, genre: string) {
+	const response = await api.get(`users/export-by-genre/?genre=${genre}`, token);
+	return response;
+}
+
+export async function exportSongsByArtist(token: string, artist: string) {
+	const response = await api.get(`users/export-by-artist/?artist=${artist}`, token);
 	return response;
 }
 

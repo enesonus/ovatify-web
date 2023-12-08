@@ -14,9 +14,13 @@
 	import { deleteFromCache, songCache } from "$lib/utils/caches";
 	import { fade } from "svelte/transition";
 	import { refresh } from "$lib/stores/refresh";
+	import { createEventDispatcher, onDestroy } from "svelte";
+	import { goto } from "$app/navigation";
 
 	export let dialogIsOpen: boolean;
-	export let selectedSongId: string;
+	export let selectedSongId: string | null;
+
+	const dispatch = createEventDispatcher();
 
 	let song: Song | null = null;
 	let loadingSong = false;
@@ -25,7 +29,7 @@
 	let addRatingDialogIsOpen = false;
 
 	$: if (!dialogIsOpen) {
-		selectedSongId = "";
+		selectedSongId = null;
 		song = null;
 		rating = 0;
 	}
@@ -36,8 +40,8 @@
 
 	$: getSong(selectedSongId);
 
-	async function getSong(selectedSongId: string) {
-		if (selectedSongId === "") return;
+	async function getSong(selectedSongId: string | null) {
+		if (!selectedSongId) return;
 		loadingSong = true;
 		const token = await $user!.getIdToken();
 		song = await getSongById(token, selectedSongId);
@@ -63,6 +67,8 @@
 			displayToast({ type: "success", message: "Rating added successfully" });
 			deleteFromCache(songCache, selectedSongId);
 			$refresh = !$refresh;
+			dispatch("songAdded", selectedSongId);
+			goto("/library");
 		} else if (response.status === 400) {
 			displayToast({ type: "error", message: "This song is already in your library" });
 		} else {
@@ -172,6 +178,16 @@
 				}`}
 				on:click={addSongToLibrary}>{loading ? "Adding..." : "Add Song"}</Button
 			>
+			<!-- <Button
+				on:click={() => {
+					displayToast({ type: "success", message: "Rating added successfully" });
+					$refresh = !$refresh;
+					addRatingDialogIsOpen = false;
+					dialogIsOpen = false;
+					loading = false;
+					dispatch("songAdded", selectedSongId);
+				}}>Test</Button
+			> -->
 		</div>
 	</Dialog.Content>
 </Dialog.Root>

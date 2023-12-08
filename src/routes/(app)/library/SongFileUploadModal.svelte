@@ -2,7 +2,7 @@
 	import * as Dialog from "$lib/components/ui/dialog";
 	import { buttonVariants } from "$lib/components/ui/button";
 	import * as Tabs from "$lib/components/ui/tabs";
-	import SpotifySearchTab from "$lib/components/SpotifySearchTab.svelte";
+	import SongUploadTab from "$lib/components/SongUploadTab.svelte";
 	import FileUploadTab from "$lib/components/FileUploadTab.svelte";
 
 	let dialogIsOpen = false;
@@ -21,7 +21,7 @@
 			</Tabs.List>
 			<!-- Manual Upload -->
 			<Tabs.Content value="manual-upload">
-				<SpotifySearchTab bind:dialogIsOpen />
+				<SongUploadTab bind:dialogIsOpen />
 			</Tabs.Content>
 			<!-- File Upload -->
 			<Tabs.Content value="file-upload">

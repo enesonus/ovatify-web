@@ -12,9 +12,9 @@
 	import type { SongQueryResponse } from "$lib/types";
 	import { deleteFromCache, songCache } from "$lib/utils/caches";
 	import { refresh } from "$lib/stores/refresh";
+	import DisplaySongModal from "$lib/components/DisplaySongModal.svelte";
 
-	export let dialogIsOpen: boolean;
-
+	let songDetailsDialogIsOpen = false;
 	let query: string = "";
 	let queryResult: SongQueryResponse[] = [];
 	let selectedSongId: string | null = null;
@@ -51,43 +51,15 @@
 		if (!validateQuery()) return;
 		querying = true;
 		const token = await $user!.getIdToken();
-		displayToast({ type: "error", message: "Not wired yet." });
-		querying = false;
-		return;
 		const response = await searchDatabaseSong(token, query);
+		console.log(response);
 		if (response.status === 200) {
-			queryResult = response.data.results;
+			queryResult = response.data.songs_info;
 		} else {
 			console.log(response);
 			displayToast({ type: "error", message: "Error searching for songs" });
 		}
 		querying = false;
-	}
-
-	async function addSelectedSong() {
-		if (loading) return;
-		if (!selectedSongId) {
-			displayToast({ type: "error", message: "Please select a song" });
-			return;
-		}
-		loading = true;
-		const token = await $user!.getIdToken();
-		const response = await addSong(token, selectedSongId, selectedSongRating);
-		if (response.status >= 200 && response.status < 300) {
-			displayToast({ type: "success", message: "Rating added successfully" });
-			deleteFromCache(songCache, selectedSongId);
-			$refresh = !$refresh;
-		} else if (response.status === 400) {
-			displayToast({ type: "error", message: "Song already exists" });
-		} else {
-			displayToast({ type: "error", message: "Error adding song" });
-		}
-		dialogIsOpen = false;
-		loading = false;
-		query = "";
-		queryResult = [];
-		selectedSongId = null;
-		selectedSongRating = 0;
 	}
 </script>
 
@@ -135,17 +107,10 @@
 				{#each queryResult as result}
 					<button
 						on:click={() => {
-							if (selectedSongId === result.spotify_id) {
-								selectedSongId = null;
-							} else {
-								selectedSongId = result.spotify_id;
-							}
+							selectedSongId = result.spotify_id;
+							songDetailsDialogIsOpen = true;
 						}}
-						class={`w-full py-2 my-2 rounded-lg ${
-							selectedSongId === result.spotify_id
-								? "bg-emerald-800 hover:bg-emerald-700"
-								: "bg-slate-800 hover:bg-slate-700"
-						}`}
+						class="w-full py-2 my-2 rounded-lg bg-slate-800 hover:bg-slate-700"
 					>
 						<div class="flex px-2">
 							<div
@@ -181,31 +146,6 @@
 				</div>
 			</div>
 		{/if}
-		{#if selectedSongId}
-			<div class="flex justify-center items-center gap-2" transition:fade>
-				<div class="flex justify-center items-center h-12">
-					<Stars bind:rating={selectedSongRating} />
-				</div>
-				<div>
-					<Button variant="outline" on:click={() => (selectedSongRating = 0)}
-						><Trash2 /></Button
-					>
-				</div>
-			</div>
-		{/if}
 	</div>
-	<Button
-		variant="outline"
-		class={`w-4/5 ${
-			selectedSongId === null || loading
-				? "text-white bg-red-800 hover:bg-red-700"
-				: "text-black bg-[#B3BBD8]"
-		}`}
-		on:click={addSelectedSong}
-		>{loading
-			? "Adding song..."
-			: selectedSongRating > 0
-			? "Rate selected song"
-			: "Add selected song"}</Button
-	>
 </div>
+<DisplaySongModal bind:dialogIsOpen={songDetailsDialogIsOpen} bind:selectedSongId />
