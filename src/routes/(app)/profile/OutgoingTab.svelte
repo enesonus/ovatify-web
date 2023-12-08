@@ -78,7 +78,7 @@
 							<img
 								src={friend.img_url ?? placeholderImageUrl}
 								alt={friend.name ?? "User"}
-								class="w-12 h-12 rounded-full"
+								class="w-12 h-12 rounded-full object-cover"
 							/>
 							<p class="pl-2 pr-4">{friend.name}</p>
 							<div class="ml-auto pr-4">

@@ -11,8 +11,8 @@
 	import { placeholderImageUrl } from "$lib/constants";
 	import type { SongQueryResponse } from "$lib/types";
 	import { deleteFromCache, songCache } from "$lib/utils/caches";
+	import { refresh } from "$lib/stores/refresh";
 
-	export let refresh: boolean;
 	export let dialogIsOpen: boolean;
 
 	let query: string = "";
@@ -73,7 +73,7 @@
 		if (response.status >= 200 && response.status < 300) {
 			displayToast({ type: "success", message: "Rating added successfully" });
 			deleteFromCache(songCache, selectedSongId);
-			refresh = !refresh;
+			$refresh = !$refresh;
 		} else if (response.status === 400) {
 			displayToast({ type: "error", message: "Song already exists" });
 		} else {

@@ -1,21 +1,28 @@
 <script lang="ts">
-	import { createUserWithEmailAndPassword } from "firebase/auth";
+	import { createUserWithEmailAndPassword, deleteUser } from "firebase/auth";
 	import { Input } from "$lib/components/ui/input";
 	import { Button } from "$lib/components/ui/button";
 	import { Label } from "$lib/components/ui/label";
 	import { FIREBASE_ERRORS, auth } from "$lib/utils/firebase";
-	import * as api from "$lib/utils/api";
 	import { displayToast } from "$lib/utils/toast";
-	import { onDestroy, onMount } from "svelte";
 	import { user } from "$lib/stores/user";
 	import { goto } from "$app/navigation";
 	import { Icons } from "$lib/icons";
-	import { createUser } from "$lib/services/authService";
+	import { createUser, updateLastLogin } from "$lib/services/authService";
+	import { authFlowOngoing } from "$lib/stores/authState";
+	import { sleep } from "$lib/utils/time";
+	import { fade } from "svelte/transition";
+	import { getUserProfile } from "$lib/services/userService";
+	import { userData } from "$lib/stores/userData";
 
 	let email = "";
 	let password = "";
 	let passwordConfirm = "";
 	let loading = false;
+
+	$: if ($user && !$authFlowOngoing) {
+		loading = true;
+	}
 
 	function validateEmail() {
 		email = email.trim();
@@ -59,40 +66,79 @@
 		}
 		loading = true;
 		try {
+			$authFlowOngoing = true;
 			const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-			console.log("Firebase Signup Successful");
+			console.log("User created in firebase");
 			const userToken = await userCredential.user.getIdToken();
 			console.log("Attempting to create user in database...");
-			const serverRes = await createUser(userToken, email);
-			if (serverRes.status !== 201) {
-				console.log("Error creating user");
-				displayToast({ type: "error", message: "Error creating user" });
-				// potentially retry here with exponential backoff strategy
-			} else {
-				console.log("User created successfully");
-				displayToast({ type: "success", message: "Signed up successfully" });
+			let serverRes = await createUser(userToken, email);
+			let retries = 0;
+			// Retry with exponential backoff strategy in the case of server errors
+			while (serverRes.status !== 201) {
+				// If retries exceed 2, delete the user from firebase and throw an error
+				if (retries > 2) {
+					try {
+						await deleteUser(userCredential.user);
+					} catch (error) {
+						console.error("Error deleting user from firebase.", error);
+					} finally {
+						loading = false;
+						throw new Error("Cannot create user, please try again later.");
+					}
+				}
+				// Else, retry after 2^retries seconds
+				const retrySeconds = Math.pow(2, retries);
+				console.log(`Error creating user. Retrying in ${retrySeconds} seconds`);
+				displayToast({
+					type: "error",
+					message: `Error creating user. Retrying in ${retrySeconds} seconds`
+				});
+				await sleep(retrySeconds);
+				serverRes = await createUser(userToken, email);
+				retries++;
 			}
+			console.log("Signup flow completed successfully");
+			console.log("Attempting to get user profile from database...");
+			const getUserProfileResponse = await getUserProfile(userToken);
+			if (getUserProfileResponse.status !== 200) {
+				console.error("Server error getting user profile.");
+			} else {
+				console.log("User profile retrieved successfully.");
+				userData.set(getUserProfileResponse.data);
+			}
+			const updateLastLoginResponse = await updateLastLogin(userToken);
+			if (updateLastLoginResponse.status !== 200) {
+				console.error("Server error updating last login.");
+			} else {
+				console.log("Last login updated successfully.");
+			}
+			goto("/", { replaceState: true });
+			displayToast({ type: "success", message: "Signed up successfully" });
 		} catch (error: any) {
-			console.log("Error message: ", error.message);
+			console.error("Error message:", error.message);
 			if (error.message === FIREBASE_ERRORS.emailInUse) {
 				displayToast({ type: "error", message: "This email is already in use" });
+			} else if (error.message === "Cannot create user, please try again later.") {
+				displayToast({
+					type: "error",
+					message: "Cannot create user, please try again later."
+				});
 			} else {
 				displayToast({ type: "error", message: "Error signing up" });
 			}
-		} finally {
 			loading = false;
 		}
 	}
 </script>
 
-<div class="flex flex-col justify-center items-center min-h-screen">
-	<div class="flex flex-col justify-center items-center">
+<div class="flex flex-col justify-center items-center min-h-[100dvh]">
+	<div in:fade|global class="flex flex-col justify-center items-center">
 		<div class="py-4">
 			<Icons.logoWithText />
 		</div>
 		<div
-			class="flex border-[2px] bg-[#1D1F26] text-[#B3BBD8] rounded-2xl
-					 w-[20rem] xsm:w-[24rem] sm:w-[32rem] justify-center items-center pb-8 mt-4 mb-8"
+			class="flex border-[2px] bg-[#1D1F26] text-[#B3BBD8] rounded-2xl justify-center items-center
+					 w-[20rem] xsm:w-[24rem] sm:w-[32rem] max-w-[95vw] pb-8 mt-4 mb-8"
 		>
 			<form class="flex flex-col p-4 gap-4 xsm:w-[24rem]" on:submit|preventDefault>
 				<h1 class="pt-4 text-center text-2xl font-bold">Sign Up</h1>
@@ -130,11 +176,21 @@
 					class="font-semibold">{!loading ? "Sign Up" : "Signing up..."}</Button
 				>
 				<div>
-					<p class="pl-4">
-						Already have an account? <a href="/login" class="font-semibold underline"
-							>Log In</a
-						>
-					</p>
+					{#if loading}
+						<p class="px-2 text-center sm:px-4 sm:text-start">
+							Already have an account? <span
+								class="font-semibold underline text-red-800 decoration-red-800"
+								>Log In</span
+							>
+						</p>
+					{:else}
+						<p class="px-2 text-center sm:px-4 sm:text-start">
+							Already have an account? <a
+								href="/login"
+								class="font-semibold underline hover:text-zinc-300">Log In</a
+							>
+						</p>
+					{/if}
 				</div>
 				<div class="relative">
 					<div class="absolute inset-0 flex items-center">
@@ -150,7 +206,7 @@
 						on:click={() => {
 							displayToast({ type: "error", message: "Not implemented yet" });
 						}}
-						class="border-[#B3BBD8] xsm:w-3/4 font-semibold"
+						class="border-[#B3BBD8] w-full xsm:w-3/4 font-semibold"
 						><Icons.google class="h-6 w-6" /><span class="px-2">Continue with Google</span
 						></Button
 					>
@@ -159,7 +215,7 @@
 						on:click={() => {
 							displayToast({ type: "error", message: "Not implemented yet" });
 						}}
-						class="border-[#B3BBD8] xsm:w-3/4 font-semibold text-start"
+						class="border-[#B3BBD8] w-full xsm:w-3/4 font-semibold text-start"
 						><Icons.github class="h-6 w-6" /><span class="px-2">Continue with Github</span
 						></Button
 					>

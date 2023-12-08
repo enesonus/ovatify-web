@@ -1,21 +1,18 @@
+import type { UserData } from "$lib/types";
 import { writable } from "svelte/store";
 
-type UserData = {
-	id: string | null;
-	name: string | null;
-	img_url: string | null;
-	preferences: {
-		dataProcessing: boolean | null;
-		dataSharing: boolean | null;
-	};
-};
-
-export const userData = writable({
+const initialUserDataState = {
 	id: null,
-	name: null,
-	img_url: null,
+	name: "",
+	img_url: "",
 	preferences: {
-		dataProcessing: null,
-		dataSharing: null
+		data_processing: false,
+		data_sharing: false
 	}
-} as UserData);
+} as UserData;
+
+export const userData = writable(initialUserDataState);
+
+export function resetUserData() {
+	userData.set(initialUserDataState);
+}

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { page } from "$app/stores";
 	import { buttonVariants } from "$lib/components/ui/button";
 	import { Icons } from "$lib/icons";
 	import { cn } from "$lib/utils";
@@ -11,7 +12,10 @@
 		<div
 			class={cn(
 				buttonVariants({ variant: "ghost" }),
-				"flex flex-col justify-center items-center h-full text-xs font-semibold"
+				"flex flex-col justify-center items-center h-full text-xs font-semibold",
+				{
+					"bg-slate-800 hover:bg-slate-700": $page.url.pathname === "/"
+				}
 			)}
 		>
 			<Icons.navHome class="h-8 w-8" />
@@ -22,7 +26,10 @@
 		<div
 			class={cn(
 				buttonVariants({ variant: "ghost" }),
-				"flex flex-col justify-center items-center h-full text-xs font-semibold"
+				"flex flex-col justify-center items-center h-full text-xs font-semibold",
+				{
+					"bg-slate-800 hover:bg-slate-700": $page.url.pathname === "/explore"
+				}
 			)}
 		>
 			<Icons.navExplore class="h-8 w-8" />
@@ -33,7 +40,10 @@
 		<div
 			class={cn(
 				buttonVariants({ variant: "ghost" }),
-				"flex flex-col justify-center items-center h-full text-xs font-semibold"
+				"flex flex-col justify-center items-center h-full text-xs font-semibold",
+				{
+					"bg-slate-800 hover:bg-slate-700": $page.url.pathname === "/library"
+				}
 			)}
 		>
 			<Icons.navLibrary class="h-8 w-8" />
@@ -44,7 +54,10 @@
 		<div
 			class={cn(
 				buttonVariants({ variant: "ghost" }),
-				"flex flex-col justify-center items-center h-full text-xs font-semibold"
+				"flex flex-col justify-center items-center h-full text-xs font-semibold",
+				{
+					"bg-slate-800 hover:bg-slate-700": $page.url.pathname === "/dashboard"
+				}
 			)}
 		>
 			<Icons.navDashboard class="h-8 w-8" />
@@ -55,7 +68,10 @@
 		<div
 			class={cn(
 				buttonVariants({ variant: "ghost" }),
-				"flex flex-col justify-center items-center h-full text-xs font-semibold"
+				"flex flex-col justify-center items-center h-full text-xs font-semibold",
+				{
+					"bg-slate-800 hover:bg-slate-700": $page.url.pathname === "/profile"
+				}
 			)}
 		>
 			<Icons.navProfile class="h-8 w-8" />

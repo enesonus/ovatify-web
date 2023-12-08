@@ -1,9 +1,6 @@
-import type { UserData } from "$lib/types";
 import { auth } from "$lib/utils/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { writable } from "svelte/store";
-
-export const userData = writable<UserData | null>(null);
 
 function userStore() {
 	let unsubscribe: () => void;

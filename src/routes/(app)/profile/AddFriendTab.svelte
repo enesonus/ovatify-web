@@ -50,17 +50,23 @@
 			});
 		}
 		console.log(response);
-		loading = false;
 		dialogIsOpen = false;
+		loading = false;
 	}
 </script>
 
-<div class="flex flex-col items-center justify-center w-full h-full gap-2">
+<form
+	on:submit|preventDefault
+	class="flex flex-col items-center justify-center w-full h-full gap-2"
+>
 	<h2 class="text-xl">Username</h2>
 	<Input type="text" bind:value={username} class="min-w-[16rem] bg-black max-w-xs" />
 	<Button
+		type="submit"
 		variant="outline"
-		class={loading ? "bg-red-800 hover:bg-red-800" : "hover:bg-zinc-700"}
-		on:click={handleFriendRequest}>Add Friend</Button
+		class={loading
+			? "min-w-[12rem] bg-red-800 hover:bg-red-800"
+			: "min-w-[12rem] hover:bg-zinc-700"}
+		on:click={handleFriendRequest}>{loading ? "Adding... " : "Add Friend"}</Button
 	>
-</div>
+</form>
