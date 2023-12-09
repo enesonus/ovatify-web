@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { onMount } from "svelte";
-	import Chart from "chart.js/auto";
+	import Chart, { type Color } from "chart.js/auto";
 
 	let canvas: HTMLCanvasElement;
 
 	export let chartTitle: string;
-	export let barColor = "#292929";
+	export let barColor = "#FFFFFF";
 	export let xValues: string[];
 	export let yValues: number[];
 
@@ -47,13 +47,7 @@
 						}
 					},
 					legend: {
-						labels: {
-							useBorderRadius: true,
-							borderRadius: 1,
-							font: {
-								size: 12
-							}
-						}
+						display: false
 					}
 				},
 				scales: {
@@ -69,6 +63,14 @@
 						},
 						grid: {
 							display: false
+						},
+						title: {
+							display: true,
+							text: "Number of Songs",
+							font: {
+								size: 12
+							},
+							color: "#FFFFFF"
 						}
 					},
 					x: {
@@ -90,6 +92,6 @@
 	});
 </script>
 
-<div class="w-[32rem] bg-[#DDDDDD] rounded-lg">
+<div class="w-11/12 bg-zinc-900 rounded-lg">
 	<canvas bind:this={canvas} />
 </div>

@@ -5,47 +5,10 @@
 
 	let canvas: HTMLCanvasElement;
 
-	function getLast5Days() {
-		let days = [];
-		for (let i = 4; i >= 0; i--) {
-			let d = new Date();
-			d.setDate(d.getDate() - i);
-			days.push(`${d.getDate()}/${d.getMonth() + 1}/${String(d.getFullYear()).slice(2)}`);
-		}
-		return days;
-	}
-
-	// Recent Ratings by Mood
-	// Recent Ratings by Tempo =>
-	// Recent Ratings by Tempo
-	// x_labels: string[] // x axis, in order
-	// y_labels: object[] // label: string, data: number[], color: string
-
-	export let chartData = {
-		title: "Recent Ratings By Mood",
-		xLabels: getLast5Days(),
-		yLabels: [
-			{ label: "Happy", data: [5, 4.2, 2.3, 3, 4], color: "green" },
-			{ label: "Sad", data: [2, 3, 1, 3, 1], color: "blue" },
-			{ label: "Excited", data: [0.5, 3, 2, 2, 3], colors: "red" }
-		]
-	};
-
-	function getDataSets(chartData: any) {
-		const returnData = [];
-		for (const yLabel in chartData.yLabels) {
-			const color = getRandomRGBA();
-			returnData.push({
-				data: chartData.yLabels[yLabel].data,
-				label: chartData.yLabels[yLabel].label,
-				backgroundColor: chartData.yLabels[yLabel].color ?? color,
-				borderColor: chartData.yLabels[yLabel].color ?? color,
-				borderWidth: 2,
-				fill: false
-			});
-		}
-		return returnData;
-	}
+	export let chartTitle: string;
+	export let xValues: string[];
+	export let yValues: number[];
+	export let lineColor = "#3498db";
 
 	onMount(() => {
 		const context = canvas.getContext("2d");
@@ -53,8 +16,16 @@
 		new Chart(context, {
 			type: "line",
 			data: {
-				labels: chartData.xLabels,
-				datasets: getDataSets(chartData)
+				labels: xValues,
+				datasets: [
+					{
+						data: yValues,
+						label: "Number of Songs",
+						borderColor: lineColor,
+						borderWidth: 2,
+						fill: false
+					}
+				]
 			},
 			options: {
 				responsive: true,
@@ -70,13 +41,14 @@
 				},
 				plugins: {
 					title: {
-						display: true,
-						text: chartData.title,
+						display: false,
+						text: chartTitle,
 						font: {
 							size: 18
 						}
 					},
 					legend: {
+						display: false,
 						labels: {
 							useBorderRadius: true,
 							borderRadius: 1,
@@ -90,7 +62,7 @@
 					y: {
 						offset: true,
 						beginAtZero: true,
-						max: 5,
+						max: undefined,
 						ticks: {
 							backdropColor: "rgba(0, 0, 0, 0)",
 							padding: 0,
@@ -123,6 +95,6 @@
 	});
 </script>
 
-<div class="w-full bg-[#DDDDDD] rounded-lg">
+<div class="w-11/12 bg-zinc-900 rounded-lg">
 	<canvas bind:this={canvas} />
 </div>

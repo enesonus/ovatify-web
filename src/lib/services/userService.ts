@@ -80,3 +80,11 @@ export async function createUserPreferences(token: string) {
 	const response = await api.post(`users/user-preferences/`, token);
 	return response;
 }
+
+export async function getRecentAddition(token: string) {
+	const response = await api.get(`users/get-recent-addition-counts`, token);
+	if (response.status !== 200) return null;
+	const data = response.data;
+	console.log(data);
+	return response;
+}
