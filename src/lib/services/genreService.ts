@@ -46,3 +46,8 @@ export async function getSongsByGenreName(
 	console.log(data);
 	return data;
 }
+
+export async function getUserGenreNames(token: string) {
+	const response = await api.get("users/get-library-genre-names/", token);
+	return response;
+}

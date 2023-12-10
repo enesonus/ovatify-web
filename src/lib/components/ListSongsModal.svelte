@@ -13,7 +13,7 @@
 
 <Dialog.Root bind:open={dialogIsOpen}>
 	<Dialog.Content
-		class="w-11/12 rounded-lg max-w-[90%] md:max-w-2xl lg:max-w-4xl h-[90vh] max-h-[48rem] overflow-y-auto"
+		class="w-11/12 rounded-lg max-w-[90%] md:max-w-2xl lg:max-w-4xl h-[90vh] max-h-[48rem] overflow-y-auto px-2 sm:px-4"
 	>
 		<div class="flex flex-col items-center pt-4">
 			{#await functionToCall()}
@@ -30,14 +30,14 @@
 						<p class="text-center text-lg">No songs found</p>
 					{:else}
 						<div
-							class="grid grid-cols-[auto,1fr,1fr,1fr] items-center justify-center text-white gap-x-4 w-full p-1 pt-2"
+							class="hidden sm:grid grid-cols-[auto,1fr,1fr,1fr] items-center justify-center text-white gap-x-4 w-full p-1 pt-2"
 						>
 							<div class="w-12 h-4" />
 							<p class="truncate">Name</p>
 							<p class="truncate">Artist</p>
 							<p class="truncate">Release Year</p>
 						</div>
-						<hr class="border-white w-full mb-2" />
+						<hr class="hidden sm:block border-white w-full mb-2" />
 						{#each songs as song}
 							<button
 								on:click={() => {
@@ -46,8 +46,23 @@
 								}}
 								class="w-full p-1 rounded-lg hover:bg-zinc-800 transition ease-in-out delay-[25ms]"
 							>
+								<div class="grid grid-cols-[auto,1fr] items-center gap-2 sm:hidden">
+									<img
+										src={song.img_url}
+										alt={song.name}
+										class="inline-block w-16 h-16 object-cover rounded-lg"
+									/>
+									<div class="overflow-x-hidden text-start">
+										<p class="truncate">
+											{song.name}
+										</p>
+										<p class="truncate">
+											{song.main_artist}
+										</p>
+									</div>
+								</div>
 								<div
-									class="grid grid-cols-[auto,1fr,1fr,1fr] items-center justify-center gap-x-4 text-start"
+									class="hidden sm:grid grid-cols-[auto,1fr,1fr,1fr] items-center justify-center gap-x-4 text-start"
 								>
 									<img
 										src={song.img_url}

@@ -5,9 +5,7 @@
 	import { displayToast } from "$lib/utils/toast";
 	import { auth } from "$lib/utils/firebase";
 	import { signOut } from "firebase/auth";
-	import { goto } from "$app/navigation";
 	import { resetUserData, userData } from "$lib/stores/userData";
-	import Skeleton from "$lib/components/ui/skeleton/skeleton.svelte";
 	import { dev } from "$app/environment";
 
 	let loading = false;

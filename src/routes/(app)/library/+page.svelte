@@ -8,6 +8,7 @@
 	import { sleep } from "$lib/utils/time";
 	import type { CarouselSong } from "$lib/types";
 	import { refresh } from "$lib/stores/refresh";
+	import ExportModal from "./ExportModal.svelte";
 
 	let displaySongDialogIsOpen = false;
 	let selectedSongId: string = "";
@@ -66,8 +67,12 @@
 
 <section>
 	<div class="flex flex-col gap-4">
-		<div class="ml-auto sm:pr-8">
-			<SongFileComboUpload />
+		<div class="flex flex-col xsm:flex-row items-center justify-center">
+			<h1 class="text-center sm:text-start text-2xl font-bold">Library</h1>
+			<div class="mt-2 xsm:mt-0 xsm:ml-auto sm:pr-8">
+				<SongFileComboUpload />
+				<ExportModal />
+			</div>
 		</div>
 		<!-- Recent Additions -->
 		{#key $refresh}

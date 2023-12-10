@@ -6,7 +6,7 @@
 </script>
 
 <nav
-	class="hidden sticky bg-zinc-950 self-start top-16 sm:flex flex-col w-20 min-w-[5rem] items-center border-blue-500"
+	class="hidden z-20 sticky bg-zinc-950 self-start top-16 sm:flex flex-col w-20 min-w-[5rem] items-center border-blue-500"
 >
 	<a href="/" class="w-16 h-16">
 		<div

@@ -52,6 +52,8 @@
 		querying = true;
 		const token = await $user!.getIdToken();
 		const response = await searchSpotifySong(token, query);
+		console.log(response);
+
 		if (response.status === 200) {
 			queryResult = response.data.results;
 		} else {

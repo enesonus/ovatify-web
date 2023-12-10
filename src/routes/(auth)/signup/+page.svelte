@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createUserWithEmailAndPassword, deleteUser } from "firebase/auth";
+	import { createUserWithEmailAndPassword, deleteUser, signOut } from "firebase/auth";
 	import { Input } from "$lib/components/ui/input";
 	import { Button } from "$lib/components/ui/button";
 	import { Label } from "$lib/components/ui/label";
@@ -9,20 +9,17 @@
 	import { goto } from "$app/navigation";
 	import { Icons } from "$lib/icons";
 	import { createUser, updateLastLogin } from "$lib/services/authService";
-	import { authFlowOngoing } from "$lib/stores/authState";
+	import { authFlowOngoing, resumingSession } from "$lib/stores/authState";
 	import { sleep } from "$lib/utils/time";
 	import { fade } from "svelte/transition";
 	import { getUserProfile } from "$lib/services/userService";
 	import { userData } from "$lib/stores/userData";
+	import { page } from "$app/stores";
 
 	let email = "";
 	let password = "";
 	let passwordConfirm = "";
 	let loading = false;
-
-	$: if ($user && !$authFlowOngoing) {
-		loading = true;
-	}
 
 	function validateEmail() {
 		email = email.trim();
@@ -49,7 +46,7 @@
 	}
 
 	async function signup() {
-		if (loading) return;
+		if (loading || $resumingSession) return;
 		if (password !== passwordConfirm) {
 			displayToast({ type: "error", message: "Passwords do not match" });
 			return;
@@ -75,19 +72,21 @@
 			let retries = 0;
 			// Retry with exponential backoff strategy in the case of server errors
 			while (serverRes.status !== 201) {
-				// If retries exceed 2, delete the user from firebase and throw an error
 				if (retries > 2) {
 					try {
 						await deleteUser(userCredential.user);
 					} catch (error) {
-						console.error("Error deleting user from firebase.", error);
+						console.error("Error deleting user from firebase");
 					} finally {
 						loading = false;
-						throw new Error("Cannot create user, please try again later.");
+						displayToast({
+							type: "error",
+							message: "There was an error signing up, please try again later."
+						});
+						return;
 					}
 				}
-				// Else, retry after 2^retries seconds
-				const retrySeconds = Math.pow(2, retries);
+				const retrySeconds = Math.pow(2, retries + 1);
 				console.log(`Error creating user. Retrying in ${retrySeconds} seconds`);
 				displayToast({
 					type: "error",
@@ -98,22 +97,34 @@
 				retries++;
 			}
 			console.log("Signup flow completed successfully");
+			console.log("Logging in...");
 			console.log("Attempting to get user profile from database...");
 			const getUserProfileResponse = await getUserProfile(userToken);
 			if (getUserProfileResponse.status !== 200) {
 				console.error("Server error getting user profile.");
-			} else {
-				console.log("User profile retrieved successfully.");
-				userData.set(getUserProfileResponse.data);
+				displayToast({ type: "error", message: "Error logging in" });
+				try {
+					await signOut(auth);
+				} catch {
+					console.error("Error signing user out from firebase");
+				}
+				loading = false;
+				return;
 			}
+			console.log("User profile retrieved successfully.");
+			userData.set(getUserProfileResponse.data);
 			const updateLastLoginResponse = await updateLastLogin(userToken);
 			if (updateLastLoginResponse.status !== 200) {
 				console.error("Server error updating last login.");
 			} else {
 				console.log("Last login updated successfully.");
 			}
-			goto("/", { replaceState: true });
-			displayToast({ type: "success", message: "Signed up successfully" });
+			const redirectTo = $page.url.searchParams.get("redirect");
+			if (redirectTo) {
+				goto(redirectTo, { replaceState: true });
+			} else {
+				goto("/", { replaceState: true });
+			}
 		} catch (error: any) {
 			console.error("Error message:", error.message);
 			if (error.message === FIREBASE_ERRORS.emailInUse) {
@@ -131,7 +142,7 @@
 	}
 </script>
 
-<div class="flex flex-col justify-center items-center min-h-[100dvh]">
+<div class="flex flex-col justify-center items-center min-h-[56rem] sm:min-h-screen">
 	<div in:fade|global class="flex flex-col justify-center items-center">
 		<div class="py-4">
 			<Icons.logoWithText />
@@ -147,6 +158,7 @@
 					<Input
 						class="bg-black mt-1"
 						type="email"
+						disabled={$resumingSession}
 						placeholder="Enter your email"
 						bind:value={email}
 					/>
@@ -156,6 +168,7 @@
 					<Input
 						class="bg-black mt-1"
 						type="password"
+						disabled={$resumingSession}
 						placeholder="Enter your password"
 						bind:value={password}
 					/>
@@ -165,23 +178,22 @@
 					<Input
 						class="bg-black mt-1"
 						type="password"
+						disabled={$resumingSession}
 						placeholder="Confirm Password"
 						bind:value={passwordConfirm}
 					/>
 				</div>
 				<Button
-					variant={!loading ? "outline" : "destructive"}
+					variant={$resumingSession || !loading ? "outline" : "secondary"}
 					type="submit"
+					disabled={$resumingSession}
 					on:click={signup}
 					class="font-semibold">{!loading ? "Sign Up" : "Signing up..."}</Button
 				>
 				<div>
-					{#if loading}
+					{#if $resumingSession || loading}
 						<p class="px-2 text-center sm:px-4 sm:text-start">
-							Already have an account? <span
-								class="font-semibold underline text-red-800 decoration-red-800"
-								>Log In</span
-							>
+							Already have an account? <span class="font-semibold underline">Log In</span>
 						</p>
 					{:else}
 						<p class="px-2 text-center sm:px-4 sm:text-start">
@@ -203,6 +215,7 @@
 				<div class="flex flex-col gap-4 justify-center items-center pb-4">
 					<Button
 						variant="outline"
+						disabled={$resumingSession}
 						on:click={() => {
 							displayToast({ type: "error", message: "Not implemented yet" });
 						}}
@@ -212,6 +225,7 @@
 					>
 					<Button
 						variant="outline"
+						disabled={$resumingSession}
 						on:click={() => {
 							displayToast({ type: "error", message: "Not implemented yet" });
 						}}

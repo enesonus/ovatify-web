@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { signInWithEmailAndPassword } from "firebase/auth";
+	import { signInWithEmailAndPassword, signOut } from "firebase/auth";
 	import { Input } from "$lib/components/ui/input";
 	import { Button } from "$lib/components/ui/button";
 	import { Label } from "$lib/components/ui/label";
@@ -7,21 +7,17 @@
 	import { displayToast } from "$lib/utils/toast";
 	import { Icons } from "$lib/icons";
 	import { updateLastLogin } from "$lib/services/authService";
-	import { authFlowOngoing } from "$lib/stores/authState";
+	import { authFlowOngoing, resumingSession } from "$lib/stores/authState";
 	import { getUserProfile } from "$lib/services/userService";
 	import { userData } from "$lib/stores/userData";
-	import { user } from "$lib/stores/user";
 	import { goto } from "$app/navigation";
 	import { sleep } from "$lib/utils/time";
-	import { fade, fly } from "svelte/transition";
+	import { fade } from "svelte/transition";
+	import { page } from "$app/stores";
 
 	let email = "";
 	let password = "";
 	let loading = false;
-
-	$: if ($user && !$authFlowOngoing) {
-		loading = true;
-	}
 
 	function validateEmail() {
 		email = email.trim();
@@ -40,7 +36,7 @@
 	}
 
 	async function login() {
-		if (loading) return;
+		if (loading || $resumingSession) return;
 		const emailError = validateEmail();
 		if (emailError !== "") {
 			displayToast({ type: "error", message: emailError });
@@ -61,20 +57,31 @@
 			const getUserProfileResponse = await getUserProfile(userToken);
 			if (getUserProfileResponse.status !== 200) {
 				console.error("Server error getting user profile.");
-			} else {
-				console.log("User profile retrieved successfully.");
-				userData.set(getUserProfileResponse.data);
+				displayToast({ type: "error", message: "Error logging in" });
+				try {
+					await signOut(auth);
+				} catch {
+					console.error("Error signing user out from firebase");
+				}
+				loading = false;
+				return;
 			}
+			console.log("User profile retrieved successfully.");
+			userData.set(getUserProfileResponse.data);
 			const updateLastLoginResponse = await updateLastLogin(userToken);
 			if (updateLastLoginResponse.status !== 200) {
-				console.error("Server error updating last login.");
+				console.info("Server error updating last login.");
 			} else {
-				console.log("Last login updated successfully.");
+				console.info("Last login updated successfully.");
 			}
-			goto("/", { replaceState: true });
-			displayToast({ type: "success", message: "Logged in successfully" });
+			const redirectTo = $page.url.searchParams.get("redirect");
+			if (redirectTo) {
+				goto(redirectTo, { replaceState: true });
+			} else {
+				goto("/", { replaceState: true });
+			}
 		} catch (error: any) {
-			console.log("Error message: ", error.message);
+			console.log("Error message:", error.message);
 			if (error.message === FIREBASE_ERRORS.invalidCredentials) {
 				displayToast({ type: "error", message: "Invalid credentials" });
 			} else {
@@ -86,7 +93,7 @@
 	}
 </script>
 
-<div class="flex flex-col justify-center items-center min-h-[100dvh]">
+<div class="flex flex-col justify-center items-center min-h-[56rem] sm:min-h-screen">
 	<div in:fade|global class="flex flex-col justify-center items-center">
 		<div class="py-4">
 			<Icons.logoWithText />
@@ -103,6 +110,7 @@
 						class="bg-black mt-1"
 						type="email"
 						placeholder="Enter your email"
+						disabled={$resumingSession}
 						bind:value={email}
 					/>
 				</div>
@@ -112,22 +120,21 @@
 						class="bg-black mt-1"
 						type="password"
 						placeholder="Enter your password"
+						disabled={$resumingSession}
 						bind:value={password}
 					/>
 				</div>
 				<Button
-					variant={!loading ? "outline" : "destructive"}
+					variant={$resumingSession || !loading ? "outline" : "secondary"}
 					type="submit"
+					disabled={$resumingSession}
 					on:click={login}
 					class="font-semibold">{!loading ? "Log In" : "Logging in..."}</Button
 				>
 				<div>
-					{#if loading}
+					{#if $resumingSession || loading}
 						<p class="px-2 text-center sm:px-4 sm:text-start">
-							Don't have an account? <span
-								class="font-semibold underline text-red-800 decoration-red-800"
-								>Sign up</span
-							>
+							Don't have an account? <span class="font-semibold underline">Sign up</span>
 						</p>
 					{:else}
 						<p class="px-2 text-center sm:px-4 sm:text-start">
@@ -152,6 +159,7 @@
 						on:click={() => {
 							displayToast({ type: "error", message: "Not implemented yet" });
 						}}
+						disabled={$resumingSession}
 						class="border-[#B3BBD8] w-full xsm:w-3/4 font-semibold"
 						><Icons.google class="h-6 w-6" /><span class="px-2">Google</span></Button
 					>
@@ -160,6 +168,7 @@
 						on:click={() => {
 							displayToast({ type: "error", message: "Not implemented yet" });
 						}}
+						disabled={$resumingSession}
 						class="border-[#B3BBD8] w-full xsm:w-3/4 font-semibold text-start"
 						><Icons.github class="h-6 w-6" /><span class="px-2">Github</span></Button
 					>
