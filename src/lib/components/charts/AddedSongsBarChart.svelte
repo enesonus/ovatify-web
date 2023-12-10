@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from "svelte";
-	import Chart, { type Color } from "chart.js/auto";
+	import Chart from "chart.js/auto";
 
 	let canvas: HTMLCanvasElement;
 

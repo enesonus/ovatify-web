@@ -3,7 +3,7 @@
 	import { displayToast } from "$lib/utils/toast";
 	import { user } from "$lib/stores/user";
 	import { cn } from "$lib/utils";
-	import { uploadSongFile } from "$lib/services/songService";
+	import { uploadSongFile } from "$lib/services/userService";
 
 	export let dialogIsOpen: boolean;
 
@@ -35,8 +35,16 @@
 		loading = true;
 		const token = await $user!.getIdToken();
 		const response = await uploadSongFile(token, file!);
+		console.log(response);
 		if (response.status === 201) {
-			displayToast({ type: "success", message: "File uploaded successfully" });
+			const data = response.data.items;
+			data?.forEach((element: { message?: string; error?: string }) => {
+				if (element.error) {
+					displayToast({ type: "error", message: element.error });
+				} else if (element.message) {
+					displayToast({ type: "success", message: element.message });
+				}
+			});
 		} else if (response.status === 400) {
 			displayToast({
 				type: "error",
