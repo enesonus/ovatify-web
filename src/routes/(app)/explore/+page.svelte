@@ -32,22 +32,42 @@
 		const token = await $user!.getIdToken();
 		const response = await recommendFriendsListen(token, 10);
 		console.log(response);
-		if (response.status !== 200) {
+		if (response.status === 200) {
+			return response.data.tracks_info;
+		} else if (
+			response.status === 404 &&
+			response.data.error === "No friends found for the user, cannot make recommendation"
+		) {
+			displayToast({
+				message:
+					"Add friends and make sure they have sharing enabled to receive friend recommendations",
+				type: "error"
+			});
+		} else {
 			displayToast({ message: "Error getting friends listen", type: "error" });
-			return [];
 		}
-		return response.data.tracks_info;
+		return [];
 	}
 
 	async function getFriendMix() {
 		const token = await $user!.getIdToken();
 		const response = await recommendFriendMix(token, 10);
 		console.log(response);
-		if (response.status !== 200) {
+		if (response.status === 200) {
+			return response.data.tracks_info;
+		} else if (
+			response.status === 404 &&
+			response.data.error === "No friends found for the user, cannot make recommendation"
+		) {
+			displayToast({
+				message:
+					"Add friends and make sure they have sharing enabled to receive friend recommendations",
+				type: "error"
+			});
+		} else {
 			displayToast({ message: "Error getting friend mix", type: "error" });
-			return [];
 		}
-		return response.data.tracks_info;
+		return [];
 	}
 
 	async function getSinceYouLike() {
