@@ -1,11 +1,7 @@
 <script lang="ts">
 	import { user } from "$lib/stores/user";
 	import SongCarousel from "$lib/components/SongCarousel.svelte";
-	import GenreCarousel from "$lib/components/GenreCarousel.svelte";
 	import DisplaySongModal from "$lib/components/DisplaySongModal.svelte";
-	import { getAllRecentSongs } from "$lib/services/songService";
-	import { getSongGenres, getRandomSongGenres } from "$lib/services/genreService";
-	import { userData } from "$lib/stores/userData";
 	import { refresh } from "$lib/stores/refresh";
 	import {
 		recommendFriendMix,
@@ -26,7 +22,7 @@
 		const response = await recommendYouMightLike(token, 10);
 		console.log(response);
 		if (response.status !== 200) {
-			displayToast({ message: "Error getting songs you might like", type: "error" });
+			// displayToast({ message: "Error getting songs you might like", type: "error" });
 			return [];
 		}
 		return response.data.tracks_info as CarouselSong[];
@@ -59,7 +55,7 @@
 		const response = await recommendSinceYouLike(token, 10);
 		console.log(response);
 		if (response.status !== 200) {
-			displayToast({ message: "Error getting since you like", type: "error" });
+			// displayToast({ message: "Error getting since you like", type: "error" });
 			return {};
 		}
 		return response.data.tracks_info;
@@ -100,9 +96,7 @@
 						<Spinner class="w-12 h-12 animate-spin" />
 					</div>
 				{:then data}
-					{#if Object.keys(data).length === 0}
-						<p class="text-center">No songs found</p>
-					{:else}
+					{#if Object.keys(data).length > 0}
 						{#each Object.keys(data) as item}
 							<SongCarousel
 								title={`Since you like ${item}`}

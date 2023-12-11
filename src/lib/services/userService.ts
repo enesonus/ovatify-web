@@ -31,9 +31,6 @@ export async function getEntityCount(
 		`users/get-favorite-${entity}/?number_of_songs=${numberOfSongs}`,
 		token
 	);
-	if (response.status !== 200) return null;
-	const data = response.data;
-	console.log(data);
 	return response;
 }
 
@@ -84,10 +81,14 @@ export async function exportSongsByArtist(token: string, artist: string) {
 	return response;
 }
 
-export async function getRecentAddition(token: string) {
+export async function getRecentAdditionCounts(token: string) {
 	const response = await api.get(`users/get-recent-addition-counts`, token);
-	if (response.status !== 200) return null;
-	const data = response.data;
-	console.log(data);
+	return response;
+}
+
+export async function uploadSongFile(token: string, file: File) {
+	const form = new FormData();
+	form.append("file", file);
+	const response = await api.post("users/upload-file/", token, null, form);
 	return response;
 }

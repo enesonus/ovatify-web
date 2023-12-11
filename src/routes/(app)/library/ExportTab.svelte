@@ -20,6 +20,10 @@
 	export let placeholder: string;
 	export let name: "genre" | "artist";
 
+	$: if (selectedItem) {
+		downloadLink = "";
+	}
+
 	async function getItems() {
 		const token = await $user!.getIdToken();
 		const response =

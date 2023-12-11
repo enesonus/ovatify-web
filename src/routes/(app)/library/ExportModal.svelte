@@ -1,20 +1,8 @@
 <script lang="ts">
 	import ExportTab from "./ExportTab.svelte";
-
 	import * as Dialog from "$lib/components/ui/dialog";
 	import { buttonVariants } from "$lib/components/ui/button";
 	import * as Tabs from "$lib/components/ui/tabs";
-	import SongUploadTab from "$lib/components/SongUploadTab.svelte";
-	import FileUploadTab from "$lib/components/FileUploadTab.svelte";
-	import { fade } from "svelte/transition";
-	import { Button } from "$lib/components/ui/button";
-	import { user } from "$lib/stores/user";
-	import { exportSongsByArtist, exportSongsByGenre } from "$lib/services/userService";
-	import { cn } from "$lib/utils";
-	import ComboBox from "$lib/components/ComboBox.svelte";
-	import { getUserGenreNames } from "$lib/services/genreService";
-	import { getUserArtistNames } from "$lib/services/artistService";
-	import { displayToast } from "$lib/utils/toast";
 
 	let dialogIsOpen = false;
 </script>

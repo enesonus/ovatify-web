@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { onMount } from "svelte";
 	import Chart from "chart.js/auto";
-	import { getRandomRGBA } from "$lib/utils/colors";
 
 	let canvas: HTMLCanvasElement;
 

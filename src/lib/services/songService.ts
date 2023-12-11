@@ -1,13 +1,6 @@
 import * as api from "$lib/utils/api";
 import { getFromCache, saveToCache, songCache } from "$lib/utils/caches";
 
-export async function uploadSongFile(token: string, file: File) {
-	const form = new FormData();
-	form.append("file", file);
-	const response = await api.post("songs/upload-file/", token, null, form);
-	return response;
-}
-
 export async function searchSpotifySong(token: string, query: string) {
 	const response = await api.get(`songs/search-spotify/?search_string=${query}`, token);
 	return response;
