@@ -4,14 +4,14 @@
 	import { Input } from "$lib/components/ui/input";
 	import { user } from "$lib/stores/user";
 	import { displayToast } from "$lib/utils/toast";
-	import { updateProfile } from "firebase/auth";
-	import { editUserProfile } from "$lib/services/userService";
+	import { deleteUserFromDatabase, editUserProfile } from "$lib/services/userService";
 	import ChooseImageModal from "./ChooseImageModal.svelte";
 	import Button from "$lib/components/ui/button/button.svelte";
 	import { fade } from "svelte/transition";
 	import { Switch } from "$lib/components/ui/switch";
-	import { userData } from "$lib/stores/userData";
+	import { resetUserData, userData } from "$lib/stores/userData";
 	import { placeholderImageUrl } from "$lib/constants";
+	import { firebaseDeleteUser } from "$lib/utils/firebase";
 
 	export let dialogIsOpen: boolean;
 	let imageUrl = $userData.img_url;
@@ -76,6 +76,25 @@
 		dialogIsOpen = false;
 		loading = false;
 	}
+
+	// TODO: Implement this
+	async function deleteUserAccount() {
+		if (loading) return;
+		loading = true;
+		const token = await $user!.getIdToken();
+		const response = await deleteUserFromDatabase(token);
+		if (response.status === 204) {
+			firebaseDeleteUser();
+			resetUserData();
+			displayToast({
+				type: "success",
+				message: "Account deleted successfully."
+			});
+		} else {
+			displayToast({ type: "error", message: "Error deleting profile" });
+		}
+		loading = false;
+	}
 </script>
 
 <Dialog.Root bind:open={dialogIsOpen}>
@@ -123,6 +142,14 @@
 					? "w-1/2 mt-2 bg-red-800 hover:bg-red-800"
 					: "w-1/2 mt-2 bg-emerald-800 hover:bg-emerald-700"}
 				>{loading ? "Saving..." : "Save Changes"}</Button
+			>
+			<Button
+				variant="outline"
+				type="submit"
+				on:click={() => displayToast({ type: "error", message: "Not implemented" })}
+				class={loading
+					? "w-1/2 mt-2 bg-red-800 hover:bg-red-800"
+					: "w-1/2 mt-2 bg-red-800 hover:bg-red-700"}>Delete Account</Button
 			>
 		</form>
 	</Dialog.Content>

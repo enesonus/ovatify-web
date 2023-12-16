@@ -5,20 +5,39 @@ export function displayToast(toast: Toast) {
 	switch (toast.type) {
 		case "success":
 			svelteToast.success(toast.message, {
-				style: "background-color: #333; color: #fff;"
+				style: "background-color: #333; color: #fff;min-width: 12rem"
 			});
 			break;
 		case "error":
 			svelteToast.error(toast.message, {
-				style: "background-color: #333; color: #fff;"
+				style: "background-color: #333; color: #fff;min-width: 12rem"
 			});
 			break;
 		default:
 			svelteToast.error(toast.message, {
-				style: "background-color: #333; color: #fff;"
+				style: "background-color: #333; color: #fff;min-width: 12rem"
 			});
 			break;
 	}
+}
+
+export function promiseToast(
+	promise: Promise<void>,
+	loadingMessage: string,
+	successMessage: string,
+	errorMessage: string
+) {
+	svelteToast.promise(
+		promise,
+		{
+			loading: loadingMessage,
+			success: successMessage,
+			error: errorMessage
+		},
+		{
+			style: "background-color: #333; color: #fff;min-width: 12rem"
+		}
+	);
 }
 
 export function makeToast(message: string) {

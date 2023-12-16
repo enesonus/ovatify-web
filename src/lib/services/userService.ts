@@ -92,3 +92,8 @@ export async function uploadSongFile(token: string, file: File) {
 	const response = await api.post("users/upload-file/", token, null, form);
 	return response;
 }
+
+export async function deleteUserFromDatabase(token: string) {
+	const response = await api.del("users/delete-user/", token);
+	return response;
+}

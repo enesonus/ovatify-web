@@ -1,13 +1,12 @@
 <script lang="ts">
 	import { createEventDispatcher, onMount } from "svelte";
-	import { placeholderImageUrl } from "$lib/constants";
 	import type { CarouselSong } from "$lib/types";
 	import { Skeleton } from "$lib/components/ui/skeleton";
 	import { fade } from "svelte/transition";
-	import { sleep } from "$lib/utils/time";
 	import { user } from "$lib/stores/user";
 	import { recommendYouMightLike } from "$lib/services/recommendationService";
 	import { displayToast } from "$lib/utils/toast";
+	import { sleep } from "$lib/utils/time";
 
 	const dispatch = createEventDispatcher<{ toggleEvent: string }>();
 
@@ -19,6 +18,7 @@
 			displayToast({ message: "Error getting songs you might like", type: "error" });
 			return [];
 		}
+		await sleep(2);
 		return response.data.tracks_info as CarouselSong[];
 	}
 </script>
@@ -31,8 +31,8 @@
 				<div class="grid grid-cols-[auto,1fr] items-center rounded-lg p-1">
 					<Skeleton class="w-12 h-12 sm:w-16 sm:h-16 rounded-lg" />
 					<div class="text-sm pl-2">
-						<Skeleton class="w-48 h-5 my-2" />
-						<Skeleton class="w-48 h-5 mb-2" />
+						<Skeleton class="h-5 my-2" />
+						<Skeleton class="h-5 mb-2" />
 					</div>
 				</div>
 			{/each}

@@ -4,10 +4,9 @@
 	import { page } from "$app/stores";
 	import { userData } from "$lib/stores/userData";
 	import { getUserProfile } from "$lib/services/userService";
-	import toast from "svelte-french-toast";
 	import { authFlowOngoing, resumingSession } from "$lib/stores/authState";
-	import { signOut } from "firebase/auth";
-	import { auth } from "$lib/utils/firebase";
+	import { firebaseSignOut } from "$lib/utils/firebase";
+	import { promiseToast } from "$lib/utils/toast";
 
 	// Get user profile data if user is logged in to firebase
 	// authFlowOngoing is used to allow sign in and sign up page flows to get user data on their own
@@ -16,17 +15,7 @@
 		console.log("User logged in to firebase");
 		console.log("Attempting to get user profile from database...");
 		$resumingSession = true;
-		toast.promise(
-			getUserData(),
-			{
-				loading: "Logging in",
-				success: "Logged in",
-				error: "Error logging in"
-			},
-			{
-				style: "background-color: #333; color: #fff;width: 12rem"
-			}
-		);
+		promiseToast(getUserData(), "Logging in", "Logged in", "Error logging in");
 	}
 
 	// Redirect away from auth pages if user is fully logged in
@@ -46,11 +35,7 @@
 		const response = await getUserProfile(token);
 		if (response.status !== 200) {
 			console.error("Server error getting user profile.");
-			try {
-				await signOut(auth);
-			} catch {
-				console.error("Error signing user out from firebase");
-			}
+			await firebaseSignOut();
 			$resumingSession = false;
 			throw new Error("Error getting user profile");
 		}
