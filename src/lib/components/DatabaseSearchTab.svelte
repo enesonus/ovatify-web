@@ -14,11 +14,10 @@
 	import { refresh } from "$lib/stores/refresh";
 	import DisplaySongModal from "$lib/components/DisplaySongModal.svelte";
 
-	let songDetailsDialogIsOpen = false;
+	let songDetailsDialogOpen = false;
 	let query: string = "";
 	let queryResult: SongQueryResponse[] = [];
 	let selectedSongId: string | null = null;
-	let selectedSongRating: number = 0;
 	let loading = false;
 	let querying = false;
 	let typing = false;
@@ -108,7 +107,7 @@
 					<button
 						on:click={() => {
 							selectedSongId = result.spotify_id;
-							songDetailsDialogIsOpen = true;
+							songDetailsDialogOpen = true;
 						}}
 						class="w-full py-2 my-2 rounded-lg bg-slate-800 hover:bg-slate-700"
 					>
@@ -148,4 +147,4 @@
 		{/if}
 	</div>
 </div>
-<DisplaySongModal bind:dialogIsOpen={songDetailsDialogIsOpen} bind:selectedSongId />
+<DisplaySongModal bind:dialogOpen={songDetailsDialogOpen} bind:selectedSongId />

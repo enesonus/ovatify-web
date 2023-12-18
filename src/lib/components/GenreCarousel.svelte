@@ -18,7 +18,7 @@
 		return response;
 	}
 
-	let detailDialogIsOpen = false;
+	let detailDialogOpen = false;
 </script>
 
 <div class="sm:max-w-[80vw] lg:max-w-[85vw]">
@@ -50,7 +50,7 @@
 							in:fade|global={{ delay: index * 75 }}
 							on:click={() => {
 								selectedGenreName = genre.name;
-								detailDialogIsOpen = true;
+								detailDialogOpen = true;
 							}}
 							class="border-2 border-black p-2 rounded-lg bg-zinc-900 hover:bg-zinc-800 transition ease-in-out delay-[25ms]"
 						>
@@ -71,8 +71,4 @@
 		{/await}
 	</div>
 </div>
-<ListSongsModal
-	functionToCall={getSongsByGenreId}
-	bind:dialogIsOpen={detailDialogIsOpen}
-	on:toggleEvent
-/>
+<ListSongsModal functionToCall={getSongsByGenreId} bind:dialogOpen={detailDialogOpen} />

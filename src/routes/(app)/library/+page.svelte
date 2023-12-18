@@ -9,8 +9,10 @@
 	import type { CarouselSong } from "$lib/types";
 	import { refresh } from "$lib/stores/refresh";
 	import ExportModal from "./ExportModal.svelte";
+	import PlaylistCarousel from "./PlaylistCarousel.svelte";
+	import { placeholderImageUrl } from "$lib/constants";
 
-	let displaySongDialogIsOpen = false;
+	let displaySongDialogOpen = false;
 	let selectedSongId: string = "";
 
 	// Gets data to fill the carousel with recent song additions by the user
@@ -61,7 +63,7 @@
 
 	function toggleDialog(event: CustomEvent<string>) {
 		selectedSongId = event.detail;
-		displaySongDialogIsOpen = !displaySongDialogIsOpen;
+		displaySongDialogOpen = !displaySongDialogOpen;
 	}
 </script>
 
@@ -89,8 +91,10 @@
 				dataFunction={getYourFavorites}
 				viewAllFunction={getAllYourFavorites}
 			/>
+			<!-- Playlists -->
+			<PlaylistCarousel />
 		{/key}
 	</div>
-	<!-- Modal for detailed music information -->
-	<SongDetailsModal bind:dialogIsOpen={displaySongDialogIsOpen} bind:selectedSongId />
 </section>
+<!-- Modal for detailed music information -->
+<SongDetailsModal bind:dialogOpen={displaySongDialogOpen} bind:selectedSongId />

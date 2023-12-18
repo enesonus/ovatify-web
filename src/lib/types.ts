@@ -69,3 +69,21 @@ export type UserData = {
 		data_sharing: boolean;
 	};
 };
+
+export type CarouselPlaylist = {
+	id: string;
+	name: string;
+	img_url: string;
+	song_imgs: string[];
+	user_id: string;
+	friend_group_id: string;
+};
+
+export type Playlist = {
+	id: string;
+	name: string;
+	description: string;
+	img_url: string;
+	img_urls?: string[];
+	songs: CarouselSong[];
+};

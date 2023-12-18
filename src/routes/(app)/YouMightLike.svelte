@@ -6,7 +6,6 @@
 	import { user } from "$lib/stores/user";
 	import { recommendYouMightLike } from "$lib/services/recommendationService";
 	import { displayToast } from "$lib/utils/toast";
-	import { sleep } from "$lib/utils/time";
 
 	const dispatch = createEventDispatcher<{ toggleEvent: string }>();
 
@@ -18,7 +17,6 @@
 			displayToast({ message: "Error getting songs you might like", type: "error" });
 			return [];
 		}
-		await sleep(2);
 		return response.data.tracks_info as CarouselSong[];
 	}
 </script>
@@ -28,11 +26,11 @@
 	<div class="grid grid-cols-2 md:grid-cols-4 gap-2">
 		{#await getYouMightLike()}
 			{#each { length: 8 } as _}
-				<div class="grid grid-cols-[auto,1fr] items-center rounded-lg p-1">
+				<div class="grid grid-cols-[auto,1fr] items-center rounded-lg">
 					<Skeleton class="w-12 h-12 sm:w-16 sm:h-16 rounded-lg" />
 					<div class="text-sm pl-2">
-						<Skeleton class="h-5 my-2" />
-						<Skeleton class="h-5 mb-2" />
+						<Skeleton class="h-4 my-2 sm:my-3" />
+						<Skeleton class="h-4 mb-2 sm:mb-4" />
 					</div>
 				</div>
 			{/each}

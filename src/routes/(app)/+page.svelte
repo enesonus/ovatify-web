@@ -4,13 +4,12 @@
 	import GenreCarousel from "$lib/components/GenreCarousel.svelte";
 	import DisplaySongModal from "$lib/components/DisplaySongModal.svelte";
 	import { getAllRecentSongs } from "$lib/services/songService";
-	import { getSongGenres, getRandomSongGenres } from "$lib/services/genreService";
+	import { getRandomSongGenres } from "$lib/services/genreService";
 	import { userData } from "$lib/stores/userData";
 	import YouMightLike from "./YouMightLike.svelte";
-	import RandomChart from "./RandomChart.svelte";
 	import { refresh } from "$lib/stores/refresh";
 
-	let dialogIsOpen = false;
+	let dialogOpen = false;
 	let selectedSongId: string = "";
 
 	async function getRecentAdditions() {
@@ -30,7 +29,7 @@
 	// React to event to get selected song id when an element in the carousel is clicked
 	function toggleDialog(event: CustomEvent<string>) {
 		selectedSongId = event.detail;
-		dialogIsOpen = !dialogIsOpen;
+		dialogOpen = !dialogOpen;
 	}
 </script>
 
@@ -64,5 +63,5 @@
 		</div>
 	</div>
 	<!-- Hidden dialog -->
-	<DisplaySongModal bind:dialogIsOpen bind:selectedSongId />
+	<DisplaySongModal bind:dialogOpen={dialogOpen} bind:selectedSongId />
 </section>

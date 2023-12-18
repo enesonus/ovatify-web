@@ -17,7 +17,7 @@
 	import { createEventDispatcher, onDestroy } from "svelte";
 	import { goto } from "$app/navigation";
 
-	export let dialogIsOpen: boolean;
+	export let dialogOpen: boolean;
 	export let selectedSongId: string | null;
 
 	const dispatch = createEventDispatcher();
@@ -26,15 +26,15 @@
 	let loadingSong = false;
 	let loading = false;
 	let rating = 0;
-	let addRatingDialogIsOpen = false;
+	let addRatingDialogOpen = false;
 
-	$: if (!dialogIsOpen) {
+	$: if (!dialogOpen) {
 		selectedSongId = null;
 		song = null;
 		rating = 0;
 	}
 
-	$: if (!addRatingDialogIsOpen) {
+	$: if (!addRatingDialogOpen) {
 		rating = 0;
 	}
 
@@ -74,18 +74,18 @@
 		} else {
 			displayToast({ type: "error", message: "Error adding song" });
 		}
-		addRatingDialogIsOpen = false;
-		dialogIsOpen = false;
+		addRatingDialogOpen = false;
+		dialogOpen = false;
 		loading = false;
 	}
 </script>
 
-<Dialog.Root bind:open={dialogIsOpen}>
+<Dialog.Root bind:open={dialogOpen}>
 	<Dialog.Content
 		class="w-11/12 rounded-lg max-w-[90%] md:max-w-2xl lg:max-w-4xl h-[90vh] max-h-[48rem] overflow-y-auto"
 	>
 		<div class="flex flex-col items-center justify-center h-full py-2">
-			{#if dialogIsOpen}
+			{#if dialogOpen}
 				{#if loadingSong}
 					<div in:fade|global class="flex justify-center items-center">
 						<Spinner class="animate-spin w-10 h-10" />
@@ -116,7 +116,7 @@
 							<Button
 								class="mt-1 min-w-[12rem] tabular-nums bg-emerald-800 hover:bg-emerald-700"
 								variant="secondary"
-								on:click={() => (addRatingDialogIsOpen = true)}
+								on:click={() => (addRatingDialogOpen = true)}
 								>Add to Library<BookmarkPlus class="ml-2" /></Button
 							>
 						{:else}
@@ -160,7 +160,7 @@
 		</div>
 	</Dialog.Content>
 </Dialog.Root>
-<Dialog.Root bind:open={addRatingDialogIsOpen}>
+<Dialog.Root bind:open={addRatingDialogOpen}>
 	<Dialog.Content
 		class="w-11/12 rounded-lg max-w-[90%] md:max-w-xl overflow-y-auto min-h-[24rem]"
 	>
@@ -178,16 +178,6 @@
 				}`}
 				on:click={addSongToLibrary}>{loading ? "Adding..." : "Add Song"}</Button
 			>
-			<!-- <Button
-				on:click={() => {
-					displayToast({ type: "success", message: "Rating added successfully" });
-					$refresh = !$refresh;
-					addRatingDialogIsOpen = false;
-					dialogIsOpen = false;
-					loading = false;
-					dispatch("songAdded", selectedSongId);
-				}}>Test</Button
-			> -->
 		</div>
 	</Dialog.Content>
 </Dialog.Root>

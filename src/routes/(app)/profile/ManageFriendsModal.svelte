@@ -8,10 +8,10 @@
 
 	export let refresh: boolean;
 	export let refreshFriendCount: boolean;
-	export let dialogIsOpen: boolean;
+	export let dialogOpen: boolean;
 </script>
 
-<Dialog.Root bind:open={dialogIsOpen}>
+<Dialog.Root bind:open={dialogOpen}>
 	<Dialog.Content
 		class="flex justify-center rounded-lg w-11/12 md:max-w-[80vw] lg:max-w-[51.2rem] h-[32rem]"
 	>
@@ -33,21 +33,21 @@
 				<div
 					class="flex flex-col items-center justify-center mt-4 h-96 bg-zinc-800 rounded-lg"
 				>
-					<AddFriendTab bind:dialogIsOpen />
+					<AddFriendTab bind:dialogOpen />
 				</div>
 			</Tabs.Content>
 			<Tabs.Content value="3">
 				<div
 					class="flex flex-col items-center justify-center mt-4 h-96 bg-zinc-800 rounded-lg"
 				>
-					<IncomingTab bind:dialogIsOpen bind:refresh bind:refreshFriendCount />
+					<IncomingTab bind:dialogOpen bind:refresh bind:refreshFriendCount />
 				</div>
 			</Tabs.Content>
 			<Tabs.Content value="4">
 				<div
 					class="flex flex-col items-center justify-center mt-4 h-96 bg-zinc-800 rounded-lg"
 				>
-					<OutgoingTab bind:dialogIsOpen />
+					<OutgoingTab bind:dialogOpen />
 				</div>
 			</Tabs.Content>
 		</Tabs.Root>

@@ -13,7 +13,7 @@
 	} from "$lib/services/friendService";
 	import type { Friend } from "$lib/types";
 
-	export let dialogIsOpen: boolean;
+	export let dialogOpen: boolean;
 	let loading = false;
 
 	async function getOutgoingRequests() {
@@ -57,7 +57,7 @@
 				message: "Something went wrong"
 			});
 		}
-		dialogIsOpen = false;
+		dialogOpen = false;
 		loading = false;
 	}
 </script>
