@@ -3,10 +3,7 @@
 	import ManageFriendsModal from "./ManageFriendsModal.svelte";
 	import * as Avatar from "$lib/components/ui/avatar";
 	import { user } from "$lib/stores/user";
-	import {
-		getUserFriends,
-		getUserIncomingFriendRequestCount
-	} from "$lib/services/friendService";
+	import { getUserIncomingFriendRequestCount } from "$lib/services/friendService";
 	import EditProfileModal from "./EditProfileModal.svelte";
 	import { getUserProfileStats } from "$lib/services/userService";
 	import { userData } from "$lib/stores/userData";
@@ -114,6 +111,6 @@
 <ManageFriendsModal
 	bind:dialogIsOpen={manageFriendsDialogIsOpen}
 	bind:refresh={refreshFriends}
-	bind:refreshFriendCount={refreshFriendCount}
+	bind:refreshFriendCount
 />
 <EditProfileModal bind:dialogIsOpen={editProfileDialogIsOpen} />

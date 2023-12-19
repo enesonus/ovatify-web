@@ -1,12 +1,22 @@
 <script lang="ts">
-	import { signInWithEmailAndPassword, signOut } from "firebase/auth";
+	import {
+		GoogleAuthProvider,
+		getAdditionalUserInfo,
+		signInWithEmailAndPassword,
+		signInWithPopup
+	} from "firebase/auth";
 	import { Input } from "$lib/components/ui/input";
 	import { Button } from "$lib/components/ui/button";
 	import { Label } from "$lib/components/ui/label";
-	import { auth, FIREBASE_ERRORS } from "$lib/utils/firebase";
+	import {
+		auth,
+		FIREBASE_ERRORS,
+		firebaseDeleteUser,
+		firebaseSignOut
+	} from "$lib/utils/firebase";
 	import { displayToast } from "$lib/utils/toast";
 	import { Icons } from "$lib/icons";
-	import { updateLastLogin } from "$lib/services/authService";
+	import { createUser, updateLastLogin } from "$lib/services/authService";
 	import { authFlowOngoing, resumingSession } from "$lib/stores/authState";
 	import { getUserProfile } from "$lib/services/userService";
 	import { userData } from "$lib/stores/userData";
@@ -58,11 +68,7 @@
 			if (getUserProfileResponse.status !== 200) {
 				console.error("Server error getting user profile.");
 				displayToast({ type: "error", message: "Error logging in" });
-				try {
-					await signOut(auth);
-				} catch {
-					console.error("Error signing user out from firebase");
-				}
+				await firebaseSignOut();
 				loading = false;
 				return;
 			}
@@ -91,16 +97,98 @@
 			loading = false;
 		}
 	}
+
+	async function loginWithGoogle() {
+		if (loading || $resumingSession) return;
+		try {
+			loading = true;
+			$authFlowOngoing = true;
+			const userCredential = await signInWithPopup(auth, new GoogleAuthProvider());
+			console.log("User logged in to firebase");
+			const userToken = await userCredential.user.getIdToken();
+			const userInfo = getAdditionalUserInfo(userCredential);
+			console.log("User info:", userInfo);
+			// Signup Flow
+			if (userInfo?.isNewUser) {
+				console.log("User is new, signup flow started");
+				const newEmail = userCredential.user.email;
+				if (!newEmail) {
+					console.error("User email not found");
+					displayToast({ type: "error", message: "Error signing up" });
+					await firebaseSignOut();
+					loading = false;
+					return;
+				}
+				let serverRes = await createUser(userToken, newEmail);
+				let retries = 0;
+				// Retry with exponential backoff strategy in the case of server errors
+				while (serverRes.status !== 201) {
+					if (retries > 2) {
+						await firebaseDeleteUser();
+						loading = false;
+						displayToast({
+							type: "error",
+							message: "There was an error signing up, please try again later."
+						});
+						return;
+					}
+					const retrySeconds = Math.pow(2, retries + 1);
+					console.log(`Error creating user. Retrying in ${retrySeconds} seconds`);
+					displayToast({
+						type: "error",
+						message: `Error creating user. Retrying in ${retrySeconds} seconds`
+					});
+					await sleep(retrySeconds);
+					serverRes = await createUser(userToken, email);
+					retries++;
+				}
+				console.log("Signup flow completed successfully");
+			}
+			// Login Flow
+			console.log("Logging in...");
+			console.log("Attempting to get user profile from database...");
+			const getUserProfileResponse = await getUserProfile(userToken);
+			if (getUserProfileResponse.status !== 200) {
+				console.error("Server error getting user profile.");
+				displayToast({ type: "error", message: "Error logging in" });
+				await firebaseSignOut();
+				loading = false;
+				return;
+			}
+			console.log("User profile retrieved successfully.");
+			userData.set(getUserProfileResponse.data);
+			const updateLastLoginResponse = await updateLastLogin(userToken);
+			if (updateLastLoginResponse.status !== 200) {
+				console.info("Server error updating last login.");
+			} else {
+				console.info("Last login updated successfully.");
+			}
+			const redirectTo = $page.url.searchParams.get("redirect");
+			if (redirectTo) {
+				goto(redirectTo, { replaceState: true });
+			} else {
+				goto("/", { replaceState: true });
+			}
+		} catch (e: any) {
+			if (e.message === FIREBASE_ERRORS.popupClosed) {
+				console.log("User closed popup");
+				displayToast({ type: "error", message: "Login cancelled" });
+			} else {
+				console.error("Error logging in with provider", e);
+			}
+			loading = false;
+		}
+	}
 </script>
 
-<div class="flex flex-col justify-center items-center min-h-[56rem] sm:min-h-screen">
+<div class="flex flex-col justify-center items-center min-h-[85vh] sm:min-h-screen">
 	<div in:fade|global class="flex flex-col justify-center items-center">
 		<div class="py-4">
 			<Icons.logoWithText />
 		</div>
 		<div
 			class="flex border-2 bg-[#1D1F26] text-[#B3BBD8] rounded-2xl justify-center items-center
-					 w-[20rem] xsm:w-[24rem] sm:w-[32rem] max-w-[95vw] pb-8 mt-4 mb-8"
+					 w-[20rem] xsm:w-[24rem] sm:w-[26rem] max-w-[90vw] pb-4 mt-4 mb-8"
 		>
 			<form class="flex flex-col p-4 gap-4 xsm:w-[24rem]" on:submit|preventDefault>
 				<h1 class="pt-4 text-center text-2xl font-bold">Log In</h1>
@@ -153,24 +241,13 @@
 						<span class="px-2 text-muted-foreground"> Or continue with </span>
 					</div>
 				</div>
-				<div class="flex flex-col gap-4 justify-center items-center pb-4">
+				<div class="flex flex-col gap-4 justify-center items-center">
 					<Button
 						variant="outline"
-						on:click={() => {
-							displayToast({ type: "error", message: "Not implemented yet" });
-						}}
-						disabled={$resumingSession}
+						on:click={() => loginWithGoogle()}
+						disabled={loading || $resumingSession}
 						class="border-[#B3BBD8] w-full xsm:w-3/4 font-semibold"
 						><Icons.google class="h-6 w-6" /><span class="px-2">Google</span></Button
-					>
-					<Button
-						variant="outline"
-						on:click={() => {
-							displayToast({ type: "error", message: "Not implemented yet" });
-						}}
-						disabled={$resumingSession}
-						class="border-[#B3BBD8] w-full xsm:w-3/4 font-semibold text-start"
-						><Icons.github class="h-6 w-6" /><span class="px-2">Github</span></Button
 					>
 				</div>
 			</form>

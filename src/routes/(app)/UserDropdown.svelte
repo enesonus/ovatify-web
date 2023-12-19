@@ -3,8 +3,7 @@
 	import * as Avatar from "$lib/components/ui/avatar";
 	import * as DropdownMenu from "$lib/components/ui/dropdown-menu";
 	import { displayToast } from "$lib/utils/toast";
-	import { auth } from "$lib/utils/firebase";
-	import { signOut } from "firebase/auth";
+	import { firebaseSignOut } from "$lib/utils/firebase";
 	import { resetUserData, userData } from "$lib/stores/userData";
 	import { dev } from "$app/environment";
 
@@ -14,7 +13,7 @@
 		if (loading) return;
 		loading = true;
 		try {
-			await signOut(auth);
+			await firebaseSignOut();
 			resetUserData();
 			displayToast({ type: "success", message: "Signed out successfully" });
 		} catch (error) {
@@ -26,7 +25,7 @@
 	}
 </script>
 
-<DropdownMenu.Root preventScroll={false}>
+<DropdownMenu.Root>
 	<DropdownMenu.Trigger>
 		<Avatar.Root class="w-8 h-8 text-xs xsm:text-base xsm:w-12 xsm:h-12">
 			<Avatar.Image src={$userData.img_url} alt={$userData.name} />
@@ -35,21 +34,21 @@
 		</Avatar.Root>
 	</DropdownMenu.Trigger>
 	<DropdownMenu.Content class="w-max xsm:w-56">
-		<DropdownMenu.Label>Account</DropdownMenu.Label>
+		<DropdownMenu.Label>@{$userData.name}</DropdownMenu.Label>
 		<DropdownMenu.Separator />
 		<DropdownMenu.Group>
-			<DropdownMenu.Item href="/profile" class="cursor-pointer">
+			<DropdownMenu.Item href="/profile" class="cursor-pointer py-2">
 				<UserCircle class="mr-2 h-4 w-4 inline-flex" /><span>Profile</span>
 			</DropdownMenu.Item>
 			{#if dev}
-				<DropdownMenu.Item href="/test" class="cursor-pointer">
+				<DropdownMenu.Item href="/test" class="cursor-pointer py-2">
 					<Settings class="mr-2 h-4 w-4 inline-flex" /><span>Test</span>
 				</DropdownMenu.Item>
 			{/if}
 		</DropdownMenu.Group>
 		<DropdownMenu.Separator />
 		<DropdownMenu.Group>
-			<DropdownMenu.Item on:click={signout} class="cursor-pointer">
+			<DropdownMenu.Item on:click={signout} class="cursor-pointer py-2">
 				<LogOut class="mr-2 h-4 w-4 inline-flex" />
 				<span>Sign Out</span>
 			</DropdownMenu.Item>
