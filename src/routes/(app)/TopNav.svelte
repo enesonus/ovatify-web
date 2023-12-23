@@ -9,8 +9,8 @@
 	import { page } from "$app/stores";
 	import SearchModal from "$lib/components/SearchModal.svelte";
 
-	let sideMenuIsOpen = false;
-	let searchDialogIsOpen = false;
+	let sideMenuOpen = false;
+	let searchDialogOpen = false;
 </script>
 
 <nav
@@ -19,7 +19,7 @@
 	<div class="flex">
 		<!-- Menu Side Nav -->
 		<div class="flex items-center justify-center px-2 xsm:w-20 xsm:px-0">
-			<Sheet.Root bind:open={sideMenuIsOpen}>
+			<Sheet.Root bind:open={sideMenuOpen}>
 				<Sheet.Trigger asChild let:builder>
 					<Button builders={[builder]} variant="ghost" class="text-base px-2 xsm:px-4">
 						<Menu class="h-6 w-6" />
@@ -29,13 +29,13 @@
 				<Sheet.Content side="left">
 					<a
 						href="/"
-						on:click={() => (sideMenuIsOpen = false)}
+						on:click={() => (sideMenuOpen = false)}
 						class="mr-6 flex items-center space-x-2"
 					>
 						<span class="font-bold inline-block">Ovatify</span></a
 					>
 					<div class="overflow-auto pt-4">
-						<a href="/" on:click={() => (sideMenuIsOpen = false)}>
+						<a href="/" on:click={() => (sideMenuOpen = false)}>
 							<div
 								class={cn(
 									buttonVariants({ variant: "ghost" }),
@@ -49,7 +49,7 @@
 								Home
 							</div>
 						</a>
-						<a href="/explore" on:click={() => (sideMenuIsOpen = false)}>
+						<a href="/explore" on:click={() => (sideMenuOpen = false)}>
 							<div
 								class={cn(
 									buttonVariants({ variant: "ghost" }),
@@ -63,7 +63,7 @@
 								Explore
 							</div>
 						</a>
-						<a href="/library" on:click={() => (sideMenuIsOpen = false)}>
+						<a href="/library" on:click={() => (sideMenuOpen = false)}>
 							<div
 								class={cn(
 									buttonVariants({ variant: "ghost" }),
@@ -77,7 +77,7 @@
 								Library
 							</div>
 						</a>
-						<a href="/dashboard" on:click={() => (sideMenuIsOpen = false)}>
+						<a href="/dashboard" on:click={() => (sideMenuOpen = false)}>
 							<div
 								class={cn(
 									buttonVariants({ variant: "ghost" }),
@@ -91,7 +91,7 @@
 								Dashboard
 							</div>
 						</a>
-						<a href="/profile" on:click={() => (sideMenuIsOpen = false)}>
+						<a href="/profile" on:click={() => (sideMenuOpen = false)}>
 							<div
 								class={cn(
 									buttonVariants({ variant: "ghost" }),
@@ -128,7 +128,7 @@
 			<Search class="absolute left-2.5 top-1/2 transform -translate-y-1/2 h-4 w-4" />
 			<Button
 				variant="secondary"
-				on:click={() => (searchDialogIsOpen = true)}
+				on:click={() => (searchDialogOpen = true)}
 				class="bg-[#292929] border-[#949494] border-[1px] pl-8 w-full text-[#949494] justify-start"
 				>Search songs, albums, artists</Button
 			>
@@ -139,7 +139,7 @@
 		<div class="md:hidden flex justify-center items-center pr-2 xsm:pr-4">
 			<Button
 				variant="ghost"
-				on:click={() => (searchDialogIsOpen = true)}
+				on:click={() => (searchDialogOpen = true)}
 				class="p-0 h-8 w-8 xsm:h-12 xsm:w-12 rounded-full"
 			>
 				<Search class="h-6 w-6" />
@@ -150,4 +150,4 @@
 		</div>
 	</div>
 </nav>
-<SearchModal bind:dialogIsOpen={searchDialogIsOpen} />
+<SearchModal bind:dialogOpen={searchDialogOpen} />

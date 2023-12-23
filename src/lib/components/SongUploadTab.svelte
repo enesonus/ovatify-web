@@ -13,7 +13,7 @@
 	import { deleteFromCache, songCache } from "$lib/utils/caches";
 	import { refresh } from "$lib/stores/refresh";
 
-	export let dialogIsOpen: boolean;
+	export let dialogOpen: boolean;
 
 	let query: string = "";
 	let queryResult: SongQueryResponse[] = [];
@@ -81,7 +81,7 @@
 		} else {
 			displayToast({ type: "error", message: "Error adding song" });
 		}
-		dialogIsOpen = false;
+		dialogOpen = false;
 		loading = false;
 		query = "";
 		queryResult = [];

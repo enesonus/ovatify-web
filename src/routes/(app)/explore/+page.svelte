@@ -14,7 +14,7 @@
 	import Spinner from "$lib/components/Spinner.svelte";
 	import { onDestroy } from "svelte";
 
-	let dialogIsOpen = false;
+	let dialogOpen = false;
 	let selectedSongId: string = "";
 
 	async function getYouMightLike() {
@@ -84,7 +84,7 @@
 	// React to event to get selected song id when an element in the carousel is clicked
 	function toggleDialog(event: CustomEvent<string>) {
 		selectedSongId = event.detail;
-		dialogIsOpen = !dialogIsOpen;
+		dialogOpen = !dialogOpen;
 	}
 
 	onDestroy(() => {});
@@ -130,5 +130,5 @@
 		</div>
 	</div>
 	<!-- Hidden dialog -->
-	<DisplaySongModal bind:dialogIsOpen bind:selectedSongId />
+	<DisplaySongModal bind:dialogOpen={dialogOpen} bind:selectedSongId />
 </section>

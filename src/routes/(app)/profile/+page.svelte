@@ -15,8 +15,8 @@
 
 	let refreshFriends = false;
 	let refreshFriendCount = false;
-	let editProfileDialogIsOpen = false;
-	let manageFriendsDialogIsOpen = false;
+	let editProfileDialogOpen = false;
+	let manageFriendsDialogOpen = false;
 
 	async function getPendingFriendRequestCount() {
 		const token = await $user!.getIdToken();
@@ -74,7 +74,7 @@
 					<Button
 						variant="outline"
 						class="relative p-0 w-8 h-8 sm:w-10 sm:h-10"
-						on:click={() => (manageFriendsDialogIsOpen = true)}
+						on:click={() => (manageFriendsDialogOpen = true)}
 					>
 						{#key refreshFriendCount}
 							<div
@@ -94,7 +94,7 @@
 					<Button
 						variant="outline"
 						class="p-0 w-8 h-8 sm:w-10 sm:h-10"
-						on:click={() => (editProfileDialogIsOpen = true)}
+						on:click={() => (editProfileDialogOpen = true)}
 					>
 						<Pencil class="w-6 h-6 sm:h-8 sm:w-8" /><span class="sr-only"
 							>Edit Profile</span
@@ -109,8 +109,8 @@
 	{/key}
 </div>
 <ManageFriendsModal
-	bind:dialogIsOpen={manageFriendsDialogIsOpen}
+	bind:dialogOpen={manageFriendsDialogOpen}
 	bind:refresh={refreshFriends}
 	bind:refreshFriendCount
 />
-<EditProfileModal bind:dialogIsOpen={editProfileDialogIsOpen} />
+<EditProfileModal bind:dialogOpen={editProfileDialogOpen} />

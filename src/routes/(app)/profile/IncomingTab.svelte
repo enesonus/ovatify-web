@@ -16,7 +16,7 @@
 
 	export let refresh: boolean;
 	export let refreshFriendCount: boolean;
-	export let dialogIsOpen: boolean;
+	export let dialogOpen: boolean;
 	let loading = false;
 
 	async function getIncomingRequests() {
@@ -68,7 +68,7 @@
 				message: "Something went wrong"
 			});
 		}
-		dialogIsOpen = false;
+		dialogOpen = false;
 		loading = false;
 	}
 </script>

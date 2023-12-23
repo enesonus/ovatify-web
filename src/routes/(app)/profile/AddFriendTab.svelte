@@ -5,7 +5,7 @@
 	import { sendFriendRequest } from "$lib/services/friendService";
 	import { user } from "$lib/stores/user";
 
-	export let dialogIsOpen: boolean;
+	export let dialogOpen: boolean;
 	let username = "";
 	let loading = false;
 
@@ -50,7 +50,7 @@
 			});
 		}
 		console.log(response);
-		dialogIsOpen = false;
+		dialogOpen = false;
 		loading = false;
 	}
 </script>

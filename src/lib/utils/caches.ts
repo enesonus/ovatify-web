@@ -27,3 +27,5 @@ export function deleteFromCache(cache: Map<string, any>, key: string) {
 export const songCache = new Map<string, any>();
 
 export const genreCache = new Map<string, any>();
+
+export const playlistCache = new Map<string, any>();

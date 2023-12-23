@@ -4,18 +4,20 @@
 	import type { CarouselSong } from "$lib/types";
 	import { createEventDispatcher } from "svelte";
 	import { fade } from "svelte/transition";
+	import DisplaySongModal from "./DisplaySongModal.svelte";
 
-	export let dialogIsOpen: boolean;
+	export let dialogOpen: boolean;
 	export let functionToCall: () => Promise<CarouselSong[]>;
 
-	const dispatch = createEventDispatcher<{ toggleEvent: string }>();
+	let selectedSongId: string | null = null;
+	let songDetailDialogOpen = false;
 </script>
 
-<Dialog.Root bind:open={dialogIsOpen}>
+<Dialog.Root bind:open={dialogOpen}>
 	<Dialog.Content
-		class="w-11/12 rounded-lg max-w-[90%] md:max-w-2xl lg:max-w-4xl h-[90vh] max-h-[48rem] overflow-y-auto px-2 sm:px-4"
+		class="w-11/12 rounded-lg max-w-[90%] md:max-w-2xl lg:max-w-4xl h-[90vh] max-h-[48rem] px-2 sm:px-4"
 	>
-		<div class="flex flex-col items-center pt-4">
+		<div class="flex flex-col items-center mt-4 bg-zinc-900 rounded-lg overflow-y-auto">
 			{#await functionToCall()}
 				<div in:fade|global class="flex w-full h-full items-center justify-center">
 					<Spinner class="animate-spin w-12 h-12" />
@@ -23,7 +25,7 @@
 			{:then songs}
 				<div
 					in:fade|global
-					class="flex flex-col w-full items-center text-start break-all bg-zinc-900 rounded-lg h-full"
+					class="flex flex-col w-full items-center text-start break-all h-full"
 				>
 					{#if songs.length === 0}
 						<!-- Highly unlikely, but just in case -->
@@ -41,8 +43,8 @@
 						{#each songs as song}
 							<button
 								on:click={() => {
-									dispatch("toggleEvent", song.id);
-									dialogIsOpen = false;
+									selectedSongId = song.id;
+									songDetailDialogOpen = true;
 								}}
 								class="w-full p-1 rounded-lg hover:bg-zinc-800 transition ease-in-out delay-[25ms]"
 							>
@@ -87,3 +89,5 @@
 		</div>
 	</Dialog.Content>
 </Dialog.Root>
+
+<DisplaySongModal bind:dialogOpen={songDetailDialogOpen} bind:selectedSongId />

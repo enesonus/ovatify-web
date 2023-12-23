@@ -4,17 +4,12 @@
 	import { Pencil } from "lucide-svelte";
 	import { createEventDispatcher } from "svelte";
 
-	let dialogIsOpen = false;
+	let dialogOpen = false;
 
 	const dispatch = createEventDispatcher();
-
 </script>
 
-<Dialog.Root bind:open={dialogIsOpen}>
-	<!-- <Dialog.Trigger class={cn(buttonVariants({ variant: "outline" }), "p-0 w-8 h-8")}
-		><Image class="h-6 w-6" /><span class="sr-only">Choose Photo</span>
-		</Dialog.Trigger
-	> -->
+<Dialog.Root bind:open={dialogOpen}>
 	<Dialog.Trigger
 		class="absolute top-0 right-0 rounded-full bg-slate-950 p-1 hover:bg-slate-800"
 		><Pencil class="h-5 w-5" /></Dialog.Trigger
@@ -31,7 +26,7 @@
 					<button
 						on:click={() => {
 							dispatch("selectImage", image.url);
-							dialogIsOpen = false;
+							dialogOpen = false;
 						}}
 					>
 						<img src={image.url} alt={image.alt} class="object-cover rounded-lg" />

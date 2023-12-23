@@ -5,7 +5,7 @@
 	import { cn } from "$lib/utils";
 	import { uploadSongFile } from "$lib/services/userService";
 
-	export let dialogIsOpen: boolean;
+	export let dialogOpen: boolean;
 
 	let file: File | null = null;
 	let loading = false;
@@ -53,7 +53,7 @@
 		} else {
 			displayToast({ type: "error", message: "Error uploading file" });
 		}
-		dialogIsOpen = false;
+		dialogOpen = false;
 		loading = false;
 		file = null;
 	}

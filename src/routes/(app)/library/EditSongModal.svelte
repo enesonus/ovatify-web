@@ -16,22 +16,22 @@
 	import { fade } from "svelte/transition";
 	import { refresh } from "$lib/stores/refresh";
 
-	export let dialogIsOpen: boolean;
+	export let dialogOpen: boolean;
 	export let selectedSongId: string = "";
 
-	let confirmDialogIsOpen = false;
-	let updateRatingDialogIsOpen = false;
+	let confirmDialogOpen = false;
+	let updateRatingDialogOpen = false;
 	let rating = 0;
 	let song: Song | null = null;
 	let loading = false;
 	let loadingSong = false;
 
-	$: if (!dialogIsOpen) {
+	$: if (!dialogOpen) {
 		selectedSongId = "";
 		song = null;
 	}
 
-	$: if (!updateRatingDialogIsOpen) {
+	$: if (!updateRatingDialogOpen) {
 		rating = 0;
 	}
 
@@ -57,8 +57,8 @@
 		} else {
 			displayToast({ message: "Error updating rating", type: "error" });
 		}
-		updateRatingDialogIsOpen = false;
-		dialogIsOpen = false;
+		updateRatingDialogOpen = false;
+		dialogOpen = false;
 		loading = false;
 	}
 
@@ -79,25 +79,25 @@
 		} else {
 			displayToast({ message: "Error deleting rating", type: "error" });
 		}
-		confirmDialogIsOpen = false;
-		dialogIsOpen = false;
+		confirmDialogOpen = false;
+		dialogOpen = false;
 		loading = false;
 	}
 </script>
 
-<Dialog.Root bind:open={dialogIsOpen}>
+<Dialog.Root bind:open={dialogOpen}>
 	<Dialog.Content
 		class="w-11/12 rounded-lg max-w-[90%] md:max-w-2xl lg:max-w-4xl h-[90vh] max-h-[48rem] overflow-y-auto"
 	>
 		<div class="flex flex-col items-center justify-center h-full py-2">
-			{#if dialogIsOpen}
+			{#if dialogOpen}
 				{#if loadingSong}
 					<div in:fade|global class="flex justify-center items-center">
 						<Spinner class="animate-spin w-10 h-10" />
 					</div>
 				{:else if !song}
 					<div in:fade|global class="flex justify-center items-center">
-						<p class="text-center text-xl">No song selected</p>
+						<p class="text-center text-xl">Song not found</p>
 					</div>
 				{:else}
 					<div
@@ -130,14 +130,14 @@
 								<Button
 									class="flex-grow md:w-10 md:h-10 md:p-0"
 									variant="secondary"
-									on:click={() => (updateRatingDialogIsOpen = true)}
+									on:click={() => (updateRatingDialogOpen = true)}
 								>
 									<Edit class="w-5 h-5" />
 								</Button>
 								<Button
 									class="flex-grow md:w-10 md:h-10 md:p-0 "
 									variant="secondary"
-									on:click={() => (confirmDialogIsOpen = true)}
+									on:click={() => (confirmDialogOpen = true)}
 								>
 									<Trash2 class="w-5 h-5" />
 								</Button>
@@ -175,7 +175,7 @@
 	</Dialog.Content>
 </Dialog.Root>
 <!-- Update rating modal -->
-<Dialog.Root bind:open={updateRatingDialogIsOpen}>
+<Dialog.Root bind:open={updateRatingDialogOpen}>
 	<Dialog.Content
 		class="w-11/12 rounded-lg max-w-[90%] md:max-w-xl overflow-y-auto min-h-[24rem]"
 	>
@@ -197,7 +197,7 @@
 	</Dialog.Content>
 </Dialog.Root>
 <!-- Confirm modal for deleting song from user's library -->
-<Dialog.Root bind:open={confirmDialogIsOpen}>
+<Dialog.Root bind:open={confirmDialogOpen}>
 	<Dialog.Content class="rounded-lg max-w-[16rem] sm:max-w-xs md:max-w-md">
 		<Dialog.Header>
 			<Dialog.Title>Are you sure?</Dialog.Title>

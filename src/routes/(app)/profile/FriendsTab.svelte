@@ -1,16 +1,10 @@
 <script lang="ts">
 	import Spinner from "$lib/components/Spinner.svelte";
 	import { placeholderImageUrl } from "$lib/constants";
-	import { sleep } from "$lib/utils/time";
-	import { Button } from "$lib/components/ui/button";
-	import { UserX } from "lucide-svelte";
-	import { makeToast } from "$lib/utils/toast";
 	import { fade } from "svelte/transition";
 	import { getUserFriends } from "$lib/services/friendService";
 	import { user } from "$lib/stores/user";
 	import type { Friend } from "$lib/types";
-
-	// export let dialogIsOpen: boolean;
 
 	async function getAllFriends() {
 		const token = await $user?.getIdToken();
@@ -27,7 +21,7 @@
 
 	// async function handleRemoveFriend(username: string) {
 	// 	makeToast(`Removed friend ${username}`);
-	// 	dialogIsOpen = false;
+	// 	dialogOpen = false;
 	// }
 </script>
 

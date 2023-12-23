@@ -5,10 +5,10 @@
 	import SongUploadTab from "$lib/components/SongUploadTab.svelte";
 	import FileUploadTab from "$lib/components/FileUploadTab.svelte";
 
-	let dialogIsOpen = false;
+	let dialogOpen = false;
 </script>
 
-<Dialog.Root bind:open={dialogIsOpen}>
+<Dialog.Root bind:open={dialogOpen}>
 	<Dialog.Trigger class={buttonVariants({ variant: "outline" })}>Add Music</Dialog.Trigger
 	>
 	<Dialog.Content
@@ -21,11 +21,11 @@
 			</Tabs.List>
 			<!-- Manual Upload -->
 			<Tabs.Content value="manual-upload">
-				<SongUploadTab bind:dialogIsOpen />
+				<SongUploadTab bind:dialogOpen={dialogOpen} />
 			</Tabs.Content>
 			<!-- File Upload -->
 			<Tabs.Content value="file-upload">
-				<FileUploadTab bind:dialogIsOpen />
+				<FileUploadTab bind:dialogOpen={dialogOpen} />
 			</Tabs.Content>
 		</Tabs.Root>
 	</Dialog.Content>

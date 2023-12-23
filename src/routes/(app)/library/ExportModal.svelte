@@ -4,10 +4,10 @@
 	import { buttonVariants } from "$lib/components/ui/button";
 	import * as Tabs from "$lib/components/ui/tabs";
 
-	let dialogIsOpen = false;
+	let dialogOpen = false;
 </script>
 
-<Dialog.Root bind:open={dialogIsOpen}>
+<Dialog.Root bind:open={dialogOpen}>
 	<Dialog.Trigger class={buttonVariants({ variant: "outline" })}
 		>Export Music</Dialog.Trigger
 	>

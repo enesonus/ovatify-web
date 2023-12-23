@@ -13,7 +13,7 @@
 	export let dataFunction: () => Promise<CarouselSong[]>;
 	export let viewAllFunction: (() => Promise<CarouselSong[]>) | null = null;
 
-	let detailDialogIsOpen = false;
+	let detailDialogOpen = false;
 </script>
 
 <div class="sm:max-w-[80vw] lg:max-w-[85vw]">
@@ -41,13 +41,12 @@
 					<Button
 						variant="outline"
 						class="py-0 h-8"
-						on:click={() => (detailDialogIsOpen = !detailDialogIsOpen)}>View All</Button
+						on:click={() => (detailDialogOpen = !detailDialogOpen)}>View All</Button
 					>
 				</div>
 				<ListSongsModal
 					functionToCall={viewAllFunction}
-					bind:dialogIsOpen={detailDialogIsOpen}
-					on:toggleEvent
+					bind:dialogOpen={detailDialogOpen}
 				/>
 			{/if}
 		</div>

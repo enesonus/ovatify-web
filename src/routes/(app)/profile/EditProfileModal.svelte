@@ -7,20 +7,18 @@
 	import { deleteUserFromDatabase, editUserProfile } from "$lib/services/userService";
 	import ChooseImageModal from "./ChooseImageModal.svelte";
 	import Button from "$lib/components/ui/button/button.svelte";
-	import { fade } from "svelte/transition";
 	import { Switch } from "$lib/components/ui/switch";
 	import { resetUserData, userData } from "$lib/stores/userData";
-	import { placeholderImageUrl } from "$lib/constants";
 	import { firebaseDeleteUser } from "$lib/utils/firebase";
 
-	export let dialogIsOpen: boolean;
+	export let dialogOpen: boolean;
 	let imageUrl = $userData.img_url;
 	let username = $userData.name;
 	let dataShareConsent: boolean = $userData.preferences.data_sharing;
 	let dataProcessingConsent: boolean = $userData.preferences.data_processing;
 	let loading = false;
 
-	$: if (!dialogIsOpen) {
+	$: if (!dialogOpen) {
 		reset();
 	}
 
@@ -73,7 +71,7 @@
 		} else {
 			displayToast({ type: "error", message: "Error updating profile" });
 		}
-		dialogIsOpen = false;
+		dialogOpen = false;
 		loading = false;
 	}
 
@@ -97,7 +95,7 @@
 	}
 </script>
 
-<Dialog.Root bind:open={dialogIsOpen}>
+<Dialog.Root bind:open={dialogOpen}>
 	<Dialog.Content
 		class="flex justify-center rounded-lg px-2 xsm:px-6 w-11/12 md:max-w-[80vw] lg:max-w-[51.2rem] min-h-[32rem]"
 	>

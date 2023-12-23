@@ -2,17 +2,25 @@
 	import * as Dialog from "$lib/components/ui/dialog";
 	import { Skeleton } from "$lib/components/ui/skeleton";
 	import { Input } from "$lib/components/ui/input";
-	import { Search } from "lucide-svelte";
+	import { Search, Trash2 } from "lucide-svelte";
 	import { displayToast } from "$lib/utils/toast";
 	import { user } from "$lib/stores/user";
 	import { fade } from "svelte/transition";
 	import { searchDatabaseSong } from "$lib/services/songService";
 	import { placeholderImageUrl } from "$lib/constants";
 	import type { SongQueryResponse } from "$lib/types";
-	import DisplaySongModal from "$lib/components/DisplaySongModal.svelte";
+	import { Button } from "$lib/components/ui/button";
+	import { cn } from "$lib/utils";
+	import { addSongToPlaylist } from "$lib/services/playlistService";
+	import { sleep } from "$lib/utils/time";
+	import { createEventDispatcher } from "svelte";
+	import { deleteFromCache, playlistCache } from "$lib/utils/caches";
 
+	export let playlistId: string | null;
 	export let dialogOpen: boolean;
-	let songDetailsDialogOpen = false;
+
+	const dispatch = createEventDispatcher();
+
 	let query: string = "";
 	let queryResult: SongQueryResponse[] = [];
 	let selectedSongId: string | null = null;
@@ -66,6 +74,30 @@
 			displayToast({ type: "error", message: "Error searching for songs" });
 		}
 		querying = false;
+	}
+
+	async function handleAddSongPlaylist() {
+		if (loading) return;
+		if (!selectedSongId) {
+			displayToast({ type: "error", message: "Please select a song" });
+			return;
+		}
+		loading = true;
+		const token = await $user!.getIdToken();
+		await sleep(2);
+		const response = await addSongToPlaylist(token, {
+			playlist_id: playlistId!,
+			song_id: selectedSongId
+		});
+		if (response.status === 200) {
+			displayToast({ type: "success", message: "Song added to playlist" });
+			deleteFromCache(playlistCache, playlistId!);
+			dispatch("refresh");
+		} else {
+			displayToast({ type: "error", message: "Error adding song to playlist" });
+		}
+		dialogOpen = false;
+		loading = false;
 	}
 </script>
 
@@ -122,10 +154,17 @@
 								{#each queryResult as result}
 									<button
 										on:click={() => {
-											selectedSongId = result.spotify_id;
-											songDetailsDialogOpen = true;
+											if (selectedSongId === result.spotify_id) {
+												selectedSongId = null;
+											} else {
+												selectedSongId = result.spotify_id;
+											}
 										}}
-										class="w-full py-2 my-2 rounded-lg bg-slate-800 hover:bg-slate-700"
+										class={`w-full py-2 my-2 rounded-lg ${
+											selectedSongId === result.spotify_id
+												? "bg-emerald-800 hover:bg-emerald-700"
+												: "bg-slate-800 hover:bg-slate-700"
+										}`}
 									>
 										<div class="flex px-2">
 											<div
@@ -157,19 +196,22 @@
 							>
 								<div class="flex justify-center items-center">
 									<Search class="mr-2 w-12 h-12 lg:mr-4" />
-									<p class="lg:text-lg select-none">Search</p>
+									<p class="lg:text-lg select-none">Add to playlist</p>
 								</div>
 							</div>
 						{/if}
 					</div>
+					<Button
+						variant="outline"
+						class={cn("w-4/5 mt-2", {
+							"bg-zinc-600 hover:bg-zinc-500": selectedSongId !== null,
+							"bg-secondary hover:bg-secondary opacity-50 cursor-not-allowed": loading
+						})}
+						on:click={handleAddSongPlaylist}
+						>{loading ? "Adding song..." : "Add selected song"}</Button
+					>
 				</div>
 			</div>
 		</div>
 	</Dialog.Content>
 </Dialog.Root>
-
-<DisplaySongModal
-	bind:dialogOpen={songDetailsDialogOpen}
-	bind:selectedSongId
-	on:songAdded={() => (dialogOpen = false)}
-/>
