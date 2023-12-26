@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { displayToast } from "$lib/utils/toast";
+	import { displayToast, promiseToast } from "$lib/utils/toast";
 	import ManageFriendsModal from "./ManageFriendsModal.svelte";
 	import * as Avatar from "$lib/components/ui/avatar";
 	import { user } from "$lib/stores/user";
@@ -12,17 +12,21 @@
 	import { Skeleton } from "$lib/components/ui/skeleton";
 	import { Pencil, UserPlus } from "lucide-svelte";
 	import { Button } from "$lib/components/ui/button";
+	import { Icons } from "$lib/icons";
+	import { spotify } from "$lib/utils/spotify";
+	import { sleep } from "$lib/utils/time";
+	import SpotifyProfileModal from "./SpotifyProfileModal.svelte";
 
 	let refreshFriends = false;
 	let refreshFriendCount = false;
 	let editProfileDialogOpen = false;
 	let manageFriendsDialogOpen = false;
+	let spotifyProfileDialogOpen = false;
 
 	async function getPendingFriendRequestCount() {
 		const token = await $user!.getIdToken();
 		const response = await getUserIncomingFriendRequestCount(token);
 		if (response.status === 200) {
-			console.log(response.data.count);
 			return response.data.count as number;
 		}
 		displayToast({ type: "error", message: "Error getting friend requests" });
@@ -32,7 +36,6 @@
 	async function getUserStats() {
 		const token = await $user!.getIdToken();
 		const response = await getUserProfileStats(token);
-		console.log(response);
 		if (response.status === 200) {
 			return response.data;
 		} else {
@@ -71,6 +74,14 @@
 			</div>
 			<div class="ml-auto pr-4">
 				<div class="flex gap-2">
+					<Button
+						variant="outline"
+						class="p-0 w-8 h-8 sm:w-10 sm:h-10"
+						on:click={() => (spotifyProfileDialogOpen = true)}
+						><Icons.spotify class="h-6 w-6 sm:h-8 sm:w-8" /><span class="sr-only"
+							>Import to Spotify</span
+						></Button
+					>
 					<Button
 						variant="outline"
 						class="relative p-0 w-8 h-8 sm:w-10 sm:h-10"
@@ -114,3 +125,4 @@
 	bind:refreshFriendCount
 />
 <EditProfileModal bind:dialogOpen={editProfileDialogOpen} />
+<SpotifyProfileModal bind:dialogOpen={spotifyProfileDialogOpen} />

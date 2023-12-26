@@ -99,11 +99,17 @@
 						in:fade|global
 						class="flex flex-col w-full h-full justify-center items-center text-start break-all"
 					>
-						<img
-							src={song.img_url ? song.img_url : placeholderImageUrl}
-							alt={`${song.name} Cover Art` ?? "Unknown Song Cover Art"}
-							class="w-64 object-cover rounded-lg"
-						/>
+						<a
+							href="https://open.spotify.com/track/{song.id}"
+							target="_blank"
+							rel="noopener noreferrer"
+						>
+							<img
+								src={song.img_url ? song.img_url : placeholderImageUrl}
+								alt={`${song.name} Cover Art` ?? "Unknown Song Cover Art"}
+								class="w-64 object-cover rounded-lg"
+							/>
+						</a>
 						<div
 							class={cn(
 								"mt-2 min-w-[12rem] tabular-nums px-4 py-2 rounded-md border-2 text-center font-medium text-sm h-10 select-none bg-primary-foreground",
@@ -129,6 +135,14 @@
 								User: {song.user_rating}
 							</div>
 						{/if}
+						<a
+							class="mt-2 min-w-[12rem] tabular-nums px-4 py-2 rounded-md border-2 text-center font-medium text-sm h-10 bg-emerald-800 hover:bg-emerald-700"
+							href="https://open.spotify.com/track/{song.id}"
+							target="_blank"
+							rel="noopener noreferrer"
+						>
+							Listen on spotify
+						</a>
 						<h1 class="pt-4 font-bold text-xl px-2 w-full">
 							{song.name ?? "Unknown Song"}
 						</h1>

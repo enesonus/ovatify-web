@@ -66,7 +66,6 @@
 		querying = true;
 		const token = await $user!.getIdToken();
 		const response = await searchDatabaseSong(token, query);
-		console.log(response);
 		if (response.status === 200) {
 			queryResult = response.data.songs_info;
 		} else {
@@ -84,7 +83,6 @@
 		}
 		loading = true;
 		const token = await $user!.getIdToken();
-		await sleep(2);
 		const response = await addSongToPlaylist(token, {
 			playlist_id: playlistId!,
 			song_id: selectedSongId
@@ -92,7 +90,9 @@
 		if (response.status === 200) {
 			displayToast({ type: "success", message: "Song added to playlist" });
 			deleteFromCache(playlistCache, playlistId!);
-			dispatch("refresh");
+			dispatch("songAdded");
+		} else if (response.status === 400) {
+			displayToast({ type: "error", message: "This song is already in the playlist" });
 		} else {
 			displayToast({ type: "error", message: "Error adding song to playlist" });
 		}
@@ -125,13 +125,13 @@
 						{#if querying}
 							<div class="my-2 px-2 h-80 overflow-auto" in:fade>
 								{#each { length: 2 } as _}
-									<div class="w-full py-2 my-2 rounded-lg bg-slate-800">
+									<div class="w-full py-2 my-2 rounded-lg bg-zinc-800">
 										<div class="flex px-2">
-											<Skeleton class="w-24 h-24 bg-slate-600" />
+											<Skeleton class="w-24 h-24 bg-zinc-600" />
 											<div class="h-24 flex-grow">
 												{#each { length: 4 } as _}
 													<p class="w-full py-1 px-2">
-														<Skeleton class="flex-grow p-2  bg-slate-600" />
+														<Skeleton class="flex-grow p-2 bg-zinc-600" />
 													</p>
 												{/each}
 											</div>
@@ -154,21 +154,25 @@
 								{#each queryResult as result}
 									<button
 										on:click={() => {
+											if (loading) return;
 											if (selectedSongId === result.spotify_id) {
 												selectedSongId = null;
 											} else {
 												selectedSongId = result.spotify_id;
 											}
 										}}
-										class={`w-full py-2 my-2 rounded-lg ${
-											selectedSongId === result.spotify_id
-												? "bg-emerald-800 hover:bg-emerald-700"
-												: "bg-slate-800 hover:bg-slate-700"
-										}`}
+										class={cn("w-full py-2 my-2 rounded-lg transition duration-75", {
+											"bg-zinc-600 hover:bg-zinc-600":
+												selectedSongId === result.spotify_id,
+											"bg-zinc-800 hover:bg-zinc-700":
+												selectedSongId !== result.spotify_id,
+											"bg-zinc-800 hover:bg-zinc-800 opacity-50 cursor-not-allowed":
+												loading
+										})}
 									>
 										<div class="flex px-2">
 											<div
-												class="hidden xsm:flex w-24 min-h-[6rem] border-slate-600 items-center justify-center"
+												class="hidden xsm:flex w-24 min-h-[6rem] items-center justify-center"
 											>
 												<img
 													class="w-24 min-w-[6rem] h-24 object-cover rounded-lg"
@@ -204,7 +208,7 @@
 					<Button
 						variant="outline"
 						class={cn("w-4/5 mt-2", {
-							"bg-zinc-600 hover:bg-zinc-500": selectedSongId !== null,
+							"bg-emerald-800 hover:bg-emerald-700": selectedSongId !== null,
 							"bg-secondary hover:bg-secondary opacity-50 cursor-not-allowed": loading
 						})}
 						on:click={handleAddSongPlaylist}

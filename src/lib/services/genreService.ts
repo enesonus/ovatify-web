@@ -8,7 +8,6 @@ export async function getSongGenres(token: string, number: number) {
 		return null;
 	}
 	const data = response.data.genres;
-	console.log(data);
 	return data;
 }
 
@@ -22,9 +21,7 @@ export async function getRandomSongGenres(token: string, number: number) {
 		console.log(response);
 		return null;
 	}
-	const data = response.data.genres;
-	console.log(data);
-	return data;
+	return response.data?.genres;
 }
 
 export async function getSongsByGenreName(
@@ -41,10 +38,7 @@ export async function getSongsByGenreName(
 		console.log(response);
 		return null;
 	}
-	console.log(response);
-	const data = response.data.songs;
-	console.log(data);
-	return data;
+	return response.data?.songs;
 }
 
 export async function getUserGenreNames(token: string) {

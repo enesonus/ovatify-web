@@ -14,7 +14,7 @@
 				buttonVariants({ variant: "ghost" }),
 				"flex flex-col justify-center items-center h-full text-xs font-semibold",
 				{
-					"bg-slate-800 hover:bg-slate-700": $page.url.pathname === "/"
+					"bg-zinc-800 hover:bg-zinc-700": $page.url.pathname === "/"
 				}
 			)}
 		>
@@ -28,7 +28,7 @@
 				buttonVariants({ variant: "ghost" }),
 				"flex flex-col justify-center items-center h-full text-xs font-semibold",
 				{
-					"bg-slate-800 hover:bg-slate-700": $page.url.pathname === "/explore"
+					"bg-zinc-800 hover:bg-zinc-700": $page.url.pathname === "/explore"
 				}
 			)}
 		>
@@ -42,7 +42,7 @@
 				buttonVariants({ variant: "ghost" }),
 				"flex flex-col justify-center items-center h-full text-xs font-semibold",
 				{
-					"bg-slate-800 hover:bg-slate-700": $page.url.pathname === "/library"
+					"bg-zinc-800 hover:bg-zinc-700": $page.url.pathname === "/library"
 				}
 			)}
 		>
@@ -56,7 +56,7 @@
 				buttonVariants({ variant: "ghost" }),
 				"flex flex-col justify-center items-center h-full text-xs font-semibold",
 				{
-					"bg-slate-800 hover:bg-slate-700": $page.url.pathname === "/dashboard"
+					"bg-zinc-800 hover:bg-zinc-700": $page.url.pathname === "/dashboard"
 				}
 			)}
 		>
@@ -70,7 +70,7 @@
 				buttonVariants({ variant: "ghost" }),
 				"flex flex-col justify-center items-center h-full text-xs font-semibold",
 				{
-					"bg-slate-800 hover:bg-slate-700": $page.url.pathname === "/profile"
+					"bg-zinc-800 hover:bg-zinc-700": $page.url.pathname === "/profile"
 				}
 			)}
 		>

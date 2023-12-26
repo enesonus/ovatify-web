@@ -130,5 +130,5 @@
 		</div>
 	</div>
 	<!-- Hidden dialog -->
-	<DisplaySongModal bind:dialogOpen={dialogOpen} bind:selectedSongId />
+	<DisplaySongModal bind:dialogOpen bind:selectedSongId />
 </section>

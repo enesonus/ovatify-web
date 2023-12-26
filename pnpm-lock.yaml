@@ -8,6 +8,9 @@ dependencies:
   '@fontsource-variable/inter':
     specifier: ^5.0.15
     version: 5.0.15
+  '@spotify/web-api-ts-sdk':
+    specifier: ^1.1.2
+    version: 1.1.2
   bits-ui:
     specifier: ^0.9.1
     version: 0.9.1(svelte@4.2.2)
@@ -1002,6 +1005,10 @@ packages:
   /@sinclair/typebox@0.27.8:
     resolution: {integrity: sha512-+Fj43pSMwJs4KRrH/938Uf+uAELIgVBmQzg/q1YG10djyfA3TnrU8N8XzqCh/okZdszqBQTZf96idMfE5lnwTA==}
     dev: true
+
+  /@spotify/web-api-ts-sdk@1.1.2:
+    resolution: {integrity: sha512-WxmaKUGZH2xtoVDZuy6PXbrAIiEux9pL1IDaDm6iRI25nT8be6huCNpNtYe0MBtq+rejbJqjg9JI2MVlfEMyUQ==}
+    dev: false
 
   /@sveltejs/adapter-auto@2.1.0(@sveltejs/kit@1.27.1):
     resolution: {integrity: sha512-o2pZCfATFtA/Gw/BB0Xm7k4EYaekXxaPGER3xGSY3FvzFJGTlJlZjBseaXwYSM94lZ0HniOjTokN3cWaLX6fow==}
