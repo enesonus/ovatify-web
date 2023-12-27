@@ -10,13 +10,20 @@
 	import { Switch } from "$lib/components/ui/switch";
 	import { resetUserData, userData } from "$lib/stores/userData";
 	import { firebaseDeleteUser } from "$lib/utils/firebase";
+	import { cn } from "$lib/utils";
+	import { clearSpotifyState } from "$lib/utils/spotify";
+	import { sleep } from "$lib/utils/time";
+	import { goto } from "$app/navigation";
+	import { authFlowOngoing } from "$lib/stores/authState";
 
 	export let dialogOpen: boolean;
 	let imageUrl = $userData.img_url;
 	let username = $userData.name;
 	let dataShareConsent: boolean = $userData.preferences.data_sharing;
 	let dataProcessingConsent: boolean = $userData.preferences.data_processing;
-	let loading = false;
+	let updating = false;
+	let deleting = false;
+	let deleteConfirmDialogOpen = false;
 
 	$: if (!dialogOpen) {
 		reset();
@@ -42,7 +49,11 @@
 	}
 
 	async function editProfile() {
-		if (loading || !changesMade) return;
+		if (updating || deleting) return;
+		if (!changesMade) {
+			dialogOpen = false;
+			return;
+		}
 		if (!validateUsername()) {
 			displayToast({
 				type: "error",
@@ -50,7 +61,7 @@
 			});
 			return;
 		}
-		loading = true;
+		updating = true;
 		const body = {
 			username: username,
 			img_url: imageUrl,
@@ -72,26 +83,36 @@
 			displayToast({ type: "error", message: "Error updating profile" });
 		}
 		dialogOpen = false;
-		loading = false;
+		updating = false;
 	}
 
-	// TODO: Implement this
-	async function deleteUserAccount() {
-		if (loading) return;
-		loading = true;
+	async function handleDeleteUser(e: SubmitEvent) {
+		if (deleting || updating) return;
+		const formData = new FormData(e.target as HTMLFormElement);
+		const confirmation = (formData.get("confirmation") as string) || "";
+		if (confirmation !== "CONFIRM") {
+			displayToast({
+				type: "error",
+				message: "Type CONFIRM to confirm deletion"
+			});
+			return;
+		}
+		deleting = true;
 		const token = await $user!.getIdToken();
 		const response = await deleteUserFromDatabase(token);
 		if (response.status === 204) {
 			firebaseDeleteUser();
 			resetUserData();
+			clearSpotifyState();
 			displayToast({
 				type: "success",
-				message: "Account deleted successfully."
+				message: "Account deleted successfully"
 			});
+			$authFlowOngoing = true;
 		} else {
 			displayToast({ type: "error", message: "Error deleting profile" });
 		}
-		loading = false;
+		deleting = false;
 	}
 </script>
 
@@ -136,19 +157,51 @@
 				variant="outline"
 				type="submit"
 				on:click={editProfile}
-				class={loading || !changesMade
-					? "w-1/2 mt-2 bg-red-800 hover:bg-red-800"
-					: "w-1/2 mt-2 bg-emerald-800 hover:bg-emerald-700"}
-				>{loading ? "Saving..." : "Save Changes"}</Button
+				class={cn("w-1/2 mt-2", {
+					"bg-cyan-800 hover:bg-cyan-700": changesMade,
+					"opacity-50 cursor-not-allowed": updating || deleting
+				})}>{updating ? "Saving..." : "Save Changes"}</Button
 			>
 			<Button
 				variant="outline"
 				type="submit"
-				on:click={() => displayToast({ type: "error", message: "Not implemented" })}
-				class={loading
-					? "w-1/2 mt-2 bg-red-800 hover:bg-red-800"
-					: "w-1/2 mt-2 bg-red-800 hover:bg-red-700"}>Delete Account</Button
+				on:click={() => {
+					if (!updating && !deleting) deleteConfirmDialogOpen = true;
+				}}
+				class={cn("w-1/2 mt-2 bg-red-800 hover:bg-red-700", {
+					"hover:bg-red-800 opacity-50 cursor-not-allowed": updating || deleting
+				})}>Delete Account</Button
 			>
 		</form>
+	</Dialog.Content>
+</Dialog.Root>
+
+<!-- Delete confirm modal -->
+<Dialog.Root bind:open={deleteConfirmDialogOpen}>
+	<Dialog.Content class="rounded-lg max-w-[16rem] sm:max-w-xs md:max-w-md px-4 sm:px-6">
+		<Dialog.Header class="pt-4">
+			<Dialog.Title>Are you absolutely sure?</Dialog.Title>
+			<Dialog.Description
+				>This action will delete your account and is irreversible!</Dialog.Description
+			>
+		</Dialog.Header>
+		<Dialog.Footer>
+			<form on:submit|preventDefault={handleDeleteUser} class="w-full">
+				<Input
+					type="text"
+					name="confirmation"
+					placeholder={`Type "CONFIRM" to confirm`}
+					class="w-full mb-4"
+					disabled={deleting || updating}
+				/>
+				<Button
+					variant="destructive"
+					class={cn("w-full", {
+						"opacity-50 cursor-not-allowed": deleting || updating
+					})}
+					type="submit">{deleting ? "Deleting..." : "Permanently Delete Account"}</Button
+				>
+			</form>
+		</Dialog.Footer>
 	</Dialog.Content>
 </Dialog.Root>

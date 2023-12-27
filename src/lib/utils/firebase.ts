@@ -34,7 +34,7 @@ export async function firebaseSignOut() {
 export async function firebaseDeleteUser() {
 	try {
 		await auth.currentUser?.delete();
-	} catch {
-		console.error("Error deleting user from firebase");
+	} catch (e) {
+		console.error("Error deleting user from firebase", e);
 	}
 }
