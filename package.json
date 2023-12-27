@@ -40,6 +40,7 @@
 	"type": "module",
 	"dependencies": {
 		"@fontsource-variable/inter": "^5.0.15",
+		"@spotify/web-api-ts-sdk": "^1.1.2",
 		"bits-ui": "^0.9.1",
 		"chart.js": "^4.4.0",
 		"clsx": "^2.0.0",

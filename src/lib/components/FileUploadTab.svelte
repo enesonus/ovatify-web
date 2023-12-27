@@ -74,8 +74,9 @@
 	<Button
 		on:click={uploadFile}
 		variant="outline"
-		class={`w-4/5 ${
-			loading ? "bg-red-800 hover:bg-red-800 text-white" : "text-black bg-[#B3BBD8]"
-		}`}>Upload File</Button
+		class={cn("w-4/5", {
+			"text-black bg-indigo-300 hover:bg-indigo-200 hover:text-black": !loading,
+			"bg-secondary hover:bg-secondary opacity-50 cursor-not-allowed": loading
+		})}>Upload File</Button
 	>
 </div>

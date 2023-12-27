@@ -1,5 +1,6 @@
 import github from "./auth-providers/github.svelte";
 import google from "./auth-providers/google.svelte";
+import spotify from "./auth-providers/spotify.svelte";
 import logo from "./logo/logoWithText.svelte";
 import logoWithText from "./logo/logo.svelte";
 import navDashboard from "./nav/navDashboard.svelte";
@@ -11,6 +12,7 @@ import navProfile from "./nav/navProfile.svelte";
 export const Icons = {
 	github,
 	google,
+	spotify,
 	logo,
 	logoWithText,
 	navDashboard,

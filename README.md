@@ -45,13 +45,20 @@ Ovatify is a music platform designed to offer a unique and personalized experien
    Ensure to set up the following environment variables in your root .env file:
 
    - `PUBLIC_BASE_URL`
+   - `PUBLIC_SPOTIFY_CLIENT_ID`
+   - `PUBLIC_SPOTIFY_REDIRECT_URI`
 
    Example: `PUBLIC_BASE_URL="http://127.0.0.1:8000"`
    ```
 
-   ## Configuring Firebase Project
+   ## Configuring Firebase Integration
 
    Make sure to populate the `firebaseConfig` entry in `src/lib/utils/firebase.ts` with [your own project credentials](https://firebase.google.com/docs/web/setup), these are safe to include in client side code.
+
+   ## Configuring Spotify Integration
+
+   Make sure to populate the environment variables stated above, more information about client side spotify apps can be found [here](https://developer.spotify.com/documentation/web-api/concepts/apps). Make sure that backend and frontend applications share the same Client ID. Also be sure to register the redirect URI in the spotify dashboard as
+   `http://localhost:5173/login` for development and `https://<your_domain>/login` for production environments and matches the corresponding environment variable.
 
    ## Commands
 

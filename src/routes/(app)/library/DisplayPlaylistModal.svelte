@@ -22,8 +22,11 @@
 	import { deleteFromCache, playlistCache } from "$lib/utils/caches";
 	import AddSongPlaylistModal from "./AddSongPlaylistModal.svelte";
 	import DisplaySongModal from "$lib/components/DisplaySongModal.svelte";
-	import { Eye, Pencil, Plus, Trash2, MinusCircle } from "lucide-svelte";
+	import { Eye, Pencil, Plus, Trash2, MinusCircle, Music } from "lucide-svelte";
+	import { Icons } from "$lib/icons";
 	import * as ContextMenu from "$lib/components/ui/context-menu";
+	import { spotify } from "$lib/utils/spotify";
+	import { enhance } from "$app/forms";
 
 	export let dialogOpen: boolean;
 	export let selectedPlaylistId: string | null;
@@ -37,6 +40,7 @@
 	let editPlaylistDialogOpen = false;
 	let deleteConfirmDialogOpen = false;
 	let songDetailsDialogOpen = false;
+	let importPlaylistSpotifyDialogOpen = false;
 
 	let refresh = false;
 
@@ -64,7 +68,6 @@
 		const formData = new FormData(e.target as HTMLFormElement);
 		let newPlaylistName = (formData.get("playlist-name") as string) || "";
 		let newPlaylistDescription = (formData.get("playlist-description") as string) || "";
-		console.log(newPlaylistName, newPlaylistDescription);
 		newPlaylistName = newPlaylistName.trim();
 		newPlaylistDescription = newPlaylistDescription.trim();
 		if (!newPlaylistName) {
@@ -76,6 +79,13 @@
 				message: "Playlist name cannot be longer than 25 characters",
 				type: "error"
 			});
+			return;
+		}
+		if (
+			newPlaylistName === playlist?.name &&
+			newPlaylistDescription === playlist?.description
+		) {
+			editPlaylistDialogOpen = false;
 			return;
 		}
 		loading = true;
@@ -127,6 +137,51 @@
 		} else {
 			displayToast({ message: "Error deleting playlist", type: "error" });
 		}
+		loading = false;
+	}
+
+	async function handleOpenImportSpotifyDialog() {
+		if (playlist!.songs.length < 3) {
+			displayToast({
+				message: "Add at least 3 songs to the playlist to import the playlist to Spotify",
+				type: "error"
+			});
+			return;
+		}
+		if (loading) return;
+		const spotifyToken = await spotify.getAccessToken();
+		if (!spotifyToken) {
+			await spotify.authenticate();
+			return;
+		}
+		importPlaylistSpotifyDialogOpen = true;
+	}
+
+	async function handleImportSpotify() {
+		if (loading) return;
+		const spotifyToken = await spotify.getAccessToken();
+		if (!spotifyToken) {
+			await spotify.authenticate();
+			return;
+		}
+		loading = true;
+		const { id: user_id } = await spotify.currentUser.profile();
+		if (!playlist) {
+			displayToast({ message: "Error importing playlist", type: "error" });
+			return;
+		}
+		const createdPlaylist = await spotify.playlists.createPlaylist(user_id, {
+			name: playlist.name,
+			description: playlist.description
+		});
+		if (playlist.songs.length > 0) {
+			await spotify.playlists.addItemsToPlaylist(
+				createdPlaylist.id,
+				playlist.songs.map((song) => `spotify:track:${song.id}`)
+			);
+		}
+		displayToast({ message: "Playlist imported to Spotify", type: "success" });
+		importPlaylistSpotifyDialogOpen = false;
 		loading = false;
 	}
 </script>
@@ -196,6 +251,14 @@
 							class="p-0 h-10 w-10"
 							on:click={() => (deleteConfirmDialogOpen = true)}
 							><Trash2 /><span class="sr-only">Delete Playlist</span></Button
+						>
+						<Button
+							variant="outline"
+							class="p-0 h-10 w-10"
+							on:click={handleOpenImportSpotifyDialog}
+							><Icons.spotify class="h-6 w-6" /><span class="sr-only"
+								>Import to Spotify</span
+							></Button
 						>
 					</div>
 					<div class="flex flex-col items-center px-2">
@@ -293,10 +356,10 @@
 <AddSongPlaylistModal
 	bind:dialogOpen={addSongPlaylistDialogOpen}
 	bind:playlistId={selectedPlaylistId}
-	on:refresh={() => {
-		console.log("hello");
+	on:songAdded={() => {
 		refresh = !refresh;
 		selectedPlaylistId = selectedPlaylistId;
+		dispatch("refresh");
 	}}
 />
 
@@ -329,7 +392,9 @@
 					maxlength={100}
 					value={playlist?.description}
 				/>
-				<Button variant="outline" type="submit">{loading ? "Saving" : "Save"}</Button>
+				<Button variant="outline" type="submit" class="bg-cyan-800 hover:bg-cyan-700"
+					>{loading ? "Saving..." : "Save"}</Button
+				>
 			</form>
 		</div>
 	</Dialog.Content>
@@ -348,6 +413,28 @@
 			<form on:submit|preventDefault={handleDeletePlaylist} class="w-full">
 				<Button variant="destructive" type="submit" class="w-full"
 					>{loading ? "Deleting..." : "Delete"}</Button
+				>
+			</form>
+		</Dialog.Footer>
+	</Dialog.Content>
+</Dialog.Root>
+
+<!-- Import playlist to spotify modal -->
+<Dialog.Root bind:open={importPlaylistSpotifyDialogOpen}>
+	<Dialog.Content class="rounded-lg max-w-[16rem] sm:max-w-xs md:max-w-md">
+		<Dialog.Header>
+			<Dialog.Title>Import this playlist to spotify?</Dialog.Title>
+			<Dialog.Description
+				>This action will import this playlist to your Spotify account.</Dialog.Description
+			>
+		</Dialog.Header>
+		<Dialog.Footer>
+			<form on:submit|preventDefault={handleImportSpotify} class="w-full">
+				<Button
+					variant="outline"
+					type="submit"
+					class="w-full bg-emerald-800 hover:bg-emerald-700"
+					>{loading ? "Importing..." : "Import"}</Button
 				>
 			</form>
 		</Dialog.Footer>

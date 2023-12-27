@@ -41,7 +41,7 @@
 									buttonVariants({ variant: "ghost" }),
 									"flex gap-2 pl-2 py-6 justify-start items-center font-semibold",
 									{
-										"bg-slate-800 hover:bg-slate-700": $page.url.pathname === "/"
+										"bg-zinc-800 hover:bg-zinc-700": $page.url.pathname === "/"
 									}
 								)}
 							>
@@ -55,7 +55,7 @@
 									buttonVariants({ variant: "ghost" }),
 									"flex gap-2 pl-2 py-6 justify-start items-center font-semibold",
 									{
-										"bg-slate-800 hover:bg-slate-700": $page.url.pathname === "/explore"
+										"bg-zinc-800 hover:bg-zinc-700": $page.url.pathname === "/explore"
 									}
 								)}
 							>
@@ -69,7 +69,7 @@
 									buttonVariants({ variant: "ghost" }),
 									"flex gap-2 pl-2 py-6 justify-start items-center font-semibold",
 									{
-										"bg-slate-800 hover:bg-slate-700": $page.url.pathname === "/library"
+										"bg-zinc-800 hover:bg-zinc-700": $page.url.pathname === "/library"
 									}
 								)}
 							>
@@ -83,7 +83,7 @@
 									buttonVariants({ variant: "ghost" }),
 									"flex gap-2 pl-2 py-6 justify-start items-center font-semibold",
 									{
-										"bg-slate-800 hover:bg-slate-700": $page.url.pathname === "/dashboard"
+										"bg-zinc-800 hover:bg-zinc-700": $page.url.pathname === "/dashboard"
 									}
 								)}
 							>
@@ -97,7 +97,7 @@
 									buttonVariants({ variant: "ghost" }),
 									"flex gap-2 pl-2 py-6 justify-start items-center font-semibold",
 									{
-										"bg-slate-800 hover:bg-slate-700": $page.url.pathname === "/profile"
+										"bg-zinc-800 hover:bg-zinc-700": $page.url.pathname === "/profile"
 									}
 								)}
 							>

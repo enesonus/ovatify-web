@@ -8,6 +8,7 @@
 	import { userData } from "$lib/stores/userData";
 	import YouMightLike from "./YouMightLike.svelte";
 	import { refresh } from "$lib/stores/refresh";
+	import { spotify } from "$lib/utils/spotify";
 
 	let dialogOpen = false;
 	let selectedSongId: string = "";
@@ -20,9 +21,7 @@
 
 	async function getGenres() {
 		const token = await $user!.getIdToken();
-		// const response = await getSongGenres(token, 10);
 		const response = await getRandomSongGenres(token, 10);
-		console.log(response);
 		return response;
 	}
 
@@ -63,5 +62,5 @@
 		</div>
 	</div>
 	<!-- Hidden dialog -->
-	<DisplaySongModal bind:dialogOpen={dialogOpen} bind:selectedSongId />
+	<DisplaySongModal bind:dialogOpen bind:selectedSongId />
 </section>

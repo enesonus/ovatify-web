@@ -12,7 +12,6 @@
 	async function getYouMightLike() {
 		const token = await $user!.getIdToken();
 		const response = await recommendYouMightLike(token, 8);
-		console.log(response);
 		if (response.status !== 200) {
 			displayToast({ message: "Error getting songs you might like", type: "error" });
 			return [];

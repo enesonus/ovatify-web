@@ -35,7 +35,6 @@ export async function getSongById(token: string, id: string) {
 		return null;
 	}
 	const data = response.data.song_info;
-	// console.log("data", data);
 	saveToCache(songCache, id, data, cachedMinutes);
 	return data;
 }
@@ -47,7 +46,5 @@ export async function getAllRecentSongs(token: string) {
 		console.log(response);
 		return null;
 	}
-	const data = response.data.songs;
-	console.log(data);
-	return data;
+	return response.data?.songs;
 }

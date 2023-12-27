@@ -93,13 +93,13 @@
 						{#if querying}
 							<div class="my-2 px-2 h-80 overflow-auto" in:fade>
 								{#each { length: 2 } as _}
-									<div class="w-full py-2 my-2 rounded-lg bg-slate-800">
+									<div class="w-full py-2 my-2 rounded-lg bg-zinc-800">
 										<div class="flex px-2">
-											<Skeleton class="w-24 h-24 bg-slate-600" />
+											<Skeleton class="w-24 h-24 bg-zinc-600" />
 											<div class="h-24 flex-grow">
 												{#each { length: 4 } as _}
 													<p class="w-full py-1 px-2">
-														<Skeleton class="flex-grow p-2  bg-slate-600" />
+														<Skeleton class="flex-grow p-2  bg-zinc-600" />
 													</p>
 												{/each}
 											</div>
@@ -125,11 +125,11 @@
 											selectedSongId = result.spotify_id;
 											songDetailsDialogOpen = true;
 										}}
-										class="w-full py-2 my-2 rounded-lg bg-slate-800 hover:bg-slate-700"
+										class="w-full py-2 my-2 rounded-lg bg-zinc-800 hover:bg-zinc-700"
 									>
 										<div class="flex px-2">
 											<div
-												class="hidden xsm:flex w-24 min-h-[6rem] border-slate-600 items-center justify-center"
+												class="hidden xsm:flex w-24 min-h-[6rem] border-zinc-600 items-center justify-center"
 											>
 												<img
 													class="w-24 min-w-[6rem] h-24 object-cover rounded-lg"

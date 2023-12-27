@@ -24,6 +24,7 @@
 	import { getUserProfile } from "$lib/services/userService";
 	import { userData } from "$lib/stores/userData";
 	import { page } from "$app/stores";
+	import { clearSpotifyState } from "$lib/utils/spotify";
 
 	let email = "";
 	let password = "";
@@ -207,6 +208,8 @@
 			} else {
 				console.info("Last login updated successfully.");
 			}
+			// Clear spotify state if user is logging in
+			clearSpotifyState();
 			const redirectTo = $page.url.searchParams.get("redirect");
 			if (redirectTo) {
 				goto(redirectTo, { replaceState: true });

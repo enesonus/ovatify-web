@@ -5,11 +5,14 @@
 	import TopNav from "./TopNav.svelte";
 	import { page } from "$app/stores";
 	import { userData } from "$lib/stores/userData";
-	import { sleep } from "$lib/utils/time";
 	import { authFlowOngoing } from "$lib/stores/authState";
 
+	/* 
+		Redirect to login page if user is not fully logged in
+		If page is refreshed while a user is logged in, this function sends the user to the login page
+		The user is then redirected back to the page they were on before the refresh
+	*/
 	$: if (!$userData.id) {
-		console.log("Line 12 in app layout");
 		const origin = $page.url.pathname;
 		if (origin === "/") {
 			goto("/login", { replaceState: true });
@@ -18,6 +21,10 @@
 		}
 	}
 
+	/* 
+		Clears auth flow ongoing state when the app portion is loaded
+		This is to prevent auth flow ongoing state from persisting between app loads
+	*/
 	onMount(() => {
 		$authFlowOngoing = false;
 	});
