@@ -13,6 +13,7 @@
 	import { Download } from "lucide-svelte";
 	import { user } from "$lib/stores/user";
 	import { saveAsPlaylist } from "$lib/services/playlistService";
+	import { refresh } from "$lib/stores/refresh";
 
 	const dispatch = createEventDispatcher<{ toggleEvent: string }>();
 
@@ -131,9 +132,9 @@
 					<Dialog.Root bind:open={saveAsPlaylistDialogOpen}>
 						<Dialog.Content class="rounded-lg max-w-[16rem] sm:max-w-xs md:max-w-md">
 							<Dialog.Header>
-								<Dialog.Title>Import these songs as a playlist?</Dialog.Title>
+								<Dialog.Title>Save these songs as a playlist?</Dialog.Title>
 								<Dialog.Description
-									>This action will import these songs as a playlist to your account.</Dialog.Description
+									>This action will save these songs as a playlist to your account.</Dialog.Description
 								>
 							</Dialog.Header>
 							<Dialog.Footer>
@@ -147,17 +148,17 @@
 											description: "",
 											songs: data.map((song) => song.id)
 										};
-										console.log(body);
 										const response = await saveAsPlaylist(token, body);
 										console.log(response);
-										if (response.status === 200) {
+										if (response.status === 201) {
 											displayToast({
-												message: "Playlist imported to Spotify",
+												message: "Songs saved as a playlist successfully",
 												type: "success"
 											});
+											$refresh = !$refresh;
 										} else {
 											displayToast({
-												message: "Error importing playlist to Spotify",
+												message: "Error saving songs as a playlist",
 												type: "error"
 											});
 										}

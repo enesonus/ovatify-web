@@ -26,7 +26,7 @@
 				<div
 					class="flex flex-col items-center justify-center mt-4 h-96 bg-zinc-800 rounded-lg"
 				>
-					<FriendsTab />
+					<FriendsTab bind:dialogOpen />
 				</div>
 			</Tabs.Content>
 			<Tabs.Content value="2">

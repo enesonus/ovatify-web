@@ -81,3 +81,11 @@ export async function deleteFriendSuggestion(token: string, suggestionId: string
 	);
 	return response;
 }
+
+export async function removeFriend(token: string, friendUsername: string) {
+	const response = await api.del(
+		`users/remove-friend/?friend_username=${friendUsername}`,
+		token
+	);
+	return response;
+}
