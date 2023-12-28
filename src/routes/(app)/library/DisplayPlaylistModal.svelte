@@ -419,7 +419,7 @@
 	</Dialog.Content>
 </Dialog.Root>
 
-<!-- Import playlist to spotify modal -->
+<!-- Import playlist to Spotify modal -->
 <Dialog.Root bind:open={importPlaylistSpotifyDialogOpen}>
 	<Dialog.Content class="rounded-lg max-w-[16rem] sm:max-w-xs md:max-w-md">
 		<Dialog.Header>
