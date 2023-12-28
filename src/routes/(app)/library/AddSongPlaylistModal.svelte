@@ -7,7 +7,7 @@
 	import { user } from "$lib/stores/user";
 	import { fade } from "svelte/transition";
 	import { searchDatabaseSong } from "$lib/services/songService";
-	import { placeholderImageUrl } from "$lib/constants";
+	import { defaultImageUrl } from "$lib/constants";
 	import type { SongQueryResponse } from "$lib/types";
 	import { Button } from "$lib/components/ui/button";
 	import { cn } from "$lib/utils";
@@ -176,7 +176,7 @@
 											>
 												<img
 													class="w-24 min-w-[6rem] h-24 object-cover rounded-lg"
-													src={result.album_url ?? placeholderImageUrl}
+													src={result.album_url || defaultImageUrl}
 													alt={result.track_name}
 												/>
 											</div>

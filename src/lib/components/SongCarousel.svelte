@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { createEventDispatcher } from "svelte";
-	import { placeholderImageUrl } from "$lib/constants";
+	import { defaultImageUrl } from "$lib/constants";
 	import type { CarouselSong } from "$lib/types";
 	import { Skeleton } from "$lib/components/ui/skeleton";
 	import { fade } from "svelte/transition";
@@ -10,6 +10,9 @@
 	import { spotify } from "$lib/utils/spotify";
 	import { displayToast } from "$lib/utils/toast";
 	import { Icons } from "$lib/icons";
+	import { Download } from "lucide-svelte";
+	import { user } from "$lib/stores/user";
+	import { saveAsPlaylist } from "$lib/services/playlistService";
 
 	const dispatch = createEventDispatcher<{ toggleEvent: string }>();
 
@@ -17,9 +20,11 @@
 	export let dataFunction: () => Promise<CarouselSong[]>;
 	export let viewAllFunction: (() => Promise<CarouselSong[]>) | null = null;
 	export let importToSpotifyVisible: boolean = true;
+	export let importAsPlaylistVisible: boolean = true;
 
 	let loading = false;
 	let importPlaylistSpotifyDialogOpen = false;
+	let saveAsPlaylistDialogOpen = false;
 	let detailDialogOpen = false;
 </script>
 
@@ -111,6 +116,67 @@
 						</Dialog.Content>
 					</Dialog.Root>
 				{/if}
+				{#if importAsPlaylistVisible}
+					<div in:fade|global>
+						<Button
+							variant="outline"
+							class="py-0 px-2 h-8"
+							on:click={() => {
+								if (loading) return;
+								saveAsPlaylistDialogOpen = true;
+							}}><Download class="w-5 h-5" /></Button
+						>
+					</div>
+					<!-- Import playlist to spotify modal -->
+					<Dialog.Root bind:open={saveAsPlaylistDialogOpen}>
+						<Dialog.Content class="rounded-lg max-w-[16rem] sm:max-w-xs md:max-w-md">
+							<Dialog.Header>
+								<Dialog.Title>Import these songs as a playlist?</Dialog.Title>
+								<Dialog.Description
+									>This action will import these songs as a playlist to your account.</Dialog.Description
+								>
+							</Dialog.Header>
+							<Dialog.Footer>
+								<form
+									on:submit|preventDefault={async () => {
+										if (loading) return;
+										const token = String(await $user?.getIdToken());
+										loading = true;
+										const body = {
+											name: `Ovatify - ${title}`,
+											description: "",
+											songs: data.map((song) => song.id)
+										};
+										console.log(body);
+										const response = await saveAsPlaylist(token, body);
+										console.log(response);
+										if (response.status === 200) {
+											displayToast({
+												message: "Playlist imported to Spotify",
+												type: "success"
+											});
+										} else {
+											displayToast({
+												message: "Error importing playlist to Spotify",
+												type: "error"
+											});
+										}
+										saveAsPlaylistDialogOpen = false;
+										loading = false;
+									}}
+									class="w-full"
+								>
+									<Button
+										variant="outline"
+										type="submit"
+										class="w-full bg-emerald-800 hover:bg-emerald-700"
+										>{loading ? "Importing..." : "Import"}</Button
+									>
+								</form>
+							</Dialog.Footer>
+						</Dialog.Content>
+					</Dialog.Root>
+				{/if}
 				{#if viewAllFunction && data.length >= 10}
 					<div in:fade|global>
 						<Button
@@ -141,7 +207,7 @@
 					>
 						<div class="w-48 h-72 rounded-lg">
 							<img
-								src={song.img_url ? song.img_url : placeholderImageUrl}
+								src={song.img_url || defaultImageUrl}
 								alt={song.name}
 								class="object-cover rounded-lg"
 							/>

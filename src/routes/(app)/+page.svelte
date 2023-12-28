@@ -9,6 +9,13 @@
 	import YouMightLike from "./YouMightLike.svelte";
 	import { refresh } from "$lib/stores/refresh";
 	import { spotify } from "$lib/utils/spotify";
+	import { onMount } from "svelte";
+	import { sleep } from "$lib/utils/time";
+	import {
+		getFriendSuggestionCount,
+		setFriendSuggestionsAsSeen
+	} from "$lib/services/friendService";
+	import { displayToast } from "$lib/utils/toast";
 
 	let dialogOpen = false;
 	let selectedSongId: string = "";
@@ -30,6 +37,34 @@
 		selectedSongId = event.detail;
 		dialogOpen = !dialogOpen;
 	}
+
+	onMount(async () => {
+		await sleep(1);
+		const token = await $user!.getIdToken();
+		const response = await getFriendSuggestionCount(token);
+		console.log(response);
+		if (response.status === 200) {
+			const count = response.data.count;
+			if (count && count > 0) {
+				displayToast({
+					message: `You have ${count} unread ${
+						count > 1 ? "suggestions" : "suggestion"
+					}}`,
+					type: "success" // TODO: Change to info
+				});
+				const setSeenResponse = await setFriendSuggestionsAsSeen(token);
+				if (setSeenResponse.status === 200) {
+					console.log("Friend suggestions marked as seen");
+				} else {
+					console.log("Error marking friend suggestions as seen");
+				}
+			} else {
+				console.log("No unread suggestions");
+			}
+		} else {
+			console.log("Error getting friend suggestion count");
+		}
+	});
 </script>
 
 <section class="min-h-[100dvh]">

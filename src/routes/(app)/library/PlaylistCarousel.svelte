@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { placeholderImageUrl } from "$lib/constants";
+	import { defaultImageUrl } from "$lib/constants";
 	import { Skeleton } from "$lib/components/ui/skeleton";
 	import { fade } from "svelte/transition";
 	import { Button } from "$lib/components/ui/button";
@@ -37,8 +37,6 @@
 		if (loading) return;
 		const token = await $user!.getIdToken();
 		loading = true;
-		console.log(token);
-		await sleep(0.5);
 		const response = await createEmptyPlaylist(token);
 		if (response.status === 201) {
 			displayToast({ message: "Playlist created", type: "success" });
@@ -95,7 +93,7 @@
 								{#if playlist.song_imgs.length < 4}
 									<img
 										class="object-cover rounded-lg"
-										src={playlist.song_imgs.at(0) || placeholderImageUrl}
+										src={playlist.song_imgs.at(0) || defaultImageUrl}
 										alt={playlist.name}
 									/>
 								{:else}
@@ -108,7 +106,7 @@
 													"rounded-bl-lg": index === 2,
 													"rounded-br-lg": index === 3
 												})}
-												src={song_img_url || placeholderImageUrl}
+												src={song_img_url || defaultImageUrl}
 												alt={playlist.name}
 											/>
 										{/each}

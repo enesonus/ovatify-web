@@ -10,18 +10,19 @@
 	import { fade } from "svelte/transition";
 	import ProfileFriends from "./ProfileFriends.svelte";
 	import { Skeleton } from "$lib/components/ui/skeleton";
-	import { Pencil, UserPlus } from "lucide-svelte";
+	import { Pencil, UserPlus, Bell } from "lucide-svelte";
 	import { Button } from "$lib/components/ui/button";
 	import { Icons } from "$lib/icons";
-	import { spotify } from "$lib/utils/spotify";
 	import { sleep } from "$lib/utils/time";
 	import SpotifyProfileModal from "./SpotifyProfileModal.svelte";
+	import NotificationsModal from "./NotificationsModal.svelte";
 
 	let refreshFriends = false;
 	let refreshFriendCount = false;
 	let editProfileDialogOpen = false;
 	let manageFriendsDialogOpen = false;
 	let spotifyProfileDialogOpen = false;
+	let notificationsDialogOpen = false;
 
 	async function getPendingFriendRequestCount() {
 		const token = await $user!.getIdToken();
@@ -84,6 +85,14 @@
 					>
 					<Button
 						variant="outline"
+						class="p-0 w-8 h-8 sm:w-10 sm:h-10"
+						on:click={() => (notificationsDialogOpen = true)}
+						><Bell class="h-6 w-6 sm:h-8 sm:w-8" /><span class="sr-only"
+							>Notifications</span
+						></Button
+					>
+					<Button
+						variant="outline"
 						class="relative p-0 w-8 h-8 sm:w-10 sm:h-10"
 						on:click={() => (manageFriendsDialogOpen = true)}
 					>
@@ -126,3 +135,4 @@
 />
 <EditProfileModal bind:dialogOpen={editProfileDialogOpen} />
 <SpotifyProfileModal bind:dialogOpen={spotifyProfileDialogOpen} />
+<NotificationsModal bind:dialogOpen={notificationsDialogOpen} />

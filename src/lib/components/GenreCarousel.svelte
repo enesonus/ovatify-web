@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { placeholderImageUrl } from "$lib/constants";
+	import { defaultImageUrl } from "$lib/constants";
 	import type { CarouselGenre } from "$lib/types";
 	import { Skeleton } from "$lib/components/ui/skeleton";
 	import { fade } from "svelte/transition";
@@ -56,7 +56,7 @@
 						>
 							<div class="w-48 h-60 rounded-lg">
 								<img
-									src={genre.img_url ? genre.img_url : placeholderImageUrl}
+									src={genre.img_url || defaultImageUrl}
 									alt={genre.name}
 									class="object-cover rounded-lg"
 								/>

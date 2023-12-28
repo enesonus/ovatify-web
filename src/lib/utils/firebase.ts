@@ -1,5 +1,14 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, signOut } from "firebase/auth";
+import {
+	getAuth,
+	sendEmailVerification,
+	sendPasswordResetEmail,
+	signOut,
+	type User
+} from "firebase/auth";
+import { env } from "$env/dynamic/public";
+
+export const requireEmailVerification = env.PUBLIC_REQUIRE_EMAIL_VERIFICATION !== "false";
 
 const firebaseConfig = {
 	apiKey: "AIzaSyDVuHFYrD_xip5Q1DyjuQZ7Wyx5fe74H8I",
@@ -26,8 +35,8 @@ export const FIREBASE_ERRORS = {
 export async function firebaseSignOut() {
 	try {
 		await signOut(auth);
-	} catch {
-		console.error("Error signing user out from firebase");
+	} catch (e) {
+		console.error("Error signing user out from firebase", e);
 	}
 }
 
@@ -36,5 +45,23 @@ export async function firebaseDeleteUser() {
 		await auth.currentUser?.delete();
 	} catch (e) {
 		console.error("Error deleting user from firebase", e);
+	}
+}
+
+export async function firebaseSendVerificationEmail(user: User) {
+	try {
+		await sendEmailVerification(user);
+	} catch (e) {
+		console.error("Error sending firebase verification email", e);
+	}
+}
+
+export async function firebaseSendPasswordResetEmail(userEmail: string) {
+	try {
+		await sendPasswordResetEmail(auth, userEmail);
+		return true;
+	} catch (e) {
+		console.error("Error sending firebase password reset email", e);
+		return false;
 	}
 }

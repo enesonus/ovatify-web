@@ -3,7 +3,7 @@
 	import * as Dialog from "$lib/components/ui/dialog";
 	import { addSong, getSongById } from "$lib/services/songService";
 	import Spinner from "$lib/components/Spinner.svelte";
-	import { placeholderImageUrl } from "$lib/constants";
+	import { defaultImageUrl } from "$lib/constants";
 	import type { Song } from "$lib/types";
 	import { Button } from "$lib/components/ui/button";
 	import { BookmarkPlus } from "lucide-svelte";
@@ -16,6 +16,7 @@
 	import { refresh } from "$lib/stores/refresh";
 	import { createEventDispatcher, onDestroy } from "svelte";
 	import { goto } from "$app/navigation";
+	import { Icons } from "$lib/icons";
 
 	export let dialogOpen: boolean;
 	export let selectedSongId: string | null;
@@ -105,7 +106,7 @@
 							rel="noopener noreferrer"
 						>
 							<img
-								src={song.img_url ? song.img_url : placeholderImageUrl}
+								src={song.img_url || defaultImageUrl}
 								alt={`${song.name} Cover Art` ?? "Unknown Song Cover Art"}
 								class="w-64 object-cover rounded-lg"
 							/>
@@ -123,7 +124,7 @@
 								class="mt-1 min-w-[12rem] tabular-nums bg-emerald-800 hover:bg-emerald-700"
 								variant="secondary"
 								on:click={() => (addRatingDialogOpen = true)}
-								>Add to Library<BookmarkPlus class="ml-2" /></Button
+								>Add to Library <BookmarkPlus class="h-6 w-6 ml-2" /></Button
 							>
 						{:else}
 							<div
@@ -136,12 +137,12 @@
 							</div>
 						{/if}
 						<a
-							class="mt-2 min-w-[12rem] tabular-nums px-4 py-2 rounded-md border-2 text-center font-medium text-sm h-10 bg-emerald-800 hover:bg-emerald-700"
+							class="inline-flex items-center justify-center mt-2 min-w-[12rem] tabular-nums px-4 py-2 rounded-md border-2 text-center font-medium text-sm h-10 bg-emerald-800 hover:bg-emerald-700"
 							href="https://open.spotify.com/track/{song.id}"
 							target="_blank"
 							rel="noopener noreferrer"
 						>
-							Listen on spotify
+							Listen on Spotify <Icons.spotify class="h-5 w-5 ml-2" />
 						</a>
 						<h1 class="pt-4 font-bold text-xl px-2 w-full">
 							{song.name ?? "Unknown Song"}

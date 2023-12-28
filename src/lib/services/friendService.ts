@@ -50,3 +50,34 @@ export async function getUserFriends(token: string) {
 	const response = await api.get(`users/get-all-friends/`, token);
 	return response;
 }
+
+export async function suggestSong(
+	token: string,
+	body: { receiver_user: string; song_id: string }
+) {
+	const response = await api.post(`users/suggest-song/`, token, body);
+	return response;
+}
+
+export async function getFriendSuggestionCount(token: string) {
+	const response = await api.get(`users/get-suggestion-count/`, token);
+	return response;
+}
+
+export async function setFriendSuggestionsAsSeen(token: string) {
+	const response = await api.put(`users/set-suggestion-seen/`, token, null);
+	return response;
+}
+
+export async function getFriendSuggestions(token: string) {
+	const response = await api.get(`users/get-suggestions/`, token);
+	return response;
+}
+
+export async function deleteFriendSuggestion(token: string, suggestionId: string) {
+	const response = await api.del(
+		`users/delete-suggestion/?suggestion_id=${suggestionId}`,
+		token
+	);
+	return response;
+}

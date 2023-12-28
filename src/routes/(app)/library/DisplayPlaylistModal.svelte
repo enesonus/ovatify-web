@@ -2,7 +2,7 @@
 	import { user } from "$lib/stores/user";
 	import * as Dialog from "$lib/components/ui/dialog";
 	import Spinner from "$lib/components/Spinner.svelte";
-	import { placeholderImageUrl } from "$lib/constants";
+	import { defaultImageUrl } from "$lib/constants";
 	import type { Playlist, Song } from "$lib/types";
 	import { displayToast } from "$lib/utils/toast";
 	import { cn } from "$lib/utils";
@@ -206,7 +206,7 @@
 							<div class="px-4 pt-4 pb-2 flex-shrink-0">
 								<img
 									class="w-48 h-48 object-cover rounded-lg"
-									src={playlist.songs.at(0)?.img_url || placeholderImageUrl}
+									src={playlist.songs.at(0)?.img_url || defaultImageUrl}
 									alt={playlist.songs.at(0)?.name || playlist.name}
 								/>
 							</div>
@@ -220,7 +220,7 @@
 											"rounded-bl-lg": index === 2,
 											"rounded-br-lg": index === 3
 										})}
-										src={song.img_url || placeholderImageUrl}
+										src={song.img_url || defaultImageUrl}
 										alt={song.name}
 									/>
 								{/each}
