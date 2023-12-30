@@ -2,6 +2,7 @@
 	import {
 		GoogleAuthProvider,
 		getAdditionalUserInfo,
+		sendEmailVerification,
 		signInWithEmailAndPassword,
 		signInWithPopup
 	} from "firebase/auth";
@@ -12,7 +13,9 @@
 		auth,
 		FIREBASE_ERRORS,
 		firebaseDeleteUser,
-		firebaseSignOut
+		firebaseSendVerificationEmail,
+		firebaseSignOut,
+		requireEmailVerification
 	} from "$lib/utils/firebase";
 	import { displayToast } from "$lib/utils/toast";
 	import { Icons } from "$lib/icons";
@@ -62,6 +65,20 @@
 		try {
 			$authFlowOngoing = true;
 			const userCredential = await signInWithEmailAndPassword(auth, email, password);
+			if (requireEmailVerification && !userCredential.user.emailVerified) {
+				const verificationEmailSent = sessionStorage.getItem("verificationEmailSent");
+				if (!verificationEmailSent) {
+					firebaseSendVerificationEmail(userCredential.user);
+					sessionStorage.setItem("verificationEmailSent", "true");
+				}
+				displayToast({
+					type: "error",
+					message: "Please verify your email"
+				});
+				await firebaseSignOut();
+				loading = false;
+				return;
+			}
 			console.log("User logged in to firebase");
 			const userToken = await userCredential.user.getIdToken();
 			console.log("Attempting to get user profile from database...");
@@ -166,6 +183,8 @@
 			} else {
 				console.info("Last login updated successfully.");
 			}
+			// Clear spotify state if user is logging in
+			clearSpotifyState();
 			const redirectTo = $page.url.searchParams.get("redirect");
 			if (redirectTo) {
 				goto(redirectTo, { replaceState: true });
@@ -193,23 +212,41 @@
 			class="flex border-2 bg-[#1D1F26] text-[#B3BBD8] rounded-2xl justify-center items-center
 					 w-[20rem] xsm:w-[24rem] sm:w-[26rem] max-w-[90vw] pb-4 mt-4 mb-8"
 		>
-			<form class="flex flex-col p-4 gap-4 xsm:w-[24rem]" on:submit|preventDefault>
+			<form
+				class="flex flex-col p-4 gap-4 xsm:w-[24rem]"
+				on:submit|preventDefault={login}
+			>
 				<h1 class="pt-4 text-center text-2xl font-bold">Log In</h1>
 				<div class="text-[#B3BBD8] placeholder-slate-800">
-					<Label>Enter your email</Label>
+					<Label for="email">Email</Label>
 					<Input
 						class="bg-black mt-1"
 						type="email"
+						id="email"
+						name="email"
+						tabindex={1}
 						placeholder="Enter your email"
 						disabled={$resumingSession}
 						bind:value={email}
 					/>
 				</div>
 				<div>
-					<Label>Enter your password</Label>
+					<div class="flex justify-between items-center font-medium text-sm">
+						<Label for="password">Password</Label>
+						{#if loading}
+							<p class="select-none">Forgot password?</p>
+						{:else}
+							<a href="/reset-password" class="transition hover:opacity-75" tabindex={4}
+								>Forgot password?</a
+							>
+						{/if}
+					</div>
 					<Input
 						class="bg-black mt-1"
 						type="password"
+						id="password"
+						name="password"
+						tabindex={2}
 						placeholder="Enter your password"
 						disabled={$resumingSession}
 						bind:value={password}
@@ -219,7 +256,7 @@
 					variant={$resumingSession || !loading ? "outline" : "secondary"}
 					type="submit"
 					disabled={$resumingSession}
-					on:click={login}
+					tabindex={3}
 					class="font-semibold">{!loading ? "Log In" : "Logging in..."}</Button
 				>
 				<div>
@@ -231,7 +268,7 @@
 						<p class="px-2 text-center sm:px-4 sm:text-start">
 							Don't have an account? <a
 								href="/signup"
-								class="font-semibold underline hover:text-zinc-300">Sign up</a
+								class="transition font-semibold underline hover:text-zinc-300">Sign up</a
 							>
 						</p>
 					{/if}

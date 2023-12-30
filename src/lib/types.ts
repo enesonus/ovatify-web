@@ -83,7 +83,5 @@ export type Playlist = {
 	id: string;
 	name: string;
 	description: string;
-	img_url: string;
-	img_urls?: string[];
 	songs: CarouselSong[];
 };

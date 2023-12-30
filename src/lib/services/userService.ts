@@ -1,14 +1,12 @@
 import * as api from "$lib/utils/api";
 
 export async function getRecentlyAddedSongs(token: string, numberOfSongs: number | null) {
-	console.log(numberOfSongs);
 	const response = await api.get(
 		`users/get-recently-added-songs/${
 			numberOfSongs ? `?number_of_songs=${numberOfSongs}` : ""
 		}`,
 		token
 	);
-	console.log(response);
 	return response;
 }
 

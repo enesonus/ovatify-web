@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Spinner from "$lib/components/Spinner.svelte";
-	import { placeholderImageUrl } from "$lib/constants";
+	import { defaultImageUrl } from "$lib/constants";
 	import { fade } from "svelte/transition";
 	import { getUserFriends } from "$lib/services/friendService";
 	import { user } from "$lib/stores/user";
@@ -39,8 +39,8 @@
 							class="w-full flex items-center justify-start bg-zinc-700 p-2 rounded-lg"
 						>
 							<img
-								src={friend.img_url ?? placeholderImageUrl}
-								alt={friend.name ?? "User"}
+								src={friend.img_url || defaultImageUrl}
+								alt={friend.name || "User"}
 								class="w-12 h-12 rounded-full object-cover"
 							/>
 							<p class="pl-2 pr-4">{friend.name}</p>

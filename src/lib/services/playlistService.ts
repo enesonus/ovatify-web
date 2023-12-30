@@ -72,3 +72,11 @@ export async function deletePlaylist(token: string, playlistId: string) {
 	);
 	return response;
 }
+
+export async function saveAsPlaylist(
+	token: string,
+	body: { name: string; description: string; songs: string[] }
+) {
+	const response = await api.post(`users/save-playlist/`, token, body);
+	return response;
+}

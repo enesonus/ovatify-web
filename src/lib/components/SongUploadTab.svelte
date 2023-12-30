@@ -8,7 +8,7 @@
 	import Stars from "$lib/components/Stars.svelte";
 	import { fade } from "svelte/transition";
 	import { searchSpotifySong, addSong } from "$lib/services/songService";
-	import { placeholderImageUrl } from "$lib/constants";
+	import { defaultImageUrl } from "$lib/constants";
 	import type { SongQueryResponse } from "$lib/types";
 	import { deleteFromCache, songCache } from "$lib/utils/caches";
 	import { refresh } from "$lib/stores/refresh";
@@ -152,7 +152,7 @@
 							<div class="hidden xsm:flex w-24 min-h-[6rem] items-center justify-center">
 								<img
 									class="w-24 min-w-[6rem] h-24 object-cover rounded-lg"
-									src={result.album_url ?? placeholderImageUrl}
+									src={result.album_url || defaultImageUrl}
 									alt={result.track_name}
 								/>
 							</div>

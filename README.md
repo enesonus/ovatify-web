@@ -44,11 +44,17 @@ Ovatify is a music platform designed to offer a unique and personalized experien
 
    Ensure to set up the following environment variables in your root .env file:
 
+   Required env variables
+
    - `PUBLIC_BASE_URL`
    - `PUBLIC_SPOTIFY_CLIENT_ID`
    - `PUBLIC_SPOTIFY_REDIRECT_URI`
 
-   Example: `PUBLIC_BASE_URL="http://127.0.0.1:8000"`
+   Optional env variables
+
+   - `PUBLIC_REQUIRE_EMAIL_VERIFICATION` // Make sure to set this to "false" for development as not having it or setting it to anything else will require emails to be verified before logging in.
+
+   Take a look at `.env.example` for example values
    ```
 
    ## Configuring Firebase Integration

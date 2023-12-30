@@ -3,6 +3,7 @@
 		GoogleAuthProvider,
 		createUserWithEmailAndPassword,
 		getAdditionalUserInfo,
+		sendEmailVerification,
 		signInWithPopup
 	} from "firebase/auth";
 	import { Input } from "$lib/components/ui/input";
@@ -12,7 +13,9 @@
 		FIREBASE_ERRORS,
 		auth,
 		firebaseDeleteUser,
-		firebaseSignOut
+		firebaseSendVerificationEmail,
+		firebaseSignOut,
+		requireEmailVerification
 	} from "$lib/utils/firebase";
 	import { displayToast } from "$lib/utils/toast";
 	import { goto } from "$app/navigation";
@@ -102,6 +105,17 @@
 				retries++;
 			}
 			console.log("Signup flow completed successfully");
+			if (requireEmailVerification && !userCredential.user.emailVerified) {
+				await firebaseSendVerificationEmail(userCredential.user);
+				sessionStorage.setItem("verificationEmailSent", "true");
+				loading = false;
+				displayToast({
+					type: "success",
+					message: "Verification email sent. Please verify your email to continue."
+				});
+				goto("/login", { replaceState: true });
+				return;
+			}
 			console.log("Logging in...");
 			console.log("Attempting to get user profile from database...");
 			const getUserProfileResponse = await getUserProfile(userToken);
@@ -120,6 +134,8 @@
 			} else {
 				console.log("Last login updated successfully.");
 			}
+			// Clear spotify state if user is logging in
+			clearSpotifyState();
 			const redirectTo = $page.url.searchParams.get("redirect");
 			if (redirectTo) {
 				goto(redirectTo, { replaceState: true });
@@ -237,20 +253,25 @@
 			class="flex border-[2px] bg-[#1D1F26] text-[#B3BBD8] rounded-2xl justify-center items-center
 					 w-[20rem] xsm:w-[24rem] sm:w-[26rem] max-w-[95vw] pb-4 mt-4 mb-8"
 		>
-			<form class="flex flex-col p-4 gap-4 xsm:w-[24rem]" on:submit|preventDefault>
+			<form
+				class="flex flex-col p-4 gap-4 xsm:w-[24rem]"
+				on:submit|preventDefault={signup}
+			>
 				<h1 class="pt-4 text-center text-2xl font-bold">Sign Up</h1>
 				<div class="text-[#B3BBD8] placeholder-slate-800">
-					<Label>Enter your email</Label>
+					<Label for="email">Email</Label>
 					<Input
 						class="bg-black mt-1"
 						type="email"
 						disabled={$resumingSession}
 						placeholder="Enter your email"
+						name="email"
+						id="email"
 						bind:value={email}
 					/>
 				</div>
 				<div>
-					<Label>Enter your password</Label>
+					<Label for="password">Password</Label>
 					<Input
 						class="bg-black mt-1"
 						type="password"
@@ -260,10 +281,12 @@
 					/>
 				</div>
 				<div>
-					<Label>Confirm Password</Label>
+					<Label for="confirm-password">Confirm Password</Label>
 					<Input
 						class="bg-black mt-1"
 						type="password"
+						name="confirm-password"
+						id="confirm-password"
 						disabled={$resumingSession}
 						placeholder="Confirm Password"
 						bind:value={passwordConfirm}
@@ -285,7 +308,7 @@
 						<p class="px-2 text-center sm:px-4 sm:text-start">
 							Already have an account? <a
 								href="/login"
-								class="font-semibold underline hover:text-zinc-300">Log In</a
+								class="transition font-semibold underline hover:text-zinc-300">Log In</a
 							>
 						</p>
 					{/if}

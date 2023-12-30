@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Spinner from "$lib/components/Spinner.svelte";
-	import { placeholderImageUrl } from "$lib/constants";
+	import { defaultImageUrl } from "$lib/constants";
 	import { getUserFriends } from "$lib/services/friendService";
 	import { user } from "$lib/stores/user";
 	import type { Friend } from "$lib/types";
@@ -36,12 +36,12 @@
 				{#each friends as friend}
 					<div class="w-1/5 flex flex-col justify-center items-center">
 						<img
-							src={friend.img_url ?? placeholderImageUrl}
-							alt={friend.name ?? "User"}
+							src={friend.img_url || defaultImageUrl}
+							alt={friend.name || "User"}
 							class="w-full max-w-[10rem] mx-auto aspect-square object-cover rounded-full"
 						/>
 						<p class="truncate max-w-[10rem] pt-2 text-center text-lg">
-							{friend.name ?? "User"}
+							{friend.name || "User"}
 						</p>
 					</div>
 				{/each}

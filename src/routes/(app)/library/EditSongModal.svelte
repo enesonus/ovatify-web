@@ -6,7 +6,7 @@
 	import Stars from "$lib/components/Stars.svelte";
 	import { user } from "$lib/stores/user";
 	import { getSongById } from "$lib/services/songService";
-	import { placeholderImageUrl } from "$lib/constants";
+	import { defaultImageUrl } from "$lib/constants";
 	import Spinner from "$lib/components/Spinner.svelte";
 	import type { Song } from "$lib/types";
 	import { deleteUserSongRating, editUserSongRating } from "$lib/services/userService";
@@ -15,6 +15,7 @@
 	import { getRatingColor } from "$lib/utils/colors";
 	import { fade } from "svelte/transition";
 	import { refresh } from "$lib/stores/refresh";
+	import ChooseFriendSuggestSong from "./ChooseFriendSuggestSong.svelte";
 
 	export let dialogOpen: boolean;
 	export let selectedSongId: string = "";
@@ -25,6 +26,7 @@
 	let song: Song | null = null;
 	let loading = false;
 	let loadingSong = false;
+	let chooseFriendDialogOpen = false;
 
 	$: if (!dialogOpen) {
 		selectedSongId = "";
@@ -105,7 +107,7 @@
 						class="flex flex-col w-full h-full justify-center items-center text-start break-all"
 					>
 						<img
-							src={song.img_url ? song.img_url : placeholderImageUrl}
+							src={song.img_url || defaultImageUrl}
 							alt={`${song.name} Cover Art` ?? "Unknown Song Cover Art"}
 							class="w-64 object-cover rounded-lg"
 						/>
@@ -142,6 +144,13 @@
 									<Trash2 class="w-5 h-5" />
 								</Button>
 							</div>
+							<Button
+								class="flex-grow mt-1"
+								variant="secondary"
+								on:click={() => (chooseFriendDialogOpen = true)}
+							>
+								Suggest to a friend
+							</Button>
 						</div>
 						<h1 class="pt-4 font-bold text-xl px-2 w-full">
 							{song.name ?? "Unknown Song"}
@@ -186,11 +195,10 @@
 			</div>
 			<Button
 				variant="outline"
-				class={`min-w-[12rem] ${
-					loading || rating == 0
-						? "bg-red-800 hover:bg-red-700"
-						: "bg-emerald-800 hover:bg-emerald-700"
-				}`}
+				class={cn("min-w-[12rem]", {
+					"bg-red-800 hover:bg-red-700": loading || rating == 0,
+					"bg-emerald-800 hover:bg-emerald-700": !loading && rating != 0
+				})}
 				on:click={updateRating}>{loading ? "Updating..." : "Update Rating"}</Button
 			>
 		</div>
@@ -212,3 +220,8 @@
 		</Dialog.Footer>
 	</Dialog.Content>
 </Dialog.Root>
+<!-- Suggest to a friend modal -->
+<ChooseFriendSuggestSong
+	bind:dialogOpen={chooseFriendDialogOpen}
+	bind:songId={selectedSongId}
+/>

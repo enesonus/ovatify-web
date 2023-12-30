@@ -5,12 +5,10 @@
 	import { displayToast } from "$lib/utils/toast";
 	import { user } from "$lib/stores/user";
 	import { getRecentlyAddedSongs, getUserFavorites } from "$lib/services/userService";
-	import { sleep } from "$lib/utils/time";
 	import type { CarouselSong } from "$lib/types";
 	import { refresh } from "$lib/stores/refresh";
 	import ExportModal from "./ExportModal.svelte";
 	import PlaylistCarousel from "./PlaylistCarousel.svelte";
-	import { placeholderImageUrl } from "$lib/constants";
 
 	let displaySongDialogOpen = false;
 	let selectedSongId: string = "";
@@ -45,7 +43,6 @@
 			displayToast({ message: "Error getting favorites", type: "error" });
 			return [];
 		}
-		console.log("favorites", response.data.songs);
 		return response.data.songs as CarouselSong[];
 	}
 
@@ -57,7 +54,6 @@
 			displayToast({ message: "Error getting favorites", type: "error" });
 			return [];
 		}
-		console.log("favorites", response.data.songs);
 		return response.data.songs as CarouselSong[];
 	}
 
