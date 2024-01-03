@@ -4,17 +4,21 @@
 	import { displayToast, makeToast } from "$lib/utils/toast";
 	import { sendFriendRequest } from "$lib/services/friendService";
 	import { user } from "$lib/stores/user";
+	import { cn } from "$lib/utils";
+	import { sleep } from "$lib/utils/time";
 
 	export let dialogOpen: boolean;
-	let username = "";
 	let loading = false;
 
-	async function handleFriendRequest() {
+	async function handleFriendRequest(e: SubmitEvent) {
 		if (loading) return;
-		if (username.length === 0 || username.length > 32) {
+		const formData = new FormData(e.target as HTMLFormElement);
+		let username = (formData.get("username") as string) || "";
+		username = username.trim();
+		if (username.length < 6 || username.length > 16) {
 			displayToast({
 				type: "error",
-				message: "Please make sure the username is between 1 and 32 characters long"
+				message: "Please make sure the username is between 6 and 16 characters long"
 			});
 			return;
 		}
@@ -26,7 +30,6 @@
 				type: "success",
 				message: "Friend request sent"
 			});
-			username = "";
 		} else if (response.status === 404) {
 			displayToast({
 				type: "error",
@@ -49,24 +52,24 @@
 				message: "Something went wrong"
 			});
 		}
-		console.log(response);
 		dialogOpen = false;
+		await sleep(0.5);
 		loading = false;
 	}
 </script>
 
 <form
-	on:submit|preventDefault
+	on:submit|preventDefault={handleFriendRequest}
 	class="flex flex-col items-center justify-center w-full h-full gap-2"
 >
 	<h2 class="text-xl">Username</h2>
-	<Input type="text" bind:value={username} class="min-w-[16rem] bg-black max-w-xs" />
+	<Input type="text" name="username" class="min-w-[16rem] bg-zinc-950 max-w-xs" />
 	<Button
 		type="submit"
 		variant="outline"
-		class={loading
-			? "min-w-[12rem] bg-red-800 hover:bg-red-800"
-			: "min-w-[12rem] hover:bg-zinc-700"}
-		on:click={handleFriendRequest}>{loading ? "Adding... " : "Add Friend"}</Button
+		class={cn("min-w-[16rem] transition", {
+			"bg-zinc-950 hover:bg-zinc-950 opacity-50 cursor-not-allowed": loading,
+			"bg-emerald-800 hover:bg-emerald-700": !loading
+		})}>{loading ? "Adding... " : "Add Friend"}</Button
 	>
 </form>

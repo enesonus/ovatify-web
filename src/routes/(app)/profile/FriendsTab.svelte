@@ -2,9 +2,17 @@
 	import Spinner from "$lib/components/Spinner.svelte";
 	import { defaultImageUrl } from "$lib/constants";
 	import { fade } from "svelte/transition";
-	import { getUserFriends } from "$lib/services/friendService";
+	import { getUserFriends, removeFriend } from "$lib/services/friendService";
 	import { user } from "$lib/stores/user";
 	import type { Friend } from "$lib/types";
+	import { Button } from "$lib/components/ui/button";
+	import { displayToast } from "$lib/utils/toast";
+	import { UserX } from "lucide-svelte";
+	import { cn } from "$lib/utils";
+	import { sleep } from "$lib/utils/time";
+
+	export let dialogOpen: boolean;
+	let loading = false;
 
 	async function getAllFriends() {
 		const token = await $user?.getIdToken();
@@ -19,10 +27,26 @@
 		return friends;
 	}
 
-	// async function handleRemoveFriend(username: string) {
-	// 	makeToast(`Removed friend ${username}`);
-	// 	dialogOpen = false;
-	// }
+	async function handleRemoveFriend(username: string) {
+		if (loading) return;
+		loading = true;
+		const token = await $user!.getIdToken();
+		const response = await removeFriend(token, username);
+		if (response.status === 200) {
+			displayToast({
+				type: "success",
+				message: `Removed friend ${username}`
+			});
+		} else {
+			displayToast({
+				type: "error",
+				message: "Failed to remove friend"
+			});
+		}
+		dialogOpen = false;
+		await sleep(1);
+		loading = false;
+	}
 </script>
 
 <div class="grid w-full h-full overflow-y-auto">
@@ -44,15 +68,17 @@
 								class="w-12 h-12 rounded-full object-cover"
 							/>
 							<p class="pl-2 pr-4">{friend.name}</p>
-							<!-- <div class="ml-auto pr-4">
-							<Button
-								variant="outline"
-								on:click={() => handleRemoveFriend(friend.name)}
-								class="w-8 h-8 p-0"
-							>
-								<UserX class="w-5 h-5" />
-							</Button>
-						</div> -->
+							<div class="ml-auto pr-4">
+								<Button
+									variant="outline"
+									on:click={() => handleRemoveFriend(friend.name)}
+									class={cn("w-8 h-8 p-0", {
+										"opacity-50 hover:bg-zinc-950 cursor-not-allowed": loading
+									})}
+								>
+									<UserX class="w-5 h-5" />
+								</Button>
+							</div>
 						</div>
 					</div>
 				{/each}
