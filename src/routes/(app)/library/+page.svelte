@@ -1,5 +1,5 @@
 <script lang="ts">
-	import SongDetailsModal from "./EditSongModal.svelte";
+	import SongDetailsModal from "./SongDetailsModal.svelte";
 	import Carousel from "$lib/components/SongCarousel.svelte";
 	import SongFileComboUpload from "./SongFileUploadModal.svelte";
 	import { displayToast } from "$lib/utils/toast";
@@ -92,5 +92,6 @@
 		{/key}
 	</div>
 </section>
+
 <!-- Modal for detailed music information -->
 <SongDetailsModal bind:dialogOpen={displaySongDialogOpen} bind:selectedSongId />

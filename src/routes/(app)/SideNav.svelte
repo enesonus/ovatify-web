@@ -14,7 +14,7 @@
 				buttonVariants({ variant: "ghost" }),
 				"flex flex-col justify-center items-center h-full text-xs font-semibold",
 				{
-					"bg-zinc-800 hover:bg-zinc-700": $page.url.pathname === "/"
+					"bg-zinc-800 hover:bg-zinc-800": $page.url.pathname === "/"
 				}
 			)}
 		>
@@ -28,7 +28,7 @@
 				buttonVariants({ variant: "ghost" }),
 				"flex flex-col justify-center items-center h-full text-xs font-semibold",
 				{
-					"bg-zinc-800 hover:bg-zinc-700": $page.url.pathname === "/explore"
+					"bg-zinc-800 hover:bg-zinc-800": $page.url.pathname === "/explore"
 				}
 			)}
 		>
@@ -42,7 +42,7 @@
 				buttonVariants({ variant: "ghost" }),
 				"flex flex-col justify-center items-center h-full text-xs font-semibold",
 				{
-					"bg-zinc-800 hover:bg-zinc-700": $page.url.pathname === "/library"
+					"bg-zinc-800 hover:bg-zinc-800": $page.url.pathname === "/library"
 				}
 			)}
 		>
@@ -50,18 +50,32 @@
 			Library
 		</div>
 	</a>
-	<a href="/dashboard" class="w-16 h-16">
+	<a href="/stats" class="w-16 h-16">
 		<div
 			class={cn(
 				buttonVariants({ variant: "ghost" }),
 				"flex flex-col justify-center items-center h-full text-xs font-semibold",
 				{
-					"bg-zinc-800 hover:bg-zinc-700": $page.url.pathname === "/dashboard"
+					"bg-zinc-800 hover:bg-zinc-800": $page.url.pathname === "/stats"
 				}
 			)}
 		>
-			<Icons.navDashboard class="h-8 w-8" />
-			Dashboard
+			<Icons.navStats class="h-8 w-8" />
+			Stats
+		</div>
+	</a>
+	<a href="/friend-groups" class="w-16 h-16">
+		<div
+			class={cn(
+				buttonVariants({ variant: "ghost" }),
+				"flex flex-col justify-center items-center h-full text-xs font-semibold",
+				{
+					"bg-zinc-800 hover:bg-zinc-800": $page.url.pathname.includes("/friend-groups")
+				}
+			)}
+		>
+			<Icons.navGroups class="h-8 w-8" />
+			Groups
 		</div>
 	</a>
 	<a href="/profile" class="w-16 h-16">
@@ -70,7 +84,7 @@
 				buttonVariants({ variant: "ghost" }),
 				"flex flex-col justify-center items-center h-full text-xs font-semibold",
 				{
-					"bg-zinc-800 hover:bg-zinc-700": $page.url.pathname === "/profile"
+					"bg-zinc-800 hover:bg-zinc-800": $page.url.pathname === "/profile"
 				}
 			)}
 		>

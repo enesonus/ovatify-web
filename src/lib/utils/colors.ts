@@ -17,3 +17,9 @@ export function getRatingColor(rating: number) {
 	if (rating <= 2 && rating > 1) return "border-orange-700";
 	if (rating == 1) return "border-red-700";
 }
+
+export function disabledBtn(loading: boolean) {
+	return {
+		"opacity-50 bg-muted hover:bg-muted cursor-not-allowed": loading
+	};
+}

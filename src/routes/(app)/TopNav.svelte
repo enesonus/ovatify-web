@@ -18,7 +18,7 @@
 >
 	<div class="flex">
 		<!-- Menu Side Nav -->
-		<div class="flex items-center justify-center px-2 xsm:w-20 xsm:px-0">
+		<div class="flex sm:hidden items-center justify-center px-2 xsm:w-20 xsm:px-0">
 			<Sheet.Root bind:open={sideMenuOpen}>
 				<Sheet.Trigger asChild let:builder>
 					<Button builders={[builder]} variant="ghost" class="text-base px-2 xsm:px-4">
@@ -77,18 +77,33 @@
 								Library
 							</div>
 						</a>
-						<a href="/dashboard" on:click={() => (sideMenuOpen = false)}>
+						<a href="/stats" on:click={() => (sideMenuOpen = false)}>
 							<div
 								class={cn(
 									buttonVariants({ variant: "ghost" }),
 									"flex gap-2 pl-2 py-6 justify-start items-center font-semibold",
 									{
-										"bg-zinc-800 hover:bg-zinc-700": $page.url.pathname === "/dashboard"
+										"bg-zinc-800 hover:bg-zinc-700": $page.url.pathname === "/stats"
 									}
 								)}
 							>
-								<Icons.navDashboard class="h-8 w-8" />
-								Dashboard
+								<Icons.navStats class="h-8 w-8" />
+								Stats
+							</div>
+						</a>
+						<a href="/friend-groups" on:click={() => (sideMenuOpen = false)}>
+							<div
+								class={cn(
+									buttonVariants({ variant: "ghost" }),
+									"flex gap-2 pl-2 py-6 justify-start items-center font-semibold",
+									{
+										"bg-zinc-800 hover:bg-zinc-700":
+											$page.url.pathname.includes("/friend-groups")
+									}
+								)}
+							>
+								<Icons.navGroups class="h-8 w-8" />
+								Groups
 							</div>
 						</a>
 						<a href="/profile" on:click={() => (sideMenuOpen = false)}>
@@ -110,7 +125,7 @@
 			</Sheet.Root>
 		</div>
 		<!-- Logo and name -->
-		<a href="/" class="h-full">
+		<a href="/" class="h-full sm:ml-2">
 			<div
 				class={cn(
 					buttonVariants({ variant: "ghost" }),

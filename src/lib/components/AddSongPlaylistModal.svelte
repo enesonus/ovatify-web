@@ -2,7 +2,7 @@
 	import * as Dialog from "$lib/components/ui/dialog";
 	import { Skeleton } from "$lib/components/ui/skeleton";
 	import { Input } from "$lib/components/ui/input";
-	import { Search, Trash2 } from "lucide-svelte";
+	import { Search } from "lucide-svelte";
 	import { displayToast } from "$lib/utils/toast";
 	import { user } from "$lib/stores/user";
 	import { fade } from "svelte/transition";
@@ -12,7 +12,6 @@
 	import { Button } from "$lib/components/ui/button";
 	import { cn } from "$lib/utils";
 	import { addSongToPlaylist } from "$lib/services/playlistService";
-	import { sleep } from "$lib/utils/time";
 	import { createEventDispatcher } from "svelte";
 	import { deleteFromCache, playlistCache } from "$lib/utils/caches";
 

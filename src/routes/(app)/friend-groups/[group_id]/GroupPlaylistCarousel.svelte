@@ -4,26 +4,30 @@
 	import { fade } from "svelte/transition";
 	import { Button } from "$lib/components/ui/button";
 	import DisplayPlaylistModal from "$lib/components/DisplayPlaylistModal.svelte";
-	import { createEmptyPlaylist, getUserPlaylists } from "$lib/services/playlistService";
 	import { user } from "$lib/stores/user";
 	import { displayToast } from "$lib/utils/toast";
 	import { cn } from "$lib/utils";
-	import type { CarouselPlaylist } from "$lib/types";
+	import type { CarouselGroupPlaylist } from "$lib/types";
+	import {
+		createNewGroupPlaylist,
+		getPlaylistsOfGroup
+	} from "$lib/services/groupService";
+	import { page } from "$app/stores";
+	import { disabledBtn } from "$lib/utils/colors";
 
 	let selectedPlaylistId: string | null = null;
 	let detailDialogOpen = false;
 	let refreshCarousel = false;
 	let loading = false;
 
-	async function getPlaylists() {
+	async function getGroupPlaylists() {
 		const token = await $user!.getIdToken();
-		const response = await getUserPlaylists(token);
-		if (response.status === 200) {
-			return response.data.items as CarouselPlaylist[];
-		} else {
-			displayToast({ message: "Error fetching playlists", type: "error" });
+		const response = await getPlaylistsOfGroup(token, $page.params.group_id);
+		if (response.status !== 200) {
+			return [];
 		}
-		return [];
+		const playlists = response.data.items as CarouselGroupPlaylist[];
+		return playlists;
 	}
 
 	async function openDetailDialog(selectedId: string | null) {
@@ -36,7 +40,7 @@
 		if (loading) return;
 		const token = await $user!.getIdToken();
 		loading = true;
-		const response = await createEmptyPlaylist(token);
+		const response = await createNewGroupPlaylist(token, Number($page.params.group_id));
 		if (response.status === 201) {
 			displayToast({ message: "Playlist created", type: "success" });
 			refreshCarousel = !refreshCarousel;
@@ -49,9 +53,9 @@
 
 {#key refreshCarousel}
 	<div class="sm:max-w-[80vw] lg:max-w-[85vw] xl:max-w-[90vw]">
-		{#await getPlaylists()}
+		{#await getGroupPlaylists()}
 			<div class="flex h-12 items-center justify-between">
-				<h1 class="text-2xl font-bold">Playlists</h1>
+				<h2 class="text-xl font-bold">Group Playlists</h2>
 			</div>
 			<div in:fade|global class="flex gap-4 overflow-x-auto pb-4 rounded-lg">
 				{#each { length: 10 } as _}
@@ -67,17 +71,17 @@
 			</div>
 		{:then data}
 			<div class="flex h-12 items-center justify-between">
-				<h1 class="text-2xl font-bold">Playlists</h1>
+				<h2 class="text-xl font-bold">Group Playlists</h2>
 				<Button
 					variant="outline"
-					class={cn("py-0 px-0 h-8 min-w-[6rem]", { "opacity-50": loading })}
+					class={cn("py-0 px-0 h-8 min-w-[6rem]", disabledBtn(loading))}
 					on:click={createNewPlaylist}>{loading ? "Creating..." : "New"}</Button
 				>
 			</div>
 			<div in:fade|global class="flex gap-4 overflow-x-auto pb-4 rounded-lg">
 				{#if !data || data.length === 0}
 					<div in:fade|global class="h-72">
-						<p>No playlists found</p>
+						<p>This group has no playlists</p>
 					</div>
 				{:else}
 					{#each data as playlist, index}

@@ -32,7 +32,6 @@
 		<Avatar.Root class="w-8 h-8 text-xs xsm:text-base xsm:w-12 xsm:h-12">
 			<Avatar.Image src={$userData.img_url} alt={$userData.name} />
 			<Avatar.Fallback>{$userData.name.slice(0, 2)}</Avatar.Fallback>
-			<!-- <Skeleton class="w-8 h-8 text-xs xsm:text-base xsm:w-12 xsm:h-12" /> -->
 		</Avatar.Root>
 	</DropdownMenu.Trigger>
 	<DropdownMenu.Content class="w-max xsm:w-56">
