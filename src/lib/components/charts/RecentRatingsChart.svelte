@@ -3,28 +3,24 @@
 	import Chart from "chart.js/auto";
 
 	let canvas: HTMLCanvasElement;
+	let myChart: Chart;
 
 	export let chartTitle: string;
 	export let xValues: string[];
 	export let yValues: number[];
+	export let friendyValues: number[];
 	export let lineColor = "#3498db";
+	export let friendLineColor = "#e54f2a";
 
 	onMount(() => {
 		const context = canvas.getContext("2d");
 		if (!context) throw new Error("Could not get canvas context");
-		new Chart(context, {
+
+		myChart = new Chart(context, {
 			type: "line",
 			data: {
 				labels: xValues,
-				datasets: [
-					{
-						data: yValues,
-						label: "Number of Songs",
-						borderColor: lineColor,
-						borderWidth: 2,
-						fill: false
-					}
-				]
+				datasets: []
 			},
 			options: {
 				responsive: true,
@@ -47,10 +43,10 @@
 						}
 					},
 					legend: {
-						display: false,
+						display: true,
 						labels: {
 							useBorderRadius: true,
-							borderRadius: 1,
+							borderRadius: 2,
 							font: {
 								size: 12
 							}
@@ -92,6 +88,32 @@
 			}
 		});
 	});
+
+	$: if (myChart && yValues) {
+		myChart.data.datasets[0] = {
+			data: yValues,
+			label: "My Number of Songs",
+			borderColor: lineColor,
+			borderWidth: 2,
+			fill: false
+		};
+		myChart.update();
+	}
+
+	$: if (myChart && friendyValues) {
+		if (friendyValues.length) {
+			myChart.data.datasets[1] = {
+				data: friendyValues,
+				label: "Friend's Number of Songs",
+				borderColor: friendLineColor,
+				borderWidth: 2,
+				fill: false
+			};
+		} else {
+			myChart.data.datasets.splice(1, 1);
+		}
+		myChart.update();
+	}
 </script>
 
 <div class="w-11/12 bg-zinc-900 rounded-lg">

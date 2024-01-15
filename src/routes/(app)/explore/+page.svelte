@@ -13,6 +13,7 @@
 	import type { CarouselSong } from "$lib/types";
 	import Spinner from "$lib/components/Spinner.svelte";
 	import { onDestroy } from "svelte";
+	import GetBanger from "./GetBanger.svelte";
 
 	let dialogOpen = false;
 	let selectedSongId: string = "";
@@ -92,7 +93,13 @@
 
 <section class="min-h-[100dvh]">
 	<div class="flex flex-col gap-4">
-		<h1 class="text-center sm:text-start text-2xl font-bold">Explore</h1>
+		<div class="flex flex-col xsm:flex-row items-center justify-center">
+			<h1 class="text-center sm:text-start text-2xl font-bold">Library</h1>
+			<div class="mt-2 xsm:mt-0 xsm:ml-auto sm:pr-8">
+				<GetBanger />
+			</div>
+		</div>
+
 		<div class="flex flex-col gap-2 pb-4">
 			<!-- Newly Added -->
 			{#key $refresh}
