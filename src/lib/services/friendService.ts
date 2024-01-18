@@ -89,3 +89,8 @@ export async function removeFriend(token: string, friendUsername: string) {
 	);
 	return response;
 }
+
+export async function getConsentFriends(token: string) {
+	const response = await api.get(`users/get-all-data-sharing-friends/`, token);
+	return response;
+}

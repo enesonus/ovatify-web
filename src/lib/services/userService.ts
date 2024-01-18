@@ -32,6 +32,18 @@ export async function getEntityCount(
 	return response;
 }
 
+export async function getFriendEntityCount(
+	token: string,
+	friend_id: string,
+	entity: "artists" | "genres" | "moods" | "tempos"
+) {
+	const response = await api.get(
+		`users/get-friends-favorite-${entity}/?friend_id=${friend_id}`,
+		token
+	);
+	return response;
+}
+
 export async function editUserSongRating(token: string, songId: string, rating: number) {
 	const body = {
 		song_id: songId,
@@ -81,6 +93,14 @@ export async function exportSongsByArtist(token: string, artist: string) {
 
 export async function getRecentAdditionCounts(token: string) {
 	const response = await api.get(`users/get-recent-addition-counts`, token);
+	return response;
+}
+
+export async function getFriendRecentAdditionCounts(token: string, friend_id: string) {
+	const response = await api.get(
+		`users/get-friends-recent-addition-counts?friend_id=${friend_id}`,
+		token
+	);
 	return response;
 }
 
