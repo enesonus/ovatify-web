@@ -7,7 +7,7 @@
 	import { Button } from "$lib/components/ui/button";
 	import type { Friend } from "$lib/types";
 	import { fade } from "svelte/transition";
-	import { placeholderImageUrl } from "$lib/constants";
+	import { defaultImageUrl } from "$lib/constants";
 	import DialogContent from "$lib/components/ui/dialog/dialog-content.svelte";
 	import { createEventDispatcher } from "svelte";
 
@@ -57,7 +57,7 @@
 								>
 									<div class="flex items-center">
 										<img
-											src={friend.img_url ?? placeholderImageUrl}
+											src={friend.img_url ?? defaultImageUrl}
 											alt={friend.name ?? "User"}
 											class="w-12 h-12 rounded-full object-cover"
 										/>
