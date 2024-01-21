@@ -297,7 +297,6 @@
 									{transformDuration(song.duration) || "Unknown"}
 								</p>
 							</div>
-							<div class="hidden sm:block" />
 							<div>
 								<p class="font-bold text-lg">Environment</p>
 								<p class="font-medium text-gray-300">

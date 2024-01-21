@@ -49,7 +49,11 @@
 		</DropdownMenu.Group>
 		<DropdownMenu.Separator />
 		<DropdownMenu.Group>
-			<DropdownMenu.Item on:click={signout} class="cursor-pointer py-2">
+			<DropdownMenu.Item
+				on:click={signout}
+				class="cursor-pointer py-2"
+				data-testid="logout-btn"
+			>
 				<LogOut class="mr-2 h-4 w-4 inline-flex" />
 				<span>Sign Out</span>
 			</DropdownMenu.Item>

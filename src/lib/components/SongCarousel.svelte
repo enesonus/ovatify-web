@@ -199,7 +199,11 @@
 				{/if}
 			</div>
 		</div>
-		<div in:fade|global class="flex gap-4 overflow-x-auto pb-4 rounded-lg">
+		<div
+			in:fade|global
+			class="flex gap-4 overflow-x-auto pb-4 rounded-lg"
+			data-testid="song-carousel"
+		>
 			{#if !data || data.length === 0}
 				<div in:fade|global class="h-72">
 					<p>No songs found</p>
