@@ -45,18 +45,3 @@ export async function getUserGenreNames(token: string) {
 	const response = await api.get("users/get-library-genre-names/", token);
 	return response;
 }
-
-export async function searchGenre(token: string, query: string) {
-	const response = await api.get(`songs/search-genres/?search_text=${query}`, token);
-	return response;
-}
-
-export async function getTempos(token: string) {
-	const response = await api.get(`songs/get-all-tempos/`, token);
-	return response;
-}
-
-export async function getMoods(token: string) {
-	const response = await api.get(`songs/get-all-moods/`, token);
-	return response;
-}

@@ -25,7 +25,7 @@ export async function getPlaylistById(token: string, playlistId: string) {
 }
 
 export async function getUserPlaylists(token: string) {
-	const response = await api.get(`users/get-playlists/`, token);
+	const response = await api.get(`users/get-playlists/?number_of_playlists=999`, token);
 	return response;
 }
 
