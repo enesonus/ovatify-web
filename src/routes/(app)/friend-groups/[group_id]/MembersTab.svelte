@@ -12,6 +12,7 @@
 	import { createEventDispatcher } from "svelte";
 	import { removeFriendFromGroup } from "$lib/services/groupService";
 	import { page } from "$app/stores";
+	import { userData } from "$lib/stores/userData";
 
 	export let dialogOpen: boolean;
 	export let members: GroupMember[];
@@ -21,6 +22,13 @@
 
 	async function handleRemoveMember(username: string) {
 		if (loading) return;
+		if (username === $userData.name) {
+			displayToast({
+				type: "error",
+				message: "You cannot remove yourself from the friend group"
+			});
+			return;
+		}
 		loading = true;
 		const token = await $user!.getIdToken();
 		const response = await removeFriendFromGroup(token, {

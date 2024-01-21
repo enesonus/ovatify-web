@@ -92,7 +92,7 @@
 <section class="min-h-[100dvh]">
 	<div class="flex flex-col gap-4">
 		<div class="flex flex-col xsm:flex-row items-center justify-center">
-			<h1 class="text-center sm:text-start text-2xl font-bold">Library</h1>
+			<h1 class="text-center sm:text-start text-2xl font-bold">Explore</h1>
 			<div class="mt-2 xsm:mt-0 xsm:ml-auto sm:pr-8">
 				<GetBanger />
 			</div>
