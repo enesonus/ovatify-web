@@ -95,6 +95,6 @@
 			{/key}
 		</div>
 	</div>
-	<!-- Hidden dialog -->
-	<DisplaySongModal bind:dialogOpen bind:selectedSongId />
 </section>
+
+<DisplaySongModal bind:dialogOpen bind:selectedSongId />

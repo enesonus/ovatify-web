@@ -23,7 +23,6 @@
 		const response = await recommendYouMightLike(token, 10);
 		console.log(response);
 		if (response.status !== 200) {
-			// displayToast({ message: "Error getting songs you might like", type: "error" });
 			return [];
 		}
 		return response.data.tracks_info as CarouselSong[];
@@ -76,7 +75,6 @@
 		const response = await recommendSinceYouLike(token, 10);
 		console.log(response);
 		if (response.status !== 200) {
-			// displayToast({ message: "Error getting since you like", type: "error" });
 			return {};
 		}
 		return response.data.tracks_info;

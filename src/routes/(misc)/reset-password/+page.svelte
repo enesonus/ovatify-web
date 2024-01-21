@@ -29,12 +29,12 @@
 		if (success) {
 			displayToast({
 				type: "success",
-				message: "Password reset email sent"
+				message: "Password reset email sent successfully"
 			});
 		} else {
 			displayToast({
 				type: "error",
-				message: "Failed to send password reset email"
+				message: "Error sending password reset email"
 			});
 		}
 		loading = false;

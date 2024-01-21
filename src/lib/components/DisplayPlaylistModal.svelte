@@ -30,7 +30,7 @@
 	export let dialogOpen: boolean;
 	export let selectedPlaylistId: string | null;
 
-	let selectedSongId: string | null = null;
+	let selectedSongId: string = "";
 
 	let playlist: Playlist | null = null;
 	let loadingPlaylist = false;
@@ -95,7 +95,7 @@
 			description: newPlaylistDescription
 		});
 		if (response.status === 200) {
-			displayToast({ message: "Playlist updated", type: "success" });
+			displayToast({ message: "Playlist updated successfully", type: "success" });
 			deleteFromCache(playlistCache, selectedPlaylistId!);
 			editPlaylistDialogOpen = false;
 			refresh = !refresh;
@@ -112,12 +112,15 @@
 		const token = await $user!.getIdToken();
 		const response = await removeSongFromPlaylist(token, selectedPlaylistId!, songId);
 		if (response.status === 200) {
-			displayToast({ message: "Song deleted from playlist", type: "success" });
+			displayToast({
+				message: "Song removed from playlist successfully",
+				type: "success"
+			});
 			deleteFromCache(playlistCache, selectedPlaylistId!);
 			refresh = !refresh;
 			dispatch("refresh");
 		} else {
-			displayToast({ message: "Error deleting song from playlist", type: "error" });
+			displayToast({ message: "Error removing song from playlist", type: "error" });
 		}
 		loading = false;
 	}
@@ -128,7 +131,7 @@
 		const token = await $user!.getIdToken();
 		const response = await deletePlaylist(token, selectedPlaylistId!);
 		if (response.status === 200) {
-			displayToast({ message: "Playlist deleted", type: "success" });
+			displayToast({ message: "Playlist deleted successfully", type: "success" });
 			deleteFromCache(playlistCache, selectedPlaylistId!);
 			deleteConfirmDialogOpen = false;
 			dialogOpen = false;
@@ -179,7 +182,10 @@
 				playlist.songs.map((song) => `spotify:track:${song.id}`)
 			);
 		}
-		displayToast({ message: "Playlist imported to Spotify", type: "success" });
+		displayToast({
+			message: "Playlist imported to Spotify successfully",
+			type: "success"
+		});
 		importPlaylistSpotifyDialogOpen = false;
 		loading = false;
 	}

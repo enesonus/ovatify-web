@@ -8,9 +8,23 @@
 	import { Button } from "$lib/components/ui/button";
 	import { page } from "$app/stores";
 	import SearchModal from "$lib/components/SearchModal.svelte";
+	import { onMount } from "svelte";
 
 	let sideMenuOpen = false;
 	let searchDialogOpen = false;
+
+	// Open search dialog on ctrl/cmd + k
+	function down(e: KeyboardEvent) {
+		if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
+			e.preventDefault();
+			searchDialogOpen = !searchDialogOpen;
+		}
+	}
+
+	onMount(() => {
+		document.addEventListener("keydown", down);
+		return () => document.removeEventListener("keydown", down);
+	});
 </script>
 
 <nav

@@ -15,7 +15,7 @@
 	let songDetailsDialogOpen = false;
 	let query: string = "";
 	let queryResult: SongQueryResponse[] = [];
-	let selectedSongId: string | null = null;
+	let selectedSongId: string = "";
 	let loading = false;
 	let querying = false;
 	let typing = false;
@@ -24,7 +24,7 @@
 	$: if (!dialogOpen) {
 		query = "";
 		queryResult = [];
-		selectedSongId = null;
+		selectedSongId = "";
 		loading = false;
 		querying = false;
 		typing = false;
@@ -52,7 +52,7 @@
 	async function querySongData() {
 		if (querying) return;
 		typing = false;
-		selectedSongId = null;
+		selectedSongId = "";
 		queryResult = [];
 		if (!validateQuery()) return;
 		querying = true;
