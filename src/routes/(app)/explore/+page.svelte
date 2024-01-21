@@ -13,10 +13,10 @@
 	import type { CarouselSong } from "$lib/types";
 	import Spinner from "$lib/components/Spinner.svelte";
 	import { onDestroy } from "svelte";
-	import GetBanger from "./GetBanger.svelte";
 
 	let dialogOpen = false;
 	let selectedSongId: string = "";
+	let noFriends = false;
 
 	async function getYouMightLike() {
 		const token = await $user!.getIdToken();
@@ -29,6 +29,7 @@
 	}
 
 	async function getFriendsListen() {
+		noFriends = false;
 		const token = await $user!.getIdToken();
 		const response = await recommendFriendsListen(token, 10);
 		console.log(response);
@@ -38,11 +39,16 @@
 			response.status === 404 &&
 			response.data.error === "No friends found for the user, cannot make recommendation"
 		) {
-			displayToast({
-				message:
-					"Add friends and make sure they have sharing enabled to receive friend recommendations",
-				type: "error"
-			});
+			noFriends = true;
+			const friendsWarningShown = sessionStorage.getItem("friendsWarningShown");
+			if (!friendsWarningShown) {
+				displayToast({
+					message:
+						"Add friends and make sure they have sharing enabled to receive friend recommendations",
+					type: "error"
+				});
+				sessionStorage.setItem("friendsWarningShown", "true");
+			}
 		} else {
 			displayToast({ message: "Error getting friends listen", type: "error" });
 		}
@@ -59,11 +65,7 @@
 			response.status === 404 &&
 			response.data.error === "No friends found for the user, cannot make recommendation"
 		) {
-			displayToast({
-				message:
-					"Add friends and make sure they have sharing enabled to receive friend recommendations",
-				type: "error"
-			});
+			console.log("No friends found for the user, cannot make recommendation");
 		} else {
 			displayToast({ message: "Error getting friend mix", type: "error" });
 		}
@@ -89,15 +91,9 @@
 	onDestroy(() => {});
 </script>
 
-<section class="min-h-[100dvh]">
+<section>
 	<div class="flex flex-col gap-4">
-		<div class="flex flex-col xsm:flex-row items-center justify-center">
-			<h1 class="text-center sm:text-start text-2xl font-bold">Explore</h1>
-			<div class="mt-2 xsm:mt-0 xsm:ml-auto sm:pr-8">
-				<GetBanger />
-			</div>
-		</div>
-
+		<h1 class="text-center sm:text-start text-2xl font-bold">Explore</h1>
 		<div class="flex flex-col gap-2 pb-4">
 			<!-- Newly Added -->
 			{#key $refresh}
@@ -106,16 +102,23 @@
 					on:toggleEvent={toggleDialog}
 					dataFunction={getYouMightLike}
 				/>
-				<SongCarousel
-					title="Your friends like"
-					on:toggleEvent={toggleDialog}
-					dataFunction={getFriendsListen}
-				/>
-				<SongCarousel
-					title="Friend Mix"
-					on:toggleEvent={toggleDialog}
-					dataFunction={getFriendMix}
-				/>
+				{#if !noFriends}
+					<SongCarousel
+						title="Your friends like"
+						on:toggleEvent={toggleDialog}
+						dataFunction={getFriendsListen}
+					/>
+					<SongCarousel
+						title="Friend Mix"
+						on:toggleEvent={toggleDialog}
+						dataFunction={getFriendMix}
+					/>
+				{:else}
+					<div class="flex flex-col justify-center pt-2">
+						<h2 class="text-lg font-semibold">Your friends like</h2>
+						<p class="pt-4">Add friends to receive friend recommendations</p>
+					</div>
+				{/if}
 				{#await getSinceYouLike()}
 					<div class="flex items-center justify-center h-[58rem] w-full">
 						<Spinner class="w-12 h-12 animate-spin" />

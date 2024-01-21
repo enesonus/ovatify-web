@@ -74,21 +74,23 @@
 		</Avatar.Root>
 		<div class="text-center sm:text-start pt-2">
 			<p class="px-4 text-4xl">{$userData.name}</p>
-			{#await getUserStats()}
-				<div in:fade|global class="px-4">
-					<Skeleton class="w-32 h-4 mt-2" />
-					<Skeleton class="w-32 h-4 mt-2" />
-					<Skeleton class="w-32 h-4 mt-2" />
-				</div>
-			{:then data}
-				<div in:fade|global class="px-4 text-gray-500">
-					<p>
-						Friends: {data.friend_count}
-					</p>
-					<p>Rated Songs: {data.rated_count}</p>
-					<p>Rating Average: {data.rating_average}</p>
-				</div>
-			{/await}
+			{#key refreshFriends}
+				{#await getUserStats()}
+					<div in:fade|global class="px-4">
+						<Skeleton class="w-32 h-4 mt-2" />
+						<Skeleton class="w-32 h-4 mt-2" />
+						<Skeleton class="w-32 h-4 mt-2" />
+					</div>
+				{:then data}
+					<div in:fade|global class="px-4 text-gray-500">
+						<p>
+							Friends: {data.friend_count}
+						</p>
+						<p>Rated Songs: {data.rated_count}</p>
+						<p>Rating Average: {data.rating_average}</p>
+					</div>
+				{/await}
+			{/key}
 		</div>
 		<div class="pt-2 sm:ml-auto sm:pr-2">
 			<div class="flex gap-2">

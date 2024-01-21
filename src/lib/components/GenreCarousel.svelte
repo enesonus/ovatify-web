@@ -58,7 +58,7 @@
 								<img
 									src={genre.img_url || defaultImageUrl}
 									alt={genre.name}
-									class="object-cover rounded-lg"
+									class="object-cover rounded-lg aspect-square"
 								/>
 								<p class="py-4 truncate">
 									{genre.name}

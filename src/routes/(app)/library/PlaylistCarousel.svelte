@@ -18,6 +18,7 @@
 	async function getPlaylists() {
 		const token = await $user!.getIdToken();
 		const response = await getUserPlaylists(token);
+		console.log(response);
 		if (response.status === 200) {
 			return response.data.items as CarouselPlaylist[];
 		} else {
@@ -91,7 +92,7 @@
 							<div class="w-48 h-60 rounded-lg">
 								{#if playlist.song_imgs.length < 4}
 									<img
-										class="object-cover rounded-lg"
+										class="object-cover rounded-lg aspect-square"
 										src={playlist.song_imgs.at(0) || defaultImageUrl}
 										alt={playlist.name}
 									/>

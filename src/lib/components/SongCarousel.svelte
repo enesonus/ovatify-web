@@ -52,7 +52,7 @@
 		<div class="flex h-12 items-center justify-between">
 			<h1 class="text-lg font-semibold">{title}</h1>
 			<div class="flex gap-2">
-				{#if importToSpotifyVisible}
+				{#if importToSpotifyVisible && data.length > 0}
 					<div in:fade|global>
 						<Button
 							variant="outline"
@@ -119,7 +119,7 @@
 						</Dialog.Content>
 					</Dialog.Root>
 				{/if}
-				{#if importAsPlaylistVisible}
+				{#if importAsPlaylistVisible && data.length > 0}
 					<div in:fade|global>
 						<Button
 							variant="outline"
@@ -220,7 +220,7 @@
 							<img
 								src={song.img_url || defaultImageUrl}
 								alt={song.name}
-								class="object-cover rounded-lg"
+								class="object-cover rounded-lg aspect-square"
 							/>
 							<p class="pt-4 truncate">
 								{song.name}
