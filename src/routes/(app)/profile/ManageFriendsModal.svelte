@@ -13,20 +13,26 @@
 
 <Dialog.Root bind:open={dialogOpen}>
 	<Dialog.Content
-		class="flex justify-center rounded-lg w-11/12 md:max-w-[80vw] lg:max-w-[51.2rem] h-[32rem]"
+		class="flex justify-center rounded-lg px-0 md:px-6 w-11/12 md:max-w-[80vw] lg:max-w-[51.2rem] sm:h-[32rem]"
 	>
-		<Tabs.Root value="1" class="w-11/12">
-			<Tabs.List class="grid w-full grid-cols-4">
+		<Tabs.Root value="1" class="w-full px-4 pt-3 md:w-11/12">
+			<Tabs.List class="hidden sm:grid w-full grid-cols-4">
 				<Tabs.Trigger value="1">Friends</Tabs.Trigger>
 				<Tabs.Trigger value="2">Add Friend</Tabs.Trigger>
-				<Tabs.Trigger value="3">Incoming Requests</Tabs.Trigger>
-				<Tabs.Trigger value="4">Outgoing Requests</Tabs.Trigger>
+				<Tabs.Trigger value="3">Incoming</Tabs.Trigger>
+				<Tabs.Trigger value="4">Outgoing</Tabs.Trigger>
+			</Tabs.List>
+			<Tabs.List class="grid sm:hidden w-full grid-cols-2 min-h-[5rem]">
+				<Tabs.Trigger value="1">Friends</Tabs.Trigger>
+				<Tabs.Trigger value="2">Add Friend</Tabs.Trigger>
+				<Tabs.Trigger value="3">Incoming</Tabs.Trigger>
+				<Tabs.Trigger value="4">Outgoing</Tabs.Trigger>
 			</Tabs.List>
 			<Tabs.Content value="1">
 				<div
 					class="flex flex-col items-center justify-center mt-4 h-96 bg-zinc-800 rounded-lg"
 				>
-					<FriendsTab bind:dialogOpen />
+					<FriendsTab bind:dialogOpen bind:refresh />
 				</div>
 			</Tabs.Content>
 			<Tabs.Content value="2">

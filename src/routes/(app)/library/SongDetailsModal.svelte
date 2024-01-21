@@ -183,6 +183,7 @@
 		</div>
 	</Dialog.Content>
 </Dialog.Root>
+
 <!-- Update rating modal -->
 <Dialog.Root bind:open={updateRatingDialogOpen}>
 	<Dialog.Content
@@ -204,6 +205,7 @@
 		</div>
 	</Dialog.Content>
 </Dialog.Root>
+
 <!-- Confirm modal for deleting song from user's library -->
 <Dialog.Root bind:open={confirmDialogOpen}>
 	<Dialog.Content class="rounded-lg max-w-[16rem] sm:max-w-xs md:max-w-md">

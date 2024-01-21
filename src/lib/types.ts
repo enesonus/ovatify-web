@@ -60,6 +60,21 @@ export type Friend = {
 	img_url: string | null;
 };
 
+export type GroupMember = {
+	id: string;
+	username: string;
+	img_url: string | null;
+};
+
+export type FriendGroup = {
+	id: string;
+	name: string;
+	description: string;
+	img_url: string | null;
+	admin: string;
+	members: GroupMember[];
+};
+
 export type UserData = {
 	id: string | null;
 	name: string;
@@ -71,6 +86,15 @@ export type UserData = {
 };
 
 export type CarouselPlaylist = {
+	id: string;
+	name: string;
+	img_url: string;
+	song_imgs: string[];
+	user_id: string;
+	friend_group_id: string;
+};
+
+export type CarouselGroupPlaylist = {
 	id: string;
 	name: string;
 	img_url: string;

@@ -1,1 +1,1 @@
-export const defaultImageUrl = "./images/ovatify.webp";
+export const defaultImageUrl = "/images/ovatify.webp";

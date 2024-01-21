@@ -18,15 +18,14 @@
 	import { Label } from "$lib/components/ui/label";
 	import { Button } from "$lib/components/ui/button";
 	import { Input } from "$lib/components/ui/input";
-	import { sleep } from "$lib/utils/time";
 	import { deleteFromCache, playlistCache } from "$lib/utils/caches";
 	import AddSongPlaylistModal from "./AddSongPlaylistModal.svelte";
 	import DisplaySongModal from "$lib/components/DisplaySongModal.svelte";
-	import { Eye, Pencil, Plus, Trash2, MinusCircle, Music } from "lucide-svelte";
+	import { Pencil, Plus, Trash2, MinusCircle } from "lucide-svelte";
 	import { Icons } from "$lib/icons";
-	import * as ContextMenu from "$lib/components/ui/context-menu";
 	import { spotify } from "$lib/utils/spotify";
-	import { enhance } from "$app/forms";
+	import { disabledBtn } from "$lib/utils/colors";
+	import { sleep } from "$lib/utils/time";
 
 	export let dialogOpen: boolean;
 	export let selectedPlaylistId: string | null;
@@ -70,6 +69,13 @@
 		let newPlaylistDescription = (formData.get("playlist-description") as string) || "";
 		newPlaylistName = newPlaylistName.trim();
 		newPlaylistDescription = newPlaylistDescription.trim();
+		if (
+			newPlaylistName === playlist?.name &&
+			newPlaylistDescription === playlist?.description
+		) {
+			editPlaylistDialogOpen = false;
+			return;
+		}
 		if (!newPlaylistName) {
 			displayToast({ message: "Playlist name cannot be empty", type: "error" });
 			return;
@@ -79,13 +85,6 @@
 				message: "Playlist name cannot be longer than 25 characters",
 				type: "error"
 			});
-			return;
-		}
-		if (
-			newPlaylistName === playlist?.name &&
-			newPlaylistDescription === playlist?.description
-		) {
-			editPlaylistDialogOpen = false;
 			return;
 		}
 		loading = true;
@@ -107,7 +106,7 @@
 		loading = false;
 	}
 
-	async function handleDeleteSongPlaylist(songId: string) {
+	async function handleDeleteSongFromPlaylist(songId: string) {
 		if (loading) return;
 		loading = true;
 		const token = await $user!.getIdToken();
@@ -236,25 +235,34 @@
 					<div class="flex px-4 gap-1 items-center">
 						<Button
 							variant="outline"
-							class="p-0 h-10 w-10"
-							on:click={() => (addSongPlaylistDialogOpen = true)}
-							><Plus /><span class="sr-only">Add Song</span></Button
+							class={cn("p-0 h-10 w-10", disabledBtn(loading))}
+							on:click={() => {
+								if (!loading) {
+									addSongPlaylistDialogOpen = true;
+								}
+							}}><Plus /><span class="sr-only">Add Song</span></Button
 						>
 						<Button
 							variant="outline"
-							class="p-0 h-10 w-10"
-							on:click={() => (editPlaylistDialogOpen = true)}
-							><Pencil /><span class="sr-only">Edit Playlist</span></Button
+							class={cn("p-0 h-10 w-10", disabledBtn(loading))}
+							on:click={() => {
+								if (!loading) {
+									editPlaylistDialogOpen = true;
+								}
+							}}><Pencil /><span class="sr-only">Edit Playlist</span></Button
 						>
 						<Button
 							variant="outline"
-							class="p-0 h-10 w-10"
-							on:click={() => (deleteConfirmDialogOpen = true)}
-							><Trash2 /><span class="sr-only">Delete Playlist</span></Button
+							class={cn("p-0 h-10 w-10", disabledBtn(loading))}
+							on:click={() => {
+								if (!loading) {
+									deleteConfirmDialogOpen = true;
+								}
+							}}><Trash2 /><span class="sr-only">Delete Playlist</span></Button
 						>
 						<Button
 							variant="outline"
-							class="p-0 h-10 w-10"
+							class={cn("p-0 h-10 w-10", disabledBtn(loading))}
 							on:click={handleOpenImportSpotifyDialog}
 							><Icons.spotify class="h-6 w-6" /><span class="sr-only"
 								>Import to Spotify</span
@@ -263,12 +271,8 @@
 					</div>
 					<div class="flex flex-col items-center px-2">
 						{#if playlist.songs.length === 0}
-							<div class="py-2 w-full">
-								<p class="text-center text-lg">No songs found for this playlist</p>
-							</div>
-						{:else}
 							<div
-								class="grid grid-cols-[auto,1fr,1fr,1fr] items-center justify-center text-white gap-x-2 sm:gap-x-4 w-full p-1"
+								class="grid grid-cols-[auto,1fr,1fr,1fr,auto] items-center justify-center text-white gap-x-2 sm:gap-x-4 w-full p-1"
 							>
 								<div class="hidden sm:block sm:w-12 h-4" />
 								<p class="sm:hidden pl-2">Title</p>
@@ -277,69 +281,90 @@
 								<p class="truncate hidden sm:block">Release Year</p>
 							</div>
 							<hr class="border-white w-full mb-2" />
+						{:else}
+							<div
+								class="grid grid-cols-[auto,1fr,1fr,1fr,auto] items-center justify-center text-white gap-x-2 sm:gap-x-4 w-full p-1"
+							>
+								<div class="hidden sm:block sm:w-12 h-4" />
+								<p class="sm:hidden pl-2">Title</p>
+								<p class="truncate hidden sm:block">Name</p>
+								<p class="truncate hidden sm:block">Artist</p>
+								<p class="truncate hidden sm:block">Release Year</p>
+								<div class="hidden sm:block sm:w-12 h-4" />
+							</div>
+							<hr class="border-white w-full mb-2" />
 							<div class="flex flex-col w-full">
 								{#each playlist.songs as song}
-									<ContextMenu.Root>
-										<ContextMenu.Trigger
-											><button
-												on:click={() => {
-													selectedSongId = song.id;
-													songDetailsDialogOpen = true;
-												}}
-												class="w-full p-1 rounded-lg hover:bg-zinc-800 transition ease-in-out delay-[25ms]"
-											>
-												<div
-													class="sm:hidden grid grid-cols-[auto,1fr,auto] items-center gap-2"
-												>
-													<img
-														src={song.img_url}
-														alt={song.name}
-														class="inline-block w-16 h-16 object-cover rounded-lg"
-													/>
-													<div class="overflow-x-hidden text-start">
-														<p class="truncate">
-															{song.name}
-														</p>
-														<p class="truncate">
-															{song.main_artist}
-														</p>
-													</div>
-												</div>
-												<div
-													class="hidden sm:grid grid-cols-[auto,1fr,1fr,1fr] items-center justify-center gap-x-4 text-start"
-												>
-													<img
-														src={song.img_url}
-														alt={song.name}
-														class="w-12 h-12 object-cover rounded-lg"
-													/>
-													<p class="truncate">
-														{song.name}
-													</p>
-													<p class="truncate">
-														{song.main_artist}
-													</p>
-													<p class="truncate">
-														{song.release_year}
-													</p>
-												</div>
-											</button></ContextMenu.Trigger
+									<button
+										on:click={() => {
+											if (!loading) {
+												selectedSongId = song.id;
+												songDetailsDialogOpen = true;
+											}
+										}}
+										class={cn(
+											"w-full p-1 rounded-lg hover:bg-zinc-800 transition ease-in-out delay-[25ms]",
+											disabledBtn(loading)
+										)}
+									>
+										<div
+											class="sm:hidden grid grid-cols-[auto,1fr,auto] items-center gap-2"
 										>
-										<ContextMenu.Content class="bg-zinc-900">
-											<ContextMenu.Item
-												class="min-w-[12rem]"
-												on:click={() => {
-													selectedSongId = song.id;
-													songDetailsDialogOpen = true;
-												}}><Eye class="w-5 h-5 mr-1" />Details</ContextMenu.Item
+											<img
+												src={song.img_url}
+												alt={song.name}
+												class="inline-block w-16 h-16 object-cover rounded-lg"
+											/>
+											<div class="overflow-x-hidden text-start">
+												<p class="truncate">
+													{song.name}
+												</p>
+												<p class="truncate">
+													{song.main_artist}
+												</p>
+											</div>
+											<Button
+												variant="outline"
+												class={cn(
+													"rounded-full p-0 h-8 w-8 hover:bg-red-800 transition duration-300 ease-in-out",
+													disabledBtn(loading)
+												)}
+												on:click={(e) => {
+													e.stopPropagation();
+													handleDeleteSongFromPlaylist(song.id);
+												}}><MinusCircle class="w-6 h-6 p-0" /></Button
 											>
-											<ContextMenu.Item
-												class="min-w-[12rem]"
-												on:click={() => handleDeleteSongPlaylist(song.id)}
-												><MinusCircle class="w-5 h-5 mr-1" />Remove from playlist</ContextMenu.Item
+										</div>
+										<div
+											class="hidden sm:grid grid-cols-[auto,1fr,1fr,1fr,auto] items-center justify-center gap-x-4 text-start"
+										>
+											<img
+												src={song.img_url}
+												alt={song.name}
+												class="w-12 h-12 object-cover rounded-lg"
+											/>
+											<p class="truncate">
+												{song.name}
+											</p>
+											<p class="truncate">
+												{song.main_artist}
+											</p>
+											<p class="truncate">
+												{song.release_year}
+											</p>
+											<Button
+												variant="outline"
+												class={cn(
+													"rounded-full p-0 h-8 w-8 hover:bg-red-800 transition duration-300 ease-in-out",
+													disabledBtn(loading)
+												)}
+												on:click={(e) => {
+													e.stopPropagation();
+													handleDeleteSongFromPlaylist(song.id);
+												}}><MinusCircle class="w-6 h-6 p-0" /></Button
 											>
-										</ContextMenu.Content>
-									</ContextMenu.Root>
+										</div>
+									</button>
 								{/each}
 							</div>
 						{/if}

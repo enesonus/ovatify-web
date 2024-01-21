@@ -13,6 +13,8 @@
 	} from "$lib/services/friendService";
 	import { user } from "$lib/stores/user";
 	import type { Friend } from "$lib/types";
+	import { cn } from "$lib/utils";
+	import { disabledBtn } from "$lib/utils/colors";
 
 	export let refresh: boolean;
 	export let refreshFriendCount: boolean;
@@ -36,12 +38,10 @@
 		if (loading) return;
 		loading = true;
 		const token = await $user?.getIdToken();
-		console.log(username);
 		const response =
 			action === "accept"
 				? await acceptFriendRequest(token!, username)
 				: await rejectFriendRequest(token!, username);
-		console.log(response);
 		if (response.status === 200) {
 			displayToast({
 				type: "success",
@@ -69,6 +69,7 @@
 			});
 		}
 		dialogOpen = false;
+		await sleep(1);
 		loading = false;
 	}
 </script>
@@ -84,26 +85,28 @@
 				{#each friends as friend}
 					<div class="p-2">
 						<div
-							class="w-full flex items-center justify-start bg-zinc-700 p-2 rounded-lg"
+							class="w-full flex items-center justify-between bg-zinc-700 p-2 rounded-lg"
 						>
-							<img
-								src={friend.img_url || defaultImageUrl}
-								alt={friend.name || "User"}
-								class="w-12 h-12 rounded-full object-cover"
-							/>
-							<p class="pl-2 pr-4">{friend.name}</p>
-							<div class="ml-auto pr-4">
+							<div class="break-all">
+								<img
+									src={friend.img_url || defaultImageUrl}
+									alt={friend.name}
+									class="w-12 h-12 rounded-full object-cover inline-block"
+								/>
+								<p class="px-2 inline-block">{friend.name}</p>
+							</div>
+							<div class="px-2 flex gap-2">
 								<Button
 									variant="outline"
 									on:click={() => handleFriendRequest("accept", friend.name)}
-									class={`w-8 h-8 p-0 ${loading ? "bg-red-800 hover:bg-red-800" : ""}`}
+									class={cn("w-8 h-8 p-0", disabledBtn(loading))}
 								>
 									<Check class="w-5 h-5" />
 								</Button>
 								<Button
 									variant="outline"
 									on:click={() => handleFriendRequest("reject", friend.name)}
-									class={`w-8 h-8 p-0 ${loading ? "bg-red-800 hover:bg-red-800" : ""}`}
+									class={cn("w-8 h-8 p-0", disabledBtn(loading))}
 								>
 									<X class="w-5 h-5" />
 								</Button>
@@ -113,7 +116,7 @@
 				{/each}
 			{:else}
 				<div class="flex flex-col items-center justify-center w-full h-full gap-2">
-					<h2 class="text-xl">No incoming friend requests</h2>
+					<h2 class="text-xl text-center">No incoming friend requests</h2>
 				</div>
 			{/if}
 		</div>

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createEventDispatcher, onMount } from "svelte";
+	import { createEventDispatcher } from "svelte";
 	import type { CarouselSong } from "$lib/types";
 	import { Skeleton } from "$lib/components/ui/skeleton";
 	import { fade } from "svelte/transition";

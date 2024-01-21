@@ -8,7 +8,6 @@
 	import { userData } from "$lib/stores/userData";
 	import YouMightLike from "./YouMightLike.svelte";
 	import { refresh } from "$lib/stores/refresh";
-	import { spotify } from "$lib/utils/spotify";
 	import { onMount } from "svelte";
 	import { sleep } from "$lib/utils/time";
 	import {
@@ -50,7 +49,7 @@
 					message: `You have ${count} unread ${
 						count > 1 ? "suggestions" : "suggestion"
 					}}`,
-					type: "success" // TODO: Change to info
+					type: "success"
 				});
 				const setSeenResponse = await setFriendSuggestionsAsSeen(token);
 				if (setSeenResponse.status === 200) {

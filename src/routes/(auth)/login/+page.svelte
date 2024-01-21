@@ -84,8 +84,17 @@
 			console.log("Attempting to get user profile from database...");
 			const getUserProfileResponse = await getUserProfile(userToken);
 			if (getUserProfileResponse.status !== 200) {
+				// If user profile doesn't exist, delete user from firebase
+				if (getUserProfileResponse.status === 404) {
+					await firebaseDeleteUser();
+					displayToast({ type: "error", message: "Invalid Credentials" });
+					return;
+				}
 				console.error("Server error getting user profile.");
-				displayToast({ type: "error", message: "Error logging in" });
+				displayToast({
+					type: "error",
+					message: "Error logging in, please try again later"
+				});
 				await firebaseSignOut();
 				loading = false;
 				return;
@@ -107,7 +116,6 @@
 				goto("/", { replaceState: true });
 			}
 		} catch (error: any) {
-			console.log("Error message:", error.message);
 			if (error.message === FIREBASE_ERRORS.invalidCredentials) {
 				displayToast({ type: "error", message: "Invalid credentials" });
 			} else {

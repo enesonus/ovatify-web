@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Select from "./ui/select/select.svelte";
 	import { user } from "$lib/stores/user";
 	import * as Dialog from "$lib/components/ui/dialog";
 	import { addSong, getSongById } from "$lib/services/songService";
@@ -17,6 +18,8 @@
 	import { createEventDispatcher, onDestroy } from "svelte";
 	import { goto } from "$app/navigation";
 	import { Icons } from "$lib/icons";
+	import { Star, User } from "lucide-svelte";
+	import { sleep } from "$lib/utils/time";
 
 	export let dialogOpen: boolean;
 	export let selectedSongId: string | null;
@@ -50,6 +53,12 @@
 		loadingSong = false;
 	}
 
+	function transformDuration(duration: number) {
+		const minutes = Math.floor(duration / 60);
+		const seconds = duration % 60;
+		return `${minutes}:${seconds < 10 ? "0" + seconds : seconds}`;
+	}
+
 	async function addSongToLibrary() {
 		if (loading) return;
 		if (rating == 0) {
@@ -77,6 +86,7 @@
 		}
 		addRatingDialogOpen = false;
 		dialogOpen = false;
+		await sleep(1);
 		loading = false;
 	}
 </script>
@@ -113,11 +123,14 @@
 						</a>
 						<div
 							class={cn(
-								"mt-2 min-w-[12rem] tabular-nums px-4 py-2 rounded-md border-2 text-center font-medium text-sm h-10 select-none bg-primary-foreground",
+								"flex items-center justify-center mt-2 min-w-[12rem] tabular-nums px-4 py-2 rounded-md border-2 text-center font-medium text-sm h-10 select-none bg-primary-foreground",
 								getRatingColor(song.average_rating)
 							)}
 						>
-							AVG: {song.average_rating ? song.average_rating : "Unrated"}
+							<Icons.logo class="h-5 w-5 mr-1" />
+							<span>
+								{song.average_rating ? song.average_rating : "Unrated"}
+							</span>
 						</div>
 						{#if !song.user_rating}
 							<Button
@@ -129,11 +142,12 @@
 						{:else}
 							<div
 								class={cn(
-									"mt-2 min-w-[12rem] tabular-nums px-4 py-2 rounded-md border-2 text-center font-medium text-sm h-10 select-none bg-primary-foreground",
+									"flex items-center justify-center mt-2 min-w-[12rem] tabular-nums px-4 py-2 rounded-md border-2 text-center font-medium text-sm h-10 select-none bg-primary-foreground",
 									getRatingColor(song.user_rating)
 								)}
 							>
-								User: {song.user_rating}
+								<User class="h-5 w-5 mr-1" />
+								<span>{song.user_rating}</span>
 							</div>
 						{/if}
 						<a
@@ -160,11 +174,13 @@
 								? song.genres.join(", ")
 								: "Unknown"}
 						</p>
-						<p class="w-full px-2">Mood: {song.mood ?? "Unknown"}</p>
+						<Select />
+						<h3 class="w-full px-2 font-bold">Mood</h3>
+						<p class="w-full px-2">{song.mood ?? "Unknown"}</p>
 						<p class="w-full px-2">Tempo: {song.tempo ?? "Unknown"}</p>
 						<p class="w-full px-2">Release Year: {song.release_year ?? "Unknown"}</p>
 						<p class="w-full px-2">
-							Duration: {song.duration ? `${song.duration} seconds` : "Unknown"}
+							Duration: {song.duration ? transformDuration(song.duration) : "Unknown"}
 						</p>
 						<p class="w-full px-2">
 							Recorded Environment: {song.recorded_environment ?? "Unknown"}
@@ -186,11 +202,10 @@
 			</div>
 			<Button
 				variant="outline"
-				class={`min-w-[12rem] ${
-					loading || rating == 0
-						? "bg-red-800 hover:bg-red-700"
-						: "bg-emerald-800 hover:bg-emerald-700"
-				}`}
+				class={cn("min-w-[12rem]", {
+					"bg-emerald-800 hover:bg-emerald-700": rating !== 0,
+					"opacity-50 cursor-not-allowed": loading
+				})}
 				on:click={addSongToLibrary}>{loading ? "Adding..." : "Add Song"}</Button
 			>
 		</div>

@@ -21,14 +21,14 @@
 	let detailDialogOpen = false;
 </script>
 
-<div class="sm:max-w-[80vw] lg:max-w-[85vw]">
+<div class="sm:max-w-[80vw] lg:max-w-[85vw] xl:max-w-[90vw]">
 	<div class="flex h-12 items-center justify-between pr-4">
 		<h1 class="text-lg font-semibold">{title}</h1>
 	</div>
 	<div>
 		{#await dataFunction()}
 			<div in:fade|global class="flex gap-4 overflow-x-auto pb-4 rounded-lg">
-				{#each { length: 5 } as _}
+				{#each { length: 10 } as _}
 					<div class="border-2 border-black p-2 rounded-lg bg-zinc-900">
 						<div class="w-48 h-60 rounded-lg">
 							<Skeleton class="h-48 w-48 rounded-lg" />
@@ -72,3 +72,13 @@
 	</div>
 </div>
 <ListSongsModal functionToCall={getSongsByGenreId} bind:dialogOpen={detailDialogOpen} />
+
+<style lang="postcss">
+	::-webkit-scrollbar-track:horizontal {
+		@apply rounded-lg mx-16 sm:mx-32 lg:mx-48;
+	}
+
+	::-webkit-scrollbar-thumb:horizontal {
+		@apply rounded-lg;
+	}
+</style>

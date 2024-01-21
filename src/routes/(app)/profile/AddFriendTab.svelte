@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Input } from "$lib/components/ui/input";
 	import { Button } from "$lib/components/ui/button";
-	import { displayToast, makeToast } from "$lib/utils/toast";
+	import { displayToast } from "$lib/utils/toast";
 	import { sendFriendRequest } from "$lib/services/friendService";
 	import { user } from "$lib/stores/user";
 	import { cn } from "$lib/utils";
@@ -60,14 +60,18 @@
 
 <form
 	on:submit|preventDefault={handleFriendRequest}
-	class="flex flex-col items-center justify-center w-full h-full gap-2"
+	class="flex flex-col items-center justify-center w-full h-full gap-2 px-2"
 >
 	<h2 class="text-xl">Username</h2>
-	<Input type="text" name="username" class="min-w-[16rem] bg-zinc-950 max-w-xs" />
+	<Input
+		type="text"
+		name="username"
+		class="min-w-[10rem] xsm:min-w-[16rem] bg-zinc-950 max-w-xs"
+	/>
 	<Button
 		type="submit"
 		variant="outline"
-		class={cn("min-w-[16rem] transition", {
+		class={cn("min-w-[10rem] xsm:min-w-[16rem] transition", {
 			"bg-zinc-950 hover:bg-zinc-950 opacity-50 cursor-not-allowed": loading,
 			"bg-emerald-800 hover:bg-emerald-700": !loading
 		})}>{loading ? "Adding... " : "Add Friend"}</Button
