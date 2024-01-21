@@ -3,7 +3,6 @@
 	import { getFriendGroupById } from "$lib/services/groupService";
 	import { user } from "$lib/stores/user";
 	import type { FriendGroup } from "$lib/types";
-	import { goto } from "$app/navigation";
 	import { fade } from "svelte/transition";
 	import { Button } from "$lib/components/ui/button";
 	import GroupPlaylistCarousel from "./GroupPlaylistCarousel.svelte";

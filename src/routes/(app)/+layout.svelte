@@ -6,6 +6,7 @@
 	import { page } from "$app/stores";
 	import { userData } from "$lib/stores/userData";
 	import { authFlowOngoing } from "$lib/stores/authState";
+	import { user } from "$lib/stores/user";
 
 	/* 
 		Redirect to login page if user is not fully logged in
@@ -30,8 +31,7 @@
 	});
 </script>
 
-<!-- $userData depends on $user, so checking userData.id is enough -->
-{#if $userData.id}
+{#if $user && $userData.id}
 	<main>
 		<TopNav />
 		<div class="flex">

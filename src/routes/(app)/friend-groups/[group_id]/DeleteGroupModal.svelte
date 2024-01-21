@@ -20,14 +20,14 @@
 		if (response.status === 204) {
 			displayToast({
 				type: "success",
-				message: "Deleted group successfully"
+				message: "Friend group deleted successfully"
 			});
 			goto("/friend-groups", { replaceState: true });
 			return;
 		}
 		displayToast({
 			type: "error",
-			message: "Failed to delete group"
+			message: "Error deleting group"
 		});
 		dialogOpen = false;
 		await sleep(1);

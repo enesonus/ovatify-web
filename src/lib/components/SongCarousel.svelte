@@ -14,6 +14,8 @@
 	import { user } from "$lib/stores/user";
 	import { saveAsPlaylist } from "$lib/services/playlistService";
 	import { refresh } from "$lib/stores/refresh";
+	import { goto } from "$app/navigation";
+	import { page } from "$app/stores";
 
 	const dispatch = createEventDispatcher<{ toggleEvent: string }>();
 
@@ -98,7 +100,7 @@
 											);
 										}
 										displayToast({
-											message: "Playlist imported to Spotify",
+											message: "Playlist imported to Spotify successfully",
 											type: "success"
 										});
 										importPlaylistSpotifyDialogOpen = false;
@@ -155,7 +157,11 @@
 												message: "Songs saved as a playlist successfully",
 												type: "success"
 											});
-											$refresh = !$refresh;
+											if ($page.url.pathname === "/library") {
+												$refresh = !$refresh;
+											} else {
+												goto("/library");
+											}
 										} else {
 											displayToast({
 												message: "Error saving songs as a playlist",

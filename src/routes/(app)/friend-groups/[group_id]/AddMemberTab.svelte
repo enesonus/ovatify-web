@@ -21,7 +21,7 @@
 	const dispatch = createEventDispatcher();
 
 	async function getAllFriends() {
-		const token = await $user?.getIdToken();
+		const token = await $user!.getIdToken();
 		const response = await getUserFriends(token!);
 		if (response.status !== 200) {
 			return [];
@@ -47,13 +47,13 @@
 		if (response.status === 200) {
 			displayToast({
 				type: "success",
-				message: `Removed friend ${username}`
+				message: `Added ${username} to the friend group successfully`
 			});
 			dispatch("refresh");
 		} else {
 			displayToast({
 				type: "error",
-				message: "Failed to remove friend"
+				message: `Error adding ${username} to friend group`
 			});
 		}
 		dialogOpen = false;

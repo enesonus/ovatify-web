@@ -4,10 +4,8 @@
 	import type { FriendGroup } from "$lib/types";
 	import { Button } from "$lib/components/ui/button";
 	import { displayToast } from "$lib/utils/toast";
-	import { defaultImageUrl } from "$lib/constants";
 	import { fade } from "svelte/transition";
 	import Spinner from "$lib/components/Spinner.svelte";
-	import { sleep } from "$lib/utils/time";
 	import { cn } from "$lib/utils";
 	import { disabledBtn } from "$lib/utils/colors";
 
@@ -33,11 +31,11 @@
 		const token = await $user!.getIdToken();
 		const response = await createFriendGroup(token, "New Friend Group");
 		console.log(response);
-		if (response.status !== 201) {
-			displayToast({ message: "Failed to Create Friend Group", type: "error" });
-		} else {
-			displayToast({ message: "Friend Group Created", type: "success" });
+		if (response.status === 201) {
+			displayToast({ message: "Friend group created successfully", type: "success" });
 			refresh = !refresh;
+		} else {
+			displayToast({ message: "Error creating friend group", type: "error" });
 		}
 		loading = false;
 	}

@@ -33,8 +33,8 @@
 	async function handleCancelFriendRequest(username: string) {
 		if (loading) return;
 		loading = true;
-		const token = await $user?.getIdToken();
-		const response = await cancelFriendRequest(token!, username);
+		const token = await $user!.getIdToken();
+		const response = await cancelFriendRequest(token, username);
 		console.log(response);
 		if (response.status === 200) {
 			displayToast({

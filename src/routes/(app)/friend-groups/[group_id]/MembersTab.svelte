@@ -31,13 +31,13 @@
 		if (response.status === 200) {
 			displayToast({
 				type: "success",
-				message: "Removed user from the group successfully"
+				message: `Removed ${username} from the friend group successfully`
 			});
 			dispatch("refresh");
 		} else {
 			displayToast({
 				type: "error",
-				message: "Failed to user from the group"
+				message: `Error removing ${username} from the friend group`
 			});
 		}
 		dialogOpen = false;

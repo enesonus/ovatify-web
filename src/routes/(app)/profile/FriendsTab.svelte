@@ -37,13 +37,13 @@
 		if (response.status === 200) {
 			displayToast({
 				type: "success",
-				message: "Removed friend successfully"
+				message: `Removed ${username} from friends list successfully`
 			});
 			refresh = !refresh;
 		} else {
 			displayToast({
 				type: "error",
-				message: "Failed to remove friend"
+				message: "Error removing friend"
 			});
 		}
 		dialogOpen = false;
